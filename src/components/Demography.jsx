@@ -1,51 +1,70 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import * as yup from "yup";
 
-const inputStyle = {
-  padding: "0.5rem",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  minWidth: "250px",
-  width: "50%"
+const styles = {
+  input: {
+    padding: "0.4rem",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    minWidth: "250px",
+    width: "50%",
+    fontSize: "16px",
+  },
+  label: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "0.1rem",
+    fontSize: "18px",
+  },
+  section: {
+    padding: "1rem",
+    marginTop: "1rem",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  },
+  button: {
+    padding: "0.5rem 1rem",
+    marginLeft: "0.5rem",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    cursor: "pointer",
+    backgroundColor: "#3498db",
+    color: "white",
+  },
+  flexRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexDirection: "row",
+    gap: "1rem",
+    marginBottom: "1rem",
+  },
+  error: {
+    color: "red",
+    fontSize: "0.8rem",
+    marginTop: "0.25rem",
+  },
 };
 
-const labelStyle = {
-  display: "flex",
-  flexDirection: "column",
-  marginBottom: "1rem"
-};
-
-const sectionStyle = {
-  padding: "1rem",
-  marginTop: "1rem",
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  backgroundColor: "#f9f9f9"
-};
-
-const buttonStyle = {
-  // padding: "0.15rem 1.0rem",
-  // background: "#3498db",
-  // color: "white",
-  // border: "none",
-  // borderRadius: "8px",
-  // fontSize: "1rem",
-  // cursor: "pointer",
-  // marginRight: "1rem",
-  // transition: "background 0.3s ease"
-  padding: "0.5rem 1rem",
-  marginLeft: "0.5rem",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  cursor: "pointer",
-  backgroundColor: "#3498db"
-};
-
-const flexRow = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "1rem",
-  marginBottom: "1rem"
-};
+// Yup validation schema
+const schema = yup.object().shape({
+  fileName: yup.string().required("File name is required."),
+  patientName: yup.string().required("Patient name is required."),
+  dob: yup
+    .string()
+    .required("Date of birth is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
+  dateOfEvaluation: yup
+    .string()
+    .required("Evaluation date is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
+  dateOfDictation: yup
+    .string()
+    .required("Dictation date is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
+  provider: yup.string().required("Provider selection is required."),
+  location: yup.string().required("Location selection is required."),
+});
 
 const Demography = ({
   fileName,
@@ -54,228 +73,184 @@ const Demography = ({
   onChange,
   onReset,
   onSubmit,
-  setFormData
+  setFormData,
 }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateField = async (fieldName, value) => {
+    try {
+      await schema.validateAt(fieldName, { ...formData, fileName });
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: undefined }));
+    } catch (err) {
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: err.message }));
+    }
+  };
+
+  // Individual field validation effects
+  useEffect(() => {
+    validateField("fileName", fileName);
+  }, [fileName]);
+
+  useEffect(() => {
+    validateField("patientName", formData.patientName);
+  }, [formData.patientName]);
+
+  useEffect(() => {
+    validateField("dob", formData.dob);
+  }, [formData.dob]);
+
+  useEffect(() => {
+    validateField("dateOfEvaluation", formData.dateOfEvaluation);
+  }, [formData.dateOfEvaluation]);
+
+  useEffect(() => {
+    validateField("dateOfDictation", formData.dateOfDictation);
+  }, [formData.dateOfDictation]);
+
+  useEffect(() => {
+    validateField("provider", formData.provider);
+  }, [formData.provider]);
+
+  useEffect(() => {
+    validateField("location", formData.location);
+  }, [formData.location]);
+
+  const handleValidatedSubmit = async () => {
+    try {
+      await schema.validate({ ...formData, fileName }, { abortEarly: false });
+      setErrors({});
+      onSubmit();
+    } catch (err) {
+      const newErrors = {};
+      err.inner.forEach((e) => {
+        newErrors[e.path] = e.message;
+      });
+      setErrors(newErrors);
+    }
+  };
+
+  const renderSelect = (name, options, clearable = false) => (
+    <label style={styles.label}>
+      {name.charAt(0).toUpperCase() + name.slice(1)}:
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <select
+          name={name}
+          style={styles.input}
+          value={formData[name]}
+          onChange={onChange}
+        >
+          <option value="">-- Select {name} --</option>
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+        {clearable && (
+          <button
+            type="button"
+            style={styles.button}
+            onClick={() => setFormData((prev) => ({ ...prev, [name]: "" }))}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {errors[name] && <span style={styles.error}>{errors[name]}</span>}
+    </label>
+  );
+
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      style={{ maxWidth: 800, margin: "auto" }}
-    >
-      <div style={flexRow}>
-        <label style={{ ...labelStyle, flex: 1 }}>
-          File Name:
+    <form onSubmit={(e) => e.preventDefault()} style={{ maxWidth: 800, margin: "auto" }}>
+      {/* Header Row */}
+      <div style={styles.flexRow}>
+        <label style={styles.label}>
+          File Name:&nbsp;
           <input
             type="text"
-            style={inputStyle}
+            style={styles.input}
             value={fileName}
             onChange={onFileNameChange}
             placeholder="Follow Up File Name"
           />
+          {errors.fileName && <span style={styles.error}>{errors.fileName}</span>}
         </label>
+
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
-          <button type="button" onClick={onSubmit} style={buttonStyle}>
+          <button type="button" onClick={handleValidatedSubmit} style={styles.button}>
             Generate Document
           </button>
-          <button type="button" onClick={onReset} style={buttonStyle}>
+          <button type="button" onClick={onReset} style={styles.button}>
             Reset
           </button>
         </div>
       </div>
 
-      <div style={sectionStyle}>
-        <label style={labelStyle}>
-          PATIENT NAME:
-          <input
-            name="patientName"
-            style={inputStyle}
-            value={formData.patientName}
-            onChange={onChange}
-          />
-        </label>
+      {/* Demography Fields */}
+      <div style={styles.section}>
+        {[{ label: "PATIENT NAME", name: "patientName" },
+          { label: "DATE OF BIRTH", name: "dob" },
+          { label: "DATE OF EVALUATION", name: "dateOfEvaluation" },
+          { label: "DATE OF DICTATION", name: "dateOfDictation" },
+        ].map(({ label, name }) => (
+          <label key={name} style={styles.label}>
+            {label}:
+            <input
+              name={name}
+              style={styles.input}
+              value={formData[name]}
+              onChange={onChange}
+            />
+            {errors[name] && <span style={styles.error}>{errors[name]}</span>}
+          </label>
+        ))}
 
-        <label style={labelStyle}>
-          DATE OF BIRTH:
-          <input
-            name="dob"
-            style={inputStyle}
-            value={formData.dob}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          DATE OF EVALUATION:
-          <input
-            name="dateOfEvaluation"
-            style={inputStyle}
-            value={formData.dateOfEvaluation}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          DATE OF DICTATION:
-          <input
-            name="dateOfDictation"
-            style={inputStyle}
-            value={formData.dateOfDictation}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
+        <label style={styles.label}>
           PHYSICIAN:
           <input
             name="physician"
-            style={inputStyle}
+            style={styles.input}
             value={formData.physician}
             onChange={onChange}
             placeholder="Robert Klickovich, M.D"
+            disabled
           />
         </label>
 
-        <label style={labelStyle}>
-          Provider:
-          <select
-            name="provider"
-            style={inputStyle}
-            value={formData.provider}
-            onChange={onChange}
-          >
-            <option value="">-- Select Provider --</option>
-            <option value="Cortney Lacefield, APRN">
-              Cortney Lacefield, APRN
-            </option>
-            <option value="Lauren Ellis, APRN">Lauren Ellis, APRN</option>
-            <option value="Taja Elder, APRN">Taja Elder, APRN</option>
-            <option value="Robert Klickovich, M.D">
-              Robert Klickovich, M.D
-            </option>
-          </select>
-        </label>
+        {renderSelect("provider", [
+          "Cortney Lacefield, APRN",
+          "Lauren Ellis, APRN",
+          "Taja Elder, APRN",
+          "Robert Klickovich, M.D",
+        ])}
 
-        <label style={labelStyle}>
+        <label style={styles.label}>
           Referring Physician:
           <input
             name="referringPhysician"
-            style={inputStyle}
+            style={styles.input}
             value={formData.referringPhysician}
             onChange={onChange}
           />
         </label>
 
-        <label style={labelStyle}>
-          Insurance:
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select
-              name="insurance"
-              style={inputStyle}
-              value={formData.insurance}
-              onChange={onChange}
-            >
-              <option value="">-- Select Insurance --</option>
-              {[
-                "Aetna",
-                "BCBS",
-                "Ambetter",
-                "Commercial",
-                "Humana",
-                "PP",
-                "Medicare",
-                "Medicaid",
-                "TriCare",
-                "Trieast",
-                "WellCare",
-                "Work. Comp",
-                "UHC"
-              ].map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={() =>
-                setFormData((prev) => ({ ...prev, insurance: "" }))
-              }
-            >
-              Clear
-            </button>
-          </div>
-        </label>
+        {renderSelect("insurance", [
+          "Aetna", "BCBS", "Ambetter", "Commercial", "Humana", "PP", "Medicare", "Medicaid",
+          "TriCare", "Trieast", "WellCare", "Work. Comp", "UHC",
+        ], true)}
 
-        <label style={labelStyle}>
-          Location:
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select
-              name="location"
-              style={inputStyle}
-              value={formData.location}
-              onChange={onChange}
-            >
-              <option value="">-- Select Location --</option>
-              <option value="Louisville">Louisville</option>
-              <option value="E-town">E-town</option>
-            </select>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={() => setFormData((prev) => ({ ...prev, location: "" }))}
-            >
-              Clear
-            </button>
-          </div>
-        </label>
+        {renderSelect("location", ["Louisville", "E-town"], true)}
 
-        <label style={labelStyle}>
-  CMA:
-  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-    <select
-      name="cma"
-      style={inputStyle}
-      value={formData.cma}
-      onChange={onChange}
-    >
-      <option value="">-- Select CMA --</option>
-      {[
-        "Alyson",
-        "Brenda",
-        "Erika",
-        "Janelle",
-        "Laurie",
-        "Melanie",
-        "MS",
-        "Nick",
-        "PP",
-        "SC",
-        "Steph",
-        "Tony",
-        "Tina",
-        "DJ"
-      ].map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-    <button
-      type="button"
-      style={buttonStyle}
-      onClick={() => setFormData((prev) => ({ ...prev, cma: "" }))}
-    >
-      Clear
-    </button>
-  </div>
-</label>
+        {renderSelect("cma", [
+          "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie", "MS",
+          "Nick", "PP", "SC", "Steph", "Tony", "Tina", "DJ",
+        ], true)}
 
-
-        <label style={labelStyle}>
+        <label style={styles.label}>
           Room #:
           <input
             name="roomNumber"
-            style={inputStyle}
+            style={styles.input}
             value={formData.roomNumber}
             onChange={onChange}
           />

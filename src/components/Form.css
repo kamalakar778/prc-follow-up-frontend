@@ -1,4 +1,8 @@
 /* Form.css */
+body {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  margin-bottom: -20px;
+}
 
 .form-section {
   background: #ffffff;
@@ -32,7 +36,7 @@ textarea {
 }
 
 button {
-  padding: 0.15rem 1.0rem;
+  padding: 0.15rem 1rem;
   background: #3498db;
   color: white;
   border: none;

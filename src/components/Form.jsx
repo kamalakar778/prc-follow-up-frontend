@@ -35,7 +35,7 @@ const Form = () => {
     dob: "",
     dateOfEvaluation: "",
     dateOfDictation: "",
-    physician: "",
+    physician: "Robert Klickovich, M.D",
     provider: "",
     referringPhysician: "",
     insurance: "",
@@ -68,7 +68,7 @@ const Form = () => {
     coordinationBalance: "",
     motorFunction: "",
     // sectionTwo: "",
-    docSections:[],
+    docSections: [],
     complaintsData: {
       cervical: { enabled: true, side: "bilaterally" },
       thoracic: { enabled: true, side: "bilaterally" },
@@ -135,7 +135,7 @@ const Form = () => {
       lymphadenopathy: examData.lymphadenopathy || prev.lymphadenopathy,
       coordinationBalance:
         examData.coordinationBalance || prev.coordinationBalance,
-      motorFunction: examData.motorFunction || prev.motorFunction,
+      motorFunction: examData.motorFunction || prev.motorFunction
       // sectionTwo: examData.sectionTwo || prev.sectionTwo
     }));
   };
@@ -186,7 +186,7 @@ const Form = () => {
       dob: "",
       dateOfEvaluation: "",
       dateOfDictation: "",
-      physician: "",
+      physician: "Robert Klickovich, M.D",
       provider: "",
       referringPhysician: "",
       insurance: "",
@@ -230,7 +230,7 @@ const Form = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     const complaintsSummary = getComplaintsSummary();
     const establishedComplaintsText =
       establishedComplaintsLines.length > 0
@@ -251,7 +251,7 @@ const Form = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/generate-doc", {
+      const response = await fetch("http://localhost:8000/generate-doc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -281,7 +281,10 @@ const Form = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
+      // a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
+      const nameToUse = fileName || formData.patientName || "follow_up";
+      a.download = `${nameToUse.replace(/\s+/g, "_")}.docx`;
+
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -318,7 +321,7 @@ const Form = () => {
       <div className="form-section">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
 
-        <h2 className="section-title">Demography</h2>
+        {/* <h2 className="section-title">Demography</h2> */}
         <Demography
           fileName={fileName}
           formData={formData}
@@ -335,7 +338,7 @@ const Form = () => {
       </div>
 
       <div className="form-section">
-        <h2 className="section-title">Characteristics Of Pain</h2>
+        <h2 className="section-title">Characteristics Of Pain Include:</h2>
         <CharacteristicsOfPain
           formData={{
             temporally: formData.temporally,

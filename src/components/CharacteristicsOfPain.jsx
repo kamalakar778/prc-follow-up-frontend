@@ -117,7 +117,7 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
 
   return (
     <div>
-      <h3 style={headingStyle}>CHARACTERISTICS OF PAIN INCLUDE:</h3>
+      {/* <h3 style={headingStyle}>CHARACTERISTICS OF PAIN INCLUDE:</h3> */}
 
       <div style={sectionStyle}>
         <label style={labelStyle}>
