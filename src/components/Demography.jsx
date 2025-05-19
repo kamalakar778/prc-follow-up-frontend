@@ -1,279 +1,259 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
-// Basic styles
-const inputStyle = {
-  padding: "0.5rem",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  minWidth: "250px",
-  width: "50%"
+const styles = {
+  input: {
+    padding: "0.4rem",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    minWidth: "250px",
+    width: "50%",
+    fontSize: "16px",
+  },
+  label: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: "0.1rem",
+    fontSize: "18px",
+  },
+  section: {
+    padding: "1rem",
+    marginTop: "1rem",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  },
+  button: {
+    padding: "0.5rem 1rem",
+    marginLeft: "0.5rem",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    cursor: "pointer",
+    backgroundColor: "#3498db",
+    color: "white",
+  },
+  flexRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexDirection: "row",
+    gap: "1rem",
+    marginBottom: "1rem",
+  },
+  error: {
+    color: "red",
+    fontSize: "0.8rem",
+    marginTop: "0.25rem",
+  },
 };
 
-const labelStyle = {
-  display: "flex",
-  flexDirection: "column",
-  marginBottom: "1rem"
-};
-
-const sectionStyle = {
-  padding: "1rem",
-  marginTop: "1rem",
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  backgroundColor: "#f9f9f9"
-};
-
-const buttonStyle = {
-  padding: "0.5rem 1rem",
-  marginLeft: "0.5rem",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  cursor: "pointer",
-  backgroundColor: "#3498db",
-  color: "white"
-};
-
-const flexRow = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "1rem",
-  marginBottom: "1rem"
-};
-
-const errorStyle = {
-  borderColor: "red"
-};
-
-const errorTextStyle = {
-  color: "red",
-  fontSize: "0.8rem",
-  marginTop: "0.25rem"
-};
-
-// Yup Schema
+// Yup validation schema
 const schema = yup.object().shape({
-  fileName: yup.string().required("File Name is required"),
-  patientName: yup.string().required("Patient Name is required"),
+  fileName: yup.string().required("File name is required."),
+  patientName: yup.string().required("Patient name is required."),
   dob: yup
     .string()
-    .required("Date of Birth is required")
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+    .required("Date of birth is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
   dateOfEvaluation: yup
     .string()
-    .required("Evaluation Date is required")
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+    .required("Evaluation date is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
   dateOfDictation: yup
     .string()
-    .required("Dictation Date is required")
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
-  physician: yup.string().required("Physician is required"),
-  provider: yup.string().required("Provider is required")
+    .required("Dictation date is required.")
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, "Invalid date format (MM/DD/YYYY)"),
+  provider: yup.string().required("Provider selection is required."),
+  location: yup.string().required("Location selection is required."),
 });
 
-const Demography = ({ onSubmit }) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    setValue,
-    watch
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      fileName: "",
-      patientName: "",
-      dob: "",
-      dateOfEvaluation: "",
-      dateOfDictation: "",
-      physician: "Robert Klickovich, M.D",
-      provider: "",
-      referringPhysician: "",
-      roomNumber: "",
-      insurance: "",
-      location: "",
-      cma: ""
+const Demography = ({
+  fileName,
+  formData,
+  onFileNameChange,
+  onChange,
+  onReset,
+  onSubmit,
+  setFormData,
+}) => {
+  const [errors, setErrors] = useState({});
+
+  const validateField = async (fieldName, value) => {
+    try {
+      await schema.validateAt(fieldName, { ...formData, fileName });
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: undefined }));
+    } catch (err) {
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: err.message }));
     }
-  });
-
-  const watchFields = watch();
-  const fileName = watch("fileName");
-
-  const handleReset = () => {
-    reset();
   };
 
+  // Individual field validation effects
+  useEffect(() => {
+    validateField("fileName", fileName);
+  }, [fileName]);
+
+  useEffect(() => {
+    validateField("patientName", formData.patientName);
+  }, [formData.patientName]);
+
+  useEffect(() => {
+    validateField("dob", formData.dob);
+  }, [formData.dob]);
+
+  useEffect(() => {
+    validateField("dateOfEvaluation", formData.dateOfEvaluation);
+  }, [formData.dateOfEvaluation]);
+
+  useEffect(() => {
+    validateField("dateOfDictation", formData.dateOfDictation);
+  }, [formData.dateOfDictation]);
+
+  useEffect(() => {
+    validateField("provider", formData.provider);
+  }, [formData.provider]);
+
+  useEffect(() => {
+    validateField("location", formData.location);
+  }, [formData.location]);
+
+  const handleValidatedSubmit = async () => {
+    try {
+      await schema.validate({ ...formData, fileName }, { abortEarly: false });
+      setErrors({});
+      onSubmit();
+    } catch (err) {
+      const newErrors = {};
+      err.inner.forEach((e) => {
+        newErrors[e.path] = e.message;
+      });
+      setErrors(newErrors);
+    }
+  };
+
+  const renderSelect = (name, options, clearable = false) => (
+    <label style={styles.label}>
+      {name.charAt(0).toUpperCase() + name.slice(1)}:
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <select
+          name={name}
+          style={styles.input}
+          value={formData[name]}
+          onChange={onChange}
+        >
+          <option value="">-- Select {name} --</option>
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+        {clearable && (
+          <button
+            type="button"
+            style={styles.button}
+            onClick={() => setFormData((prev) => ({ ...prev, [name]: "" }))}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {errors[name] && <span style={styles.error}>{errors[name]}</span>}
+    </label>
+  );
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{ maxWidth: 800, margin: "auto" }}
-    >
-      <div style={flexRow}>
-        <label style={{ ...labelStyle, flex: 1 }}>
-          File Name:
+    <form onSubmit={(e) => e.preventDefault()} style={{ maxWidth: 800, margin: "auto" }}>
+      {/* Header Row */}
+      <div style={styles.flexRow}>
+        <label style={styles.label}>
+          File Name:&nbsp;
           <input
             type="text"
-            style={inputStyle}
-            {...register("fileName")}
-            value={fileName || watchFields.patientName}
-            onChange={(e) => setValue("fileName", e.target.value)}
+            style={styles.input}
+            value={fileName}
+            onChange={onFileNameChange}
+            placeholder="Follow Up File Name"
           />
-          {errors.provider && (
-            <div style={errorTextStyle}>{errors.fileName.message}</div>
-          )}
+          {errors.fileName && <span style={styles.error}>{errors.fileName}</span>}
         </label>
+
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
-          <button type="submit" style={buttonStyle}>
+          <button type="button" onClick={handleValidatedSubmit} style={styles.button}>
             Generate Document
           </button>
-          <button type="button" onClick={handleReset} style={buttonStyle}>
+          <button type="button" onClick={onReset} style={styles.button}>
             Reset
           </button>
         </div>
       </div>
 
-      <div style={sectionStyle}>
-        {[
-          { label: "PATIENT NAME:", name: "patientName" },
-          { label: "DATE OF BIRTH:", name: "dob" },
-          { label: "DATE OF EVALUATION:", name: "dateOfEvaluation" },
-          { label: "DATE OF DICTATION:", name: "dateOfDictation" },
-          {
-            label: "PHYSICIAN:",
-            name: "physician",
-            placeholder: "Robert Klickovich, M.D"
-          },
-          { label: "Referring Physician:", name: "referringPhysician" },
-          { label: "Room #:", name: "roomNumber" }
-        ].map(({ label, name, placeholder }) => (
-          <label key={name} style={labelStyle}>
-            {label}
+      {/* Demography Fields */}
+      <div style={styles.section}>
+        {[{ label: "PATIENT NAME", name: "patientName" },
+          { label: "DATE OF BIRTH", name: "dob" },
+          { label: "DATE OF EVALUATION", name: "dateOfEvaluation" },
+          { label: "DATE OF DICTATION", name: "dateOfDictation" },
+        ].map(({ label, name }) => (
+          <label key={name} style={styles.label}>
+            {label}:
             <input
               name={name}
-              placeholder={placeholder}
-              style={{ ...inputStyle, ...(errors[name] && errorStyle) }}
-              {...register(name)}
+              style={styles.input}
+              value={formData[name]}
+              onChange={onChange}
             />
-            {errors[name] && (
-              <div style={errorTextStyle}>{errors[name].message}</div>
-            )}
+            {errors[name] && <span style={styles.error}>{errors[name]}</span>}
           </label>
         ))}
 
-        <label style={labelStyle}>
-          Provider:
-          <select
-            name="provider"
-            style={{ ...inputStyle, ...(errors.provider && errorStyle) }}
-            {...register("provider")}
-          >
-            <option value="">-- Select Provider --</option>
-            {[
-              "Cortney Lacefield, APRN",
-              "Lauren Ellis, APRN",
-              "Taja Elder, APRN",
-              "Robert Klickovich, M.D"
-            ].map((provider) => (
-              <option key={provider} value={provider}>
-                {provider}
-              </option>
-            ))}
-          </select>
-          {errors.provider && (
-            <div style={errorTextStyle}>{errors.provider.message}</div>
-          )}
+        <label style={styles.label}>
+          PHYSICIAN:
+          <input
+            name="physician"
+            style={styles.input}
+            value={formData.physician}
+            onChange={onChange}
+            placeholder="Robert Klickovich, M.D"
+            disabled
+          />
         </label>
 
-        <label style={labelStyle}>
-          Insurance:
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select style={inputStyle} {...register("insurance")}>
-              <option value="">-- Select Insurance --</option>
-              {[
-                "Aetna",
-                "BCBS",
-                "Ambetter",
-                "Commercial",
-                "Humana",
-                "PP",
-                "Medicare",
-                "Medicaid",
-                "TriCare",
-                "Trieast",
-                "WellCare",
-                "Work. Comp",
-                "UHC"
-              ].map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={() => setValue("insurance", "")}
-            >
-              Clear
-            </button>
-          </div>
+        {renderSelect("provider", [
+          "Cortney Lacefield, APRN",
+          "Lauren Ellis, APRN",
+          "Taja Elder, APRN",
+          "Robert Klickovich, M.D",
+        ])}
+
+        <label style={styles.label}>
+          Referring Physician:
+          <input
+            name="referringPhysician"
+            style={styles.input}
+            value={formData.referringPhysician}
+            onChange={onChange}
+          />
         </label>
 
-        <label style={labelStyle}>
-          Location:
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select style={inputStyle} {...register("location")}>
-              <option value="">-- Select Location --</option>
-              <option value="Louisville">Louisville</option>
-              <option value="E-town">E-town</option>
-            </select>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={() => setValue("location", "")}
-            >
-              Clear
-            </button>
-          </div>
-        </label>
+        {renderSelect("insurance", [
+          "Aetna", "BCBS", "Ambetter", "Commercial", "Humana", "PP", "Medicare", "Medicaid",
+          "TriCare", "Trieast", "WellCare", "Work. Comp", "UHC",
+        ], true)}
 
-        <label style={labelStyle}>
-          CMA:
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select style={inputStyle} {...register("cma")}>
-              <option value="">-- Select CMA --</option>
-              {[
-                "Alyson",
-                "Brenda",
-                "Erika",
-                "Janelle",
-                "Laurie",
-                "Melanie",
-                "MS",
-                "Nick",
-                "PP",
-                "SC",
-                "Steph",
-                "Tony",
-                "Tina",
-                "DJ"
-              ].map((cma) => (
-                <option key={cma} value={cma}>
-                  {cma}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={() => setValue("cma", "")}
-            >
-              Clear
-            </button>
-          </div>
+        {renderSelect("location", ["Louisville", "E-town"], true)}
+
+        {renderSelect("cma", [
+          "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie", "MS",
+          "Nick", "PP", "SC", "Steph", "Tony", "Tina", "DJ",
+        ], true)}
+
+        <label style={styles.label}>
+          Room #:
+          <input
+            name="roomNumber"
+            style={styles.input}
+            value={formData.roomNumber}
+            onChange={onChange}
+          />
         </label>
       </div>
     </form>

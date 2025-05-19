@@ -35,7 +35,7 @@ const Form = () => {
     dob: "",
     dateOfEvaluation: "",
     dateOfDictation: "",
-    physician: "",
+    physician: "Robert Klickovich, M.D",
     provider: "",
     referringPhysician: "",
     insurance: "",
@@ -189,7 +189,7 @@ const Form = () => {
       dob: "",
       dateOfEvaluation: "",
       dateOfDictation: "",
-      physician: "",
+      physician: "Robert Klickovich, M.D",
       provider: "",
       referringPhysician: "",
       insurance: "",
@@ -233,75 +233,97 @@ const Form = () => {
   };
 
   const handleSubmit = async (e) => {
-  // e.preventDefault(); // if using inside a <form>
+    // e.preventDefault();
+    // const complaintsSummary = getComplaintsSummary();
+    // const establishedComplaintsText =
+    //   establishedComplaintsLines.length > 0
+    //     ? establishedComplaintsLines.join("\n")
+    //     : "";
+    // const assessmentCodesFinalList = Array.from(selected).join("\n");
 
-  const complaintsSummary = getComplaintsSummary();
-  const establishedComplaintsText =
-    establishedComplaintsLines.length > 0
-      ? establishedComplaintsLines.join("\n")
-      : "";
-  const assessmentCodesFinalList = Array.from(selected).join("\n");
+    const complaintsSummary = getComplaintsSummary();
+    const establishedComplaintsText =
+      establishedComplaintsLines.length > 0
+        ? establishedComplaintsLines.join("\n")
+        : "";
+    const assessmentCodesFinalList = Array.from(selected).join("\n");
 
-  const payload = {
-    fileName,
-    ...formData,
-    chiefComplaint: chiefComplaint.finalText,
-    complaintsSummary,
-    earlier_followups: earlierFollowupsText,
-    establishedComplaintsText,
-    assessment_codes: assessmentCodesFinalList,
-    ...followupData,
-    signature: signatureData
-  };
+    try {
+      const response = await fetch("http://localhost:8000/generate-doc", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "cors" // explicitly allow CORS if needed
+      });
 
-  try {
-    const response = await fetch("http://localhost:8000/generate-doc", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      mode: "cors"
-    });
+      try {
+        const response = await fetch("http://localhost:8000/generate-doc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          mode: "cors"
+        });
 
-    console.log("Response status:", response.status);
+        // const blob = await response.blob();
+        // const url = window.URL.createObjectURL(blob);
+        // const link = document.createElement("a");
+        // link.href = url;
+        // link.setAttribute(
+        //   "download",
+        //   fileName ? `${fileName}.docx` : "follow_up.docx"
+        // );
+        // document.body.appendChild(link);
+        // link.click();
+        // link.remove();
+        // window.URL.revokeObjectURL(url);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        // a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
+        const nameToUse = fileName || formData.patientName || "follow_up";
+        a.download = `${nameToUse.replace(/\s+/g, "_")}.docx`;
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error response:", errorData);
-      throw new Error(errorData.detail || "Failed to generate document");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error generating or downloading DOCX:", error);
+      }
+
+      const blob = await response.blob();
+
+      // ✅ Extract filename from Content-Disposition header (if present)
+      const contentDisposition = response.headers.get("Content-Disposition");
+      console.log("Content-Disposition header:", contentDisposition);
+
+      const match =
+        contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
+      const extractedFilename = match
+        ? match[1]
+        : (fileName || formData.patientName || "follow_up") + ".docx";
+
+      // ✅ Trigger download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", extractedFilename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating or downloading DOCX:", error);
     }
-
-    const blob = await response.blob();
-
-    // ✅ Extract filename from Content-Disposition header (if present)
-    const contentDisposition = response.headers.get("Content-Disposition");
-    console.log("Content-Disposition header:", contentDisposition);
-
-    const match = contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
-    const extractedFilename = match
-      ? match[1]
-      : (fileName || formData.patientName || "follow_up") + ".docx";
-
-    // ✅ Trigger download
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", extractedFilename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Error generating or downloading DOCX:", error);
-  }
-};
-
+  };
 
   return (
     <>
       <div className="form-section">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
 
-        <h2 className="section-title">Demography</h2>
+        {/* <h2 className="section-title">Demography</h2> */}
         <Demography
           formData={formData}
           onFileNameChange={handleFileNameChange}
@@ -318,7 +340,7 @@ const Form = () => {
       </div>
 
       <div className="form-section">
-        <h2 className="section-title">Characteristics Of Pain</h2>
+        <h2 className="section-title">Characteristics Of Pain Include:</h2>
         <CharacteristicsOfPain
           formData={{
             temporally: formData.temporally,
