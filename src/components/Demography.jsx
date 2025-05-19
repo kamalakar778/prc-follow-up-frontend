@@ -1,5 +1,9 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
+// Basic styles
 const inputStyle = {
   padding: "0.5rem",
   borderRadius: "4px",
@@ -23,21 +27,13 @@ const sectionStyle = {
 };
 
 const buttonStyle = {
-  // padding: "0.15rem 1.0rem",
-  // background: "#3498db",
-  // color: "white",
-  // border: "none",
-  // borderRadius: "8px",
-  // fontSize: "1rem",
-  // cursor: "pointer",
-  // marginRight: "1rem",
-  // transition: "background 0.3s ease"
   padding: "0.5rem 1rem",
   marginLeft: "0.5rem",
   borderRadius: "4px",
   border: "1px solid #ccc",
   cursor: "pointer",
-  backgroundColor: "#3498db"
+  backgroundColor: "#3498db",
+  color: "white"
 };
 
 const flexRow = {
@@ -47,18 +43,72 @@ const flexRow = {
   marginBottom: "1rem"
 };
 
-const Demography = ({
-  fileName,
-  formData,
-  onFileNameChange,
-  onChange,
-  onReset,
-  onSubmit,
-  setFormData
-}) => {
+const errorStyle = {
+  borderColor: "red"
+};
+
+const errorTextStyle = {
+  color: "red",
+  fontSize: "0.8rem",
+  marginTop: "0.25rem"
+};
+
+// Yup Schema
+const schema = yup.object().shape({
+  fileName: yup.string().required("File Name is required"),
+  patientName: yup.string().required("Patient Name is required"),
+  dob: yup
+    .string()
+    .required("Date of Birth is required")
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  dateOfEvaluation: yup
+    .string()
+    .required("Evaluation Date is required")
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  dateOfDictation: yup
+    .string()
+    .required("Dictation Date is required")
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  physician: yup.string().required("Physician is required"),
+  provider: yup.string().required("Provider is required")
+});
+
+const Demography = ({ onSubmit }) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setValue,
+    watch
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      fileName: "",
+      patientName: "",
+      dob: "",
+      dateOfEvaluation: "",
+      dateOfDictation: "",
+      physician: "Robert Klickovich, M.D",
+      provider: "",
+      referringPhysician: "",
+      roomNumber: "",
+      insurance: "",
+      location: "",
+      cma: ""
+    }
+  });
+
+  const watchFields = watch();
+  const fileName = watch("fileName");
+
+  const handleReset = () => {
+    reset();
+  };
+
   return (
     <form
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={handleSubmit(onSubmit)}
       style={{ maxWidth: 800, margin: "auto" }}
     >
       <div style={flexRow}>
@@ -67,112 +117,80 @@ const Demography = ({
           <input
             type="text"
             style={inputStyle}
-            value={fileName}
-            onChange={onFileNameChange}
-            placeholder="Follow Up File Name"
+            {...register("fileName")}
+            value={fileName || watchFields.patientName}
+            onChange={(e) => setValue("fileName", e.target.value)}
           />
+          {errors.provider && (
+            <div style={errorTextStyle}>{errors.fileName.message}</div>
+          )}
         </label>
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
-          <button type="button" onClick={onSubmit} style={buttonStyle}>
+          <button type="submit" style={buttonStyle}>
             Generate Document
           </button>
-          <button type="button" onClick={onReset} style={buttonStyle}>
+          <button type="button" onClick={handleReset} style={buttonStyle}>
             Reset
           </button>
         </div>
       </div>
 
       <div style={sectionStyle}>
-        <label style={labelStyle}>
-          PATIENT NAME:
-          <input
-            name="patientName"
-            style={inputStyle}
-            value={formData.patientName}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          DATE OF BIRTH:
-          <input
-            name="dob"
-            style={inputStyle}
-            value={formData.dob}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          DATE OF EVALUATION:
-          <input
-            name="dateOfEvaluation"
-            style={inputStyle}
-            value={formData.dateOfEvaluation}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          DATE OF DICTATION:
-          <input
-            name="dateOfDictation"
-            style={inputStyle}
-            value={formData.dateOfDictation}
-            onChange={onChange}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          PHYSICIAN:
-          <input
-            name="physician"
-            style={inputStyle}
-            value={formData.physician}
-            onChange={onChange}
-            placeholder="Robert Klickovich, M.D"
-          />
-        </label>
+        {[
+          { label: "PATIENT NAME:", name: "patientName" },
+          { label: "DATE OF BIRTH:", name: "dob" },
+          { label: "DATE OF EVALUATION:", name: "dateOfEvaluation" },
+          { label: "DATE OF DICTATION:", name: "dateOfDictation" },
+          {
+            label: "PHYSICIAN:",
+            name: "physician",
+            placeholder: "Robert Klickovich, M.D"
+          },
+          { label: "Referring Physician:", name: "referringPhysician" },
+          { label: "Room #:", name: "roomNumber" }
+        ].map(({ label, name, placeholder }) => (
+          <label key={name} style={labelStyle}>
+            {label}
+            <input
+              name={name}
+              placeholder={placeholder}
+              style={{ ...inputStyle, ...(errors[name] && errorStyle) }}
+              {...register(name)}
+            />
+            {errors[name] && (
+              <div style={errorTextStyle}>{errors[name].message}</div>
+            )}
+          </label>
+        ))}
 
         <label style={labelStyle}>
           Provider:
           <select
             name="provider"
-            style={inputStyle}
-            value={formData.provider}
-            onChange={onChange}
+            style={{ ...inputStyle, ...(errors.provider && errorStyle) }}
+            {...register("provider")}
           >
             <option value="">-- Select Provider --</option>
-            <option value="Cortney Lacefield, APRN">
-              Cortney Lacefield, APRN
-            </option>
-            <option value="Lauren Ellis, APRN">Lauren Ellis, APRN</option>
-            <option value="Taja Elder, APRN">Taja Elder, APRN</option>
-            <option value="Robert Klickovich, M.D">
-              Robert Klickovich, M.D
-            </option>
+            {[
+              "Cortney Lacefield, APRN",
+              "Lauren Ellis, APRN",
+              "Taja Elder, APRN",
+              "Robert Klickovich, M.D"
+            ].map((provider) => (
+              <option key={provider} value={provider}>
+                {provider}
+              </option>
+            ))}
           </select>
-        </label>
-
-        <label style={labelStyle}>
-          Referring Physician:
-          <input
-            name="referringPhysician"
-            style={inputStyle}
-            value={formData.referringPhysician}
-            onChange={onChange}
-          />
+          {errors.provider && (
+            <div style={errorTextStyle}>{errors.provider.message}</div>
+          )}
         </label>
 
         <label style={labelStyle}>
           Insurance:
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select
-              name="insurance"
-              style={inputStyle}
-              value={formData.insurance}
-              onChange={onChange}
-            >
+            <select style={inputStyle} {...register("insurance")}>
               <option value="">-- Select Insurance --</option>
               {[
                 "Aetna",
@@ -188,18 +206,16 @@ const Demography = ({
                 "WellCare",
                 "Work. Comp",
                 "UHC"
-              ].map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+              ].map((option) => (
+                <option key={option} value={option}>
+                  {option}
                 </option>
               ))}
             </select>
             <button
               type="button"
               style={buttonStyle}
-              onClick={() =>
-                setFormData((prev) => ({ ...prev, insurance: "" }))
-              }
+              onClick={() => setValue("insurance", "")}
             >
               Clear
             </button>
@@ -209,12 +225,7 @@ const Demography = ({
         <label style={labelStyle}>
           Location:
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <select
-              name="location"
-              style={inputStyle}
-              value={formData.location}
-              onChange={onChange}
-            >
+            <select style={inputStyle} {...register("location")}>
               <option value="">-- Select Location --</option>
               <option value="Louisville">Louisville</option>
               <option value="E-town">E-town</option>
@@ -222,7 +233,7 @@ const Demography = ({
             <button
               type="button"
               style={buttonStyle}
-              onClick={() => setFormData((prev) => ({ ...prev, location: "" }))}
+              onClick={() => setValue("location", "")}
             >
               Clear
             </button>
@@ -230,55 +241,39 @@ const Demography = ({
         </label>
 
         <label style={labelStyle}>
-  CMA:
-  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-    <select
-      name="cma"
-      style={inputStyle}
-      value={formData.cma}
-      onChange={onChange}
-    >
-      <option value="">-- Select CMA --</option>
-      {[
-        "Alyson",
-        "Brenda",
-        "Erika",
-        "Janelle",
-        "Laurie",
-        "Melanie",
-        "MS",
-        "Nick",
-        "PP",
-        "SC",
-        "Steph",
-        "Tony",
-        "Tina",
-        "DJ"
-      ].map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-    <button
-      type="button"
-      style={buttonStyle}
-      onClick={() => setFormData((prev) => ({ ...prev, cma: "" }))}
-    >
-      Clear
-    </button>
-  </div>
-</label>
-
-
-        <label style={labelStyle}>
-          Room #:
-          <input
-            name="roomNumber"
-            style={inputStyle}
-            value={formData.roomNumber}
-            onChange={onChange}
-          />
+          CMA:
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <select style={inputStyle} {...register("cma")}>
+              <option value="">-- Select CMA --</option>
+              {[
+                "Alyson",
+                "Brenda",
+                "Erika",
+                "Janelle",
+                "Laurie",
+                "Melanie",
+                "MS",
+                "Nick",
+                "PP",
+                "SC",
+                "Steph",
+                "Tony",
+                "Tina",
+                "DJ"
+              ].map((cma) => (
+                <option key={cma} value={cma}>
+                  {cma}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              style={buttonStyle}
+              onClick={() => setValue("cma", "")}
+            >
+              Clear
+            </button>
+          </div>
         </label>
       </div>
     </form>

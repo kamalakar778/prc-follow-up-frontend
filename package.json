@@ -2,10 +2,12 @@
   "name": "followup-frontend",
   "version": "1.0.0",
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
     "axios": "^1.9.0",
     "formik": "^2.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.56.4",
     "react-scripts": "^5.0.1",
     "yup": "^1.6.1"
   },

@@ -68,7 +68,7 @@ const Form = () => {
     coordinationBalance: "",
     motorFunction: "",
     // sectionTwo: "",
-    docSections:[],
+    docSections: [],
     complaintsData: {
       cervical: { enabled: true, side: "bilaterally" },
       thoracic: { enabled: true, side: "bilaterally" },
@@ -135,12 +135,15 @@ const Form = () => {
       lymphadenopathy: examData.lymphadenopathy || prev.lymphadenopathy,
       coordinationBalance:
         examData.coordinationBalance || prev.coordinationBalance,
-      motorFunction: examData.motorFunction || prev.motorFunction,
+      motorFunction: examData.motorFunction || prev.motorFunction
       // sectionTwo: examData.sectionTwo || prev.sectionTwo
     }));
   };
 
-  const handleFileNameChange = (e) => setFileName(e.target.value);
+  const handleFileNameChange = (newFileName) => {
+    setFileName(newFileName);
+    console.log("Received from Demography:", newFileName);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -230,88 +233,68 @@ const Form = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const complaintsSummary = getComplaintsSummary();
-    const establishedComplaintsText =
-      establishedComplaintsLines.length > 0
-        ? establishedComplaintsLines.join("\n")
-        : "";
-    const assessmentCodesFinalList = Array.from(selected).join("\n");
+  // e.preventDefault(); // if using inside a <form>
 
-    const payload = {
-      fileName,
-      ...formData,
-      chiefComplaint: chiefComplaint.finalText,
-      complaintsSummary,
-      earlier_followups: earlierFollowupsText,
-      establishedComplaintsText,
-      assessment_codes: assessmentCodesFinalList,
-      ...followupData,
-      signature: signatureData
-    };
+  const complaintsSummary = getComplaintsSummary();
+  const establishedComplaintsText =
+    establishedComplaintsLines.length > 0
+      ? establishedComplaintsLines.join("\n")
+      : "";
+  const assessmentCodesFinalList = Array.from(selected).join("\n");
 
-    try {
-      const response = await fetch("http://localhost:8000/generate-doc", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        mode: "cors" // explicitly allow CORS if needed
-      });
+  const payload = {
+    fileName,
+    ...formData,
+    chiefComplaint: chiefComplaint.finalText,
+    complaintsSummary,
+    earlier_followups: earlierFollowupsText,
+    establishedComplaintsText,
+    assessment_codes: assessmentCodesFinalList,
+    ...followupData,
+    signature: signatureData
+  };
 
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error response:", errorData);
-        throw new Error(errorData.detail || "Failed to generate document");
-      }
+  try {
+    const response = await fetch("http://localhost:8000/generate-doc", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      mode: "cors"
+    });
 
-      // const blob = await response.blob();
-      // const url = window.URL.createObjectURL(blob);
-      // const link = document.createElement("a");
-      // link.href = url;
-      // link.setAttribute(
-      //   "download",
-      //   fileName ? `${fileName}.docx` : "follow_up.docx"
-      // );
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
-      // window.URL.revokeObjectURL(url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error generating or downloading DOCX:", error);
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error response:", errorData);
+      throw new Error(errorData.detail || "Failed to generate document");
     }
 
-    // try {
-    //   const response = await fetch("http://localhost:5000/generate-doc", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(payload)
-    //   });
+    const blob = await response.blob();
 
-    //   if (!response.ok) throw new Error("Network response was not ok");
+    // ✅ Extract filename from Content-Disposition header (if present)
+    const contentDisposition = response.headers.get("Content-Disposition");
+    console.log("Content-Disposition header:", contentDisposition);
 
-    //   const blob = await response.blob();
-    //   const url = window.URL.createObjectURL(blob);
-    //   const a = document.createElement("a");
-    //   a.href = url;
-    //   a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
-    //   document.body.appendChild(a);
-    //   a.click();
-    //   a.remove();
-    //   window.URL.revokeObjectURL(url);
-    // } catch (error) {
-    //   console.error("Error generating document:", error);
-    // }
-  };
+    const match = contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
+    const extractedFilename = match
+      ? match[1]
+      : (fileName || formData.patientName || "follow_up") + ".docx";
+
+    // ✅ Trigger download
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", extractedFilename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error generating or downloading DOCX:", error);
+  }
+};
+
 
   return (
     <>
@@ -320,13 +303,13 @@ const Form = () => {
 
         <h2 className="section-title">Demography</h2>
         <Demography
-          fileName={fileName}
           formData={formData}
           onFileNameChange={handleFileNameChange}
           onChange={handleChange}
           onReset={handleReset}
           onSubmit={handleSubmit}
           setFormData={setFormData}
+          fileName={fileName}
         />
       </div>
       <div className="form-section">
