@@ -2,28 +2,30 @@ import React, { useState, useEffect, useCallback } from "react";
 
 const SignatureLine = ({ onChange }) => {
   const buttonTexts = {
-    "Dr. Klickovich": `Robert Klickovich, M.D. personally performed the initial service evaluation and treatment plan of the patient.`,
-    APRN: `personally performed today's follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during today's follow-up patient encounter.`,
-    "Dr. Olivia Kelley": `personally performed today's follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or another physician) supervised.`
+    "Dr. Klickovich":
+      "personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Robert Klickovich currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
+    APRN: "personally performed todays follow-up evaluation and treatment plan of the patient.",
+    "Dr. Olivia Kelley":
+      "personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan."
   };
 
   const initialLines = [
     "Facet, RFA, & ESI/Caudal Injection Notes:",
-    "MBB INITIAL:  The patient reports axial pain...",
-    "RFA INITIAL:  The patient has received 80% temporary relief...",
-    "RFA REPEAT:  The patient reports 50% pain relief for 6 months...",
-    "RFA will be ordered...",
-    "RFA with spinal fusion...",
-    "ESI/Caudal Indication:  Patient reports 4 weeks of radicular pain...",
-    "ESI/Caudal Indication:  Imaging shows...",
-    "ESI/Caudal Indication:  Quality of life and function impacted...",
-    "ESI/Caudal Indication:  Patient completed 4 weeks of PT...",
-    "ESI/Caudal REPEAT SUCCESS:  50% pain relief OR improved function...",
-    "ESI/Caudal REPEAT FAILURE:  Try different spinal level or approach..."
+    "MBB INITIAL:",
+    "RFA INITIAL:",
+    "RFA REPEAT:",
+    "RFA will be ordered:",
+    "RFA with spinal fusion:",
+    "ESI/Caudal Indication:",
+    "ESI/Caudal Indication:",
+    "ESI/Caudal Indication:",
+    "ESI/Caudal Indication:",
+    "ESI/Caudal REPEAT SUCCESS:  ",
+    "ESI/Caudal REPEAT FAILURE:  "
   ];
 
   const optionMap = {
-    0: ["≥ 3 months", "≥ 6 weeks", "ADL reduced", "Medications tried"],
+    0: [""],
     1: ["Left", "Right", "Confirmatory Bilateral MBB"],
     2: ["≥ 50% relief", "≥ 50% ADL improvement"],
     3: ["Bilateral", "Unilateral", "Left only", "Right only"],
@@ -33,24 +35,27 @@ const SignatureLine = ({ onChange }) => {
     7: ["ADLs impacted", "Severe radicular pain"],
     8: ["Completed PT", "Unsuccessful PT due to pain"],
     9: ["50% relief", "Improved ADLs"],
-    10: ["Different spinal level", "Different approach"]
+    10: ["Different spinal level", "Different approach"],
+    11: ["Recurrent symptoms", "Consider surgery"]
   };
 
   const initialFollowUp = "Four weeks";
+
   const getTodayFormatted = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+    return `${mm}/${dd}/${yyyy}`;
   };
 
   const [lines, setLines] = useState(initialLines);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
-  const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
+  const [followUpAppointment, setFollowUpAppointment] =
+    useState(initialFollowUp);
   const [selectedButton, setSelectedButton] = useState("");
-  const [dateTranscribed, setdateTranscribed] = useState(getTodayFormatted());
+  const [dateTranscribed, setDateTranscribed] = useState(getTodayFormatted());
 
   const lineDropdownOptions = lines.reduce((acc, _, idx) => {
     acc[idx] = optionMap[idx] || ["Custom option A", "Custom option B"];
@@ -58,39 +63,62 @@ const SignatureLine = ({ onChange }) => {
   }, {});
 
   const formatProcessedLines = useCallback(() => {
-    return lines.map((line, idx) => {
-      const opts = selectedOptions[idx];
-      if (!opts || opts.length === 0) return `${line} {{option_${idx + 1}}}`;
-      return `${line} ${opts.join(", ")}`;
-    });
+    return lines
+      .map((line, idx) => {
+        const opts = selectedOptions[idx];
+        if (!opts || opts.length === 0) return null;
+        return `${line} ${opts.join(", ")}`;
+      })
+      .filter(Boolean)
+      .join("\n");
   }, [lines, selectedOptions]);
 
+  // const formatOtherPlans = () => {
+  //   return otherPlans
+  //     .filter((line, idx, arr) => idx < arr.length - 1 || line.trim() !== "")
+  //     // .map((line, idx) => `${line.trim() || "_________"}`)
+
+  //     .map((line, idx) => `${idx + 1}. ${line.trim() || "_________"}`)
+  //     .join("\n");
+  // };
   const formatOtherPlans = () => {
-    return otherPlans
-      .filter((line, idx, arr) => idx < arr.length - 1 || line.trim() !== "")
-      .map((line, idx) => `${idx + 1}. ${line.trim() || "_________"}`)
-      .join("\n");
+    const filteredLines = otherPlans.filter(
+      (line, idx, arr) => idx < arr.length - 1 || line.trim() !== ""
+    );
+
+    const lines = filteredLines.map(
+      (line, idx) => `${idx + 1}. ${line.trim() || "_________"}`
+    );
+
+    return {
+      // heading: "Other Plans:",
+      lines
+    };
   };
 
-  // === Section Variables ===
-  const section1 = `Other Plans:\n${formatOtherPlans()}`;
-  const section2 = formatProcessedLines().join("\n");
-  const section3 = `Follow-up Appointment in: ${followUpAppointment}`;
-  const section4 = `${buttonTexts[selectedButton] || ""}\n\nDate Signed: ${dateTranscribed}`;
-
-  // === Notify parent with updated values ===
   useEffect(() => {
     if (onChange) {
       onChange({
-        section1,
-        section2,
-        section3,
-        section4
+        otherPlans: formatOtherPlans(),
+        formattedLines: formatProcessedLines(),
+        followUpAppointment,
+        signatureLine: buttonTexts[selectedButton] || "_________________",
+        dateTranscribed
       });
     }
-  }, [section1, section2, section3, section4, onChange]);
+  }, [
+    selectedOptions,
+    lines,
+    followUpAppointment,
+    selectedButton,
+    dateTranscribed,
+    otherPlans,
+    onChange,
+    formatOtherPlans,
+    formatProcessedLines,
+    buttonTexts
+  ]);
 
-  // === Handlers ===
   const handleSelectChange = (e, lineIndex) => {
     const value = e.target.value;
     if (!value) return;
@@ -117,7 +145,7 @@ const SignatureLine = ({ onChange }) => {
     setSelectedOptions({});
     setLines(initialLines);
     setSelectedButton("");
-    setdateTranscribed(getTodayFormatted());
+    setDateTranscribed(getTodayFormatted());
     setFollowUpAppointment(initialFollowUp);
   };
 
@@ -156,7 +184,9 @@ const SignatureLine = ({ onChange }) => {
             onChange={(e) => handleChangeOtherPlan(e, idx)}
           />
           {otherPlans.length > 1 && (
-            <button onClick={(e) => handleRemoveOtherPlan(e, idx)}>Remove</button>
+            <button onClick={(e) => handleRemoveOtherPlan(e, idx)}>
+              Remove
+            </button>
           )}
         </div>
       ))}
@@ -231,7 +261,7 @@ const SignatureLine = ({ onChange }) => {
         <input
           type="date"
           value={dateTranscribed}
-          onChange={(e) => setdateTranscribed(e.target.value)}
+          onChange={(e) => setDateTranscribed(e.target.value)}
         />
       </div>
     </div>

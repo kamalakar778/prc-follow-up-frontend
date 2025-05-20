@@ -11,24 +11,20 @@ import AssessmeCodes from "./AssessmeCodes";
 import FollowupPlan from "./FollowupPlan";
 import MedicationManagement from "./MedicationManagement";
 import SignatureLine from "./SignatureLine";
-import InjectionsList from "./InjectionList";
+import InjectionsList from "./InjectionsList";
 import EarlierFollowups from "./EarlierFollowups";
 import "./Form.css";
 
 const Form = () => {
   const [fileName, setFileName] = useState("");
+  const [initialFormData, setInitialFormData] = useState({});
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
-  const [establishedComplaintsLines, setEstablishedComplaintsLines] = useState(
-    []
-  );
+  const [establishedComplaintsLines, setEstablishedComplaintsLines] = useState([]);
+  const [medications, setMedications] = useState([]);
+  // const [medicationOutput, setMedicationOutput] = useState("");
   const [signatureData, setSignatureData] = useState("");
-  const [docSections, setDocSections] = useState({
-    section1: "",
-    section2: "",
-    section3: "",
-    section4: ""
-  });
+  const [injections, setInjections] = useState([]);
 
   const [formData, setFormData] = useState({
     patientName: "",
@@ -67,8 +63,8 @@ const Form = () => {
     lymphadenopathy: "",
     coordinationBalance: "",
     motorFunction: "",
-    // sectionTwo: "",
-    docSections: [],
+    followUpPlan: "",
+    medicationOutput: [],
     complaintsData: {
       cervical: { enabled: true, side: "bilaterally" },
       thoracic: { enabled: true, side: "bilaterally" },
@@ -76,7 +72,13 @@ const Form = () => {
       hip: { enabled: true, side: "bilaterally" },
       patella: { enabled: true, side: "bilaterally" }
     },
-    signature: signatureData
+    injections: "",
+    INJECTION_SUMMARY: "",
+    otherPlans: "",
+    formattedLines: "",
+    followUpAppointment: "",
+    signatureLine: "",
+    dateTranscribed: ""
   });
 
   const [followupData, setFollowupData] = useState({
@@ -102,23 +104,23 @@ const Form = () => {
     const complaints = formData.complaintsData;
     if (!complaints) return "";
     return Object.entries(complaints)
-      .map(
-        ([region, { enabled, side }]) =>
-          `${region.charAt(0).toUpperCase() + region.slice(1)}: ${
-            enabled ? "Yes" : "No"
-          } (Side: ${side})`
+      .map(([region, { enabled, side }]) =>
+        `${region.charAt(0).toUpperCase() + region.slice(1)}: ${
+          enabled ? "Yes" : "No"
+        } (Side: ${side})`
       )
       .join("; ");
   };
 
-  const handleFollowupChange = (field, value) => {
-    setFollowupData((prev) => ({
+  const handleFollowupChange = (formattedText) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      followUpPlan: formattedText
     }));
   };
 
   const handleSignatureChange = (data) => {
+    setFormData((prev) => ({ ...prev, ...data }));
     setSignatureData(data);
   };
 
@@ -133,10 +135,8 @@ const Form = () => {
       stationStance: examData.stationStance || prev.stationStance,
       cardiovascular: examData.cardiovascular || prev.cardiovascular,
       lymphadenopathy: examData.lymphadenopathy || prev.lymphadenopathy,
-      coordinationBalance:
-        examData.coordinationBalance || prev.coordinationBalance,
+      coordinationBalance: examData.coordinationBalance || prev.coordinationBalance,
       motorFunction: examData.motorFunction || prev.motorFunction
-      // sectionTwo: examData.sectionTwo || prev.sectionTwo
     }));
   };
 
@@ -166,6 +166,14 @@ const Form = () => {
     setFormData((prev) => ({ ...prev, ...updatedPainData }));
   };
 
+  const handleInjectionChange = ({ injections, INJECTION_SUMMARY }) => {
+    setFormData((prev) => ({
+      ...prev,
+      injections,
+      INJECTION_SUMMARY
+    }));
+  };
+
   const handleReset = () => {
     setFileName("");
     setSelected(new Set());
@@ -183,8 +191,8 @@ const Form = () => {
       behavioralFocus: "",
       referral: ""
     });
-    setFormData((prev) => ({
-      ...prev,
+    setFormData({
+      ...formData,
       patientName: "",
       dob: "",
       dateOfEvaluation: "",
@@ -221,7 +229,7 @@ const Form = () => {
       lymphadenopathy: "",
       coordinationBalance: "",
       motorFunction: "",
-      // sectionTwo: "",
+      INJECTION_SUMMARY: "",
       complaintsData: {
         cervical: { enabled: true, side: "bilaterally" },
         thoracic: { enabled: true, side: "bilaterally" },
@@ -229,17 +237,15 @@ const Form = () => {
         hip: { enabled: true, side: "bilaterally" },
         patella: { enabled: true, side: "bilaterally" }
       }
-    }));
+    });
   };
 
-  const handleSubmit = async (e) => {
-    // e.preventDefault();
-    // const complaintsSummary = getComplaintsSummary();
-    // const establishedComplaintsText =
-    //   establishedComplaintsLines.length > 0
-    //     ? establishedComplaintsLines.join("\n")
-    //     : "";
-    // const assessmentCodesFinalList = Array.from(selected).join("\n");
+  const handleSubmit = async () => {
+    const finalText = `
+Patient Form Summary:
+${formData?.INJECTION_SUMMARY || "No injections selected."}
+... more summary if needed ...
+`;
 
     const complaintsSummary = getComplaintsSummary();
     const establishedComplaintsText =
@@ -248,67 +254,44 @@ const Form = () => {
         : "";
     const assessmentCodesFinalList = Array.from(selected).join("\n");
 
+    const payload = {
+      fileName,
+      ...formData,
+      chiefComplaint: chiefComplaint.finalText,
+      complaintsSummary,
+      earlier_followups: earlierFollowupsText,
+      establishedComplaintsText,
+      assessment_codes: assessmentCodesFinalList,
+      INJECTION_SUMMARY: finalText,
+      followUpPlan: formData.followUpPlan,
+      medicationOutput: formData.medicationOutput,
+      ...followupData,
+      signature: signatureData
+    };
+
     try {
       const response = await fetch("http://localhost:8000/generate-doc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        mode: "cors" // explicitly allow CORS if needed
+        mode: "cors"
       });
 
-      try {
-        const response = await fetch("http://localhost:8000/generate-doc", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          mode: "cors"
-        });
-
-        // const blob = await response.blob();
-        // const url = window.URL.createObjectURL(blob);
-        // const link = document.createElement("a");
-        // link.href = url;
-        // link.setAttribute(
-        //   "download",
-        //   fileName ? `${fileName}.docx` : "follow_up.docx"
-        // );
-        // document.body.appendChild(link);
-        // link.click();
-        // link.remove();
-        // window.URL.revokeObjectURL(url);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        // a.download = fileName ? `${fileName}.docx` : "follow_up.docx";
-        const nameToUse = fileName || formData.patientName || "follow_up";
-        a.download = `${nameToUse.replace(/\s+/g, "_")}.docx`;
-
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error generating or downloading DOCX:", error);
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
       }
 
       const blob = await response.blob();
-
-      // ✅ Extract filename from Content-Disposition header (if present)
       const contentDisposition = response.headers.get("Content-Disposition");
-      console.log("Content-Disposition header:", contentDisposition);
-
-      const match =
-        contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
+      const match = contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
       const extractedFilename = match
         ? match[1]
         : (fileName || formData.patientName || "follow_up") + ".docx";
 
-      // ✅ Trigger download
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", extractedFilename);
+      link.setAttribute("download", extractedFilename.replace(/\s+/g, "_"));
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -322,8 +305,6 @@ const Form = () => {
     <>
       <div className="form-section">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
-
-        {/* <h2 className="section-title">Demography</h2> */}
         <Demography
           formData={formData}
           onFileNameChange={handleFileNameChange}
@@ -334,9 +315,15 @@ const Form = () => {
           fileName={fileName}
         />
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Chief Complaint</h2>
         <ChiefComplaint initialValues={{}} onChange={setChiefComplaint} />
+      </div>
+
+      <div className="form-section">
+        <h2 className="section-title">History Of Present Illness</h2>
+        <HistoryOfPresentIllness />
       </div>
 
       <div className="form-section">
@@ -355,30 +342,26 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Review Of Systems</h2>
-
         <ReviewOfSystems onReviewChange={handleReviewChange} />
       </div>
+
       <div className="form-section">
-        <h2 className="section-title">
-          Patient Compliance with Treatment Plan
-        </h2>
-        <ComplianceWithTreatmentPlan
-          formData={formData}
-          setFormData={setFormData}
-        />
+        <h2 className="section-title">Patient Compliance with Treatment Plan</h2>
+        <ComplianceWithTreatmentPlan formData={formData} setFormData={setFormData} />
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Physical Examination</h2>
         <PhysicalExamination onChange={handlePhysicalExamChange} />
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Earlier Followups</h2>
         <EarlierFollowups onDataChange={setEarlierFollowupsText} />
-        {/* <EarlierFollowups onChange={(text) => setEarlierFollowupsText(text)} /> */}
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Established Complaints</h2>
-
         <EstablishedComplaints
           lines={establishedComplaintsLines}
           setLines={setEstablishedComplaintsLines}
@@ -386,48 +369,33 @@ const Form = () => {
       </div>
 
       <div className="form-section">
-        <h2 className="section-title">Follow-Up Plan</h2>
+        <h2 className="section-title">Assessme Codes</h2>
+        <AssessmeCodes selected={selected} setSelected={setSelected} />
+      </div>
 
-        {/* ✅ Added FollowupPlan Section */}
-        <FollowupPlan
-          followupData={followupData}
-          onChange={handleFollowupChange}
-        />
+      <div className="form-section">
+        <h2 className="section-title">Follow-Up Plan</h2>
+        <FollowupPlan setFormData={setFormData} />
       </div>
 
       <div className="form-section">
         <h2 className="section-title">Medication Management</h2>
-
-        <MedicationManagement />
+        <MedicationManagement
+          medications={medications}
+          setMedications={setMedications}
+          setInitialFormData={setFormData}
+        />
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Injections List</h2>
-        <InjectionsList />
+        <InjectionsList onInjectionChange={handleInjectionChange} />
       </div>
-      <div className="form-section">
-        <h2 className="section-title">Assessme Codes</h2>
-        <AssessmeCodes selected={selected} setSelected={setSelected} />
-      </div>
+
       <div className="form-section">
         <h2 className="section-title">Signature Line</h2>
-        {/* <SignatureLine onChange={(data) => setDocSections(data)} /> */}
-
         <SignatureLine onChange={handleSignatureChange} />
       </div>
-
-      {/* .docx Placeholder Output Section */}
-      {/* <div className="mt-8">
-        <h2 className="font-semibold text-lg mb-2">📄 .docx Placeholder Output:</h2>
-        <p className="mb-2 text-gray-600">
-          Use this content in your template at <code>{{`{{ earlier_followups }}`}}</code>
-        </p>
-        <textarea
-          value={earlierFollowupsText}
-          readOnly
-          rows={15}
-          className="w-full border p-3 font-mono"
-        />
-      </div> */}
     </>
   );
 };

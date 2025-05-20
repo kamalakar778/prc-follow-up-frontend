@@ -1,70 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-const FollowupPlan = () => {
-  const [nonComplianceSeverity, setNonComplianceSeverity] = useState('');
-  const [actionTaken, setActionTaken] = useState('');
+const FollowupPlan = ({ setFormData }) => {
+  const [nonComplianceSeverity, setNonComplianceSeverity] = useState("");
+  const [actionTaken, setActionTaken] = useState("");
   const [willOrderUDT, setWillOrderUDT] = useState(false);
   const [willNotOrderUDT, setWillNotOrderUDT] = useState(false); // Added state for "Will not order"
   const [unexpectedUTox, setUnexpectedUTox] = useState(false);
   const [pillCount, setPillCount] = useState(false);
-  const [ptEval, setPtEval] = useState('');
-  const [imaging, setImaging] = useState('');
-  const [xrayOf, setXrayOf] = useState('');
-  const [behavioralFocus, setBehavioralFocus] = useState('');
-  const [referral, setReferral] = useState('');
+  const [ptEval, setPtEval] = useState("");
+  const [imaging, setImaging] = useState("");
+  const [xrayOf, setXrayOf] = useState("");
+  const [behavioralFocus, setBehavioralFocus] = useState("");
+  const [referral, setReferral] = useState("");
+  const [medicationOutput, setMedicationOutput] = useState("");
 
   const sectionStyle = {
-    padding: '16px 0',
-    borderBottom: '1px solid #ddd',
+    padding: "16px 0",
+    borderBottom: "1px solid #ddd"
   };
 
   const labelStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '12px',
-    fontWeight: '500',
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "12px",
+    fontWeight: "500"
   };
 
   const selectStyle = {
-    marginLeft: '10px',
-    padding: '6px 10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    flexShrink: 0,
+    marginLeft: "10px",
+    padding: "6px 10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    flexShrink: 0
   };
 
   const inputStyle = {
-    marginLeft: '10px',
-    padding: '6px 10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    flex: 1,
+    marginLeft: "10px",
+    padding: "6px 10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    flex: 1
   };
 
   const checkboxLabelStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '12px',
-    cursor: 'pointer',
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "12px",
+    cursor: "pointer"
   };
 
   const checkboxStyle = {
-    marginRight: '8px',
+    marginRight: "8px"
   };
 
   const ulStyle = {
-    listStyleType: 'disc',
-    paddingLeft: '20px',
-    marginTop: '8px',
+    listStyleType: "disc",
+    paddingLeft: "20px",
+    marginTop: "8px"
   };
 
   const infoTextStyle = {
-    marginLeft: '20px',
-    marginTop: '8px',
-    marginBottom: '16px',
-    color: '#555',
-    fontSize: '0.9rem',
-    lineHeight: 1.4,
+    marginLeft: "20px",
+    marginTop: "8px",
+    marginBottom: "16px",
+    color: "#555",
+    fontSize: "0.9rem",
+    lineHeight: 1.4
   };
 
   // Handler for "Will not order UDT"
@@ -87,19 +88,62 @@ const FollowupPlan = () => {
       setWillNotOrderUDT(false);
     }
   };
+  
 
   const bothUnchecked = !willOrderUDT && !willNotOrderUDT;
 
+  useEffect(() => {
+    const formatted = `
+Follow-Up Plan:
+- Non-Compliance Severity: ${nonComplianceSeverity || 'N/A'}
+- Action Taken: ${actionTaken || 'N/A'}
+- UDT Order Status: ${willOrderUDT ? 'Will order' : willNotOrderUDT ? 'Will not order' : 'Unspecified'}
+- Unexpected U-Tox: ${unexpectedUTox ? 'Yes (pill count + confirmatory screen)' : 'No'}
+- Physical Therapy Evaluation: ${ptEval || 'N/A'}
+- Imaging Ordered: ${imaging || 'N/A'}
+- X-Ray Of: ${xrayOf || 'N/A'}
+- Behavioral Focus: ${behavioralFocus || 'N/A'}
+- Referral To: ${referral || 'N/A'}
+    `.trim();
+
+    setFormData(prev => ({
+      ...prev,
+      followUpPlan: formatted,
+    }));
+  }, [
+    nonComplianceSeverity,
+    actionTaken,
+    willOrderUDT,
+    willNotOrderUDT,
+    unexpectedUTox,
+    pillCount,
+    ptEval,
+    imaging,
+    xrayOf,
+    behavioralFocus,
+    referral,
+    setFormData,
+  ]);
+
+
   return (
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: "16px" }}>
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '16px' }}>Follow-Up Plan</h2>
+        <h2
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            marginBottom: "16px"
+          }}
+        >
+          Follow-Up Plan
+        </h2>
 
         <label style={labelStyle}>
           F/u severity of non-compliance per history:
           <select
             value={nonComplianceSeverity}
-            onChange={e => setNonComplianceSeverity(e.target.value)}
+            onChange={(e) => setNonComplianceSeverity(e.target.value)}
             style={selectStyle}
           >
             <option value="">Select</option>
@@ -112,7 +156,11 @@ const FollowupPlan = () => {
 
         <label style={labelStyle}>
           Action taken if non-compliant:
-          <select value={actionTaken} onChange={e => setActionTaken(e.target.value)} style={selectStyle}>
+          <select
+            value={actionTaken}
+            onChange={(e) => setActionTaken(e.target.value)}
+            style={selectStyle}
+          >
             <option value="">Select</option>
             <option value="Counseled">Patient counseled</option>
             <option value="Warned">Final warning before NNCP</option>
@@ -120,21 +168,39 @@ const FollowupPlan = () => {
           </select>
         </label>
 
-        <p style={{ marginBottom: '12px', fontWeight: '500' }}>
-          F/u Review completed for: U-Tox/ORT, KASPER, Medication list, Nursing notes, Treatment goals, etc.
+        <p style={{ marginBottom: "12px", fontWeight: "500" }}>
+          F/u Review completed for: U-Tox/ORT, KASPER, Medication list, Nursing
+          notes, Treatment goals, etc.
         </p>
 
         <ul style={ulStyle}>
-          <li>Engage in physical therapy and home-based McKenzie stabilization exercises.</li>
-          <li>Participate in weight loss program if BMI ≥ 30 (MyFitnessPal app, dietician consult if diabetic).</li>
-          <li>Behavioral health program for mental health conditions (coping skills like distraction, guided imagery).</li>
+          <li>
+            Engage in physical therapy and home-based McKenzie stabilization
+            exercises.
+          </li>
+          <li>
+            Participate in weight loss program if BMI ≥ 30 (MyFitnessPal app,
+            dietician consult if diabetic).
+          </li>
+          <li>
+            Behavioral health program for mental health conditions (coping
+            skills like distraction, guided imagery).
+          </li>
           <li>Stable conditions continue with current treatment.</li>
           <li>Continue or adjust procedure based on 50%+ pain relief.</li>
         </ul>
       </div>
 
       <div style={sectionStyle}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '16px' }}>F/u Orders</h2>
+        <h2
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            marginBottom: "16px"
+          }}
+        >
+          F/u Orders
+        </h2>
 
         <label style={checkboxLabelStyle}>
           <input
@@ -157,17 +223,29 @@ const FollowupPlan = () => {
         </label>
 
         {bothUnchecked && (
-          <p style={{ fontStyle: 'italic', marginLeft: '24px', color: '#888' }}>
+          <p style={{ fontStyle: "italic", marginLeft: "24px", color: "#888" }}>
             ________page # point # __________
           </p>
         )}
 
         {willOrderUDT && (
-          <div style={{ marginLeft: '24px', marginBottom: '16px', fontSize: '0.9rem', color: '#444', lineHeight: 1.5 }}>
+          <div
+            style={{
+              marginLeft: "24px",
+              marginBottom: "16px",
+              fontSize: "0.9rem",
+              color: "#444",
+              lineHeight: 1.5
+            }}
+          >
             <p>1. Review screen results and confirm all prescribed meds.</p>
-            <p>2. Confirm non-prescribed drugs and always test for Fentanyl, Meth, Cocaine.</p>
             <p>
-              Justification: Monitor adherence, detect misuse/diversion via tools like UDT, KASPER, ORT, etc.
+              2. Confirm non-prescribed drugs and always test for Fentanyl,
+              Meth, Cocaine.
+            </p>
+            <p>
+              Justification: Monitor adherence, detect misuse/diversion via
+              tools like UDT, KASPER, ORT, etc.
             </p>
             <p>Usually ordered quarterly or more if on opioids.</p>
           </div>
@@ -188,7 +266,7 @@ const FollowupPlan = () => {
           <input
             type="text"
             value={ptEval}
-            onChange={e => setPtEval(e.target.value)}
+            onChange={(e) => setPtEval(e.target.value)}
             style={inputStyle}
             placeholder="e.g. ROM, Strengthening"
           />
@@ -199,7 +277,7 @@ const FollowupPlan = () => {
           <input
             type="text"
             value={imaging}
-            onChange={e => setImaging(e.target.value)}
+            onChange={(e) => setImaging(e.target.value)}
             style={inputStyle}
             placeholder="e.g. lumbar spine"
           />
@@ -210,7 +288,7 @@ const FollowupPlan = () => {
           <input
             type="text"
             value={xrayOf}
-            onChange={e => setXrayOf(e.target.value)}
+            onChange={(e) => setXrayOf(e.target.value)}
             style={inputStyle}
           />
         </label>
@@ -220,7 +298,7 @@ const FollowupPlan = () => {
           <input
             type="text"
             value={behavioralFocus}
-            onChange={e => setBehavioralFocus(e.target.value)}
+            onChange={(e) => setBehavioralFocus(e.target.value)}
             style={inputStyle}
             placeholder="e.g. coping skills"
           />
@@ -231,7 +309,7 @@ const FollowupPlan = () => {
           <input
             type="text"
             value={referral}
-            onChange={e => setReferral(e.target.value)}
+            onChange={(e) => setReferral(e.target.value)}
             style={inputStyle}
           />
         </label>

@@ -47,11 +47,11 @@ const FormControls = ({ onGenerate }) => {
         />
       </label>
 
-      <button type="submit">Generate Document</button>
+      {/* <button type="submit">Generate Document</button>
 
       <button type="button" onClick={handleReset}>
         Reset
-      </button>
+      </button> */}
     </form>
   );
 };

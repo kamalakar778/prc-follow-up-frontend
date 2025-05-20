@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
+// 👉 Available direction options
 const directionOptions = [
   "Schedule right",
   "Schedule left",
@@ -8,6 +9,7 @@ const directionOptions = [
   "Schedule bilateral"
 ];
 
+// 👉 Base injection templates
 const baseInjections = [
   { label: "lumbar medial branch blocks at", levels: ["L3/4, L4/5, L5/S1"], direction: true },
   { label: "radiofrequency ablation at", levels: ["L3/4 , L4/5 , L5/S1"], direction: true },
@@ -26,18 +28,21 @@ const baseInjections = [
   { label: "schedule SCS trial lumbar at", levels: [], direction: false },
   { label: "schedule SCS implantation lumbar at", levels: [], direction: false },
   { label: "schedule trigger point injection at", levels: [], direction: false },
-  { label: "schedule", levels: ["Custom at"], direction: false }
+  { label: "schedule", levels: ["schedule at"], direction: false }
 ];
 
+// 👉 Initialize state with added control fields
 const getInitialInjections = () =>
   baseInjections.map(item => ({
     ...item,
     timing: "Later",
     directionSelected: "",
     selectedLevel: "",
-    notes: ""
+    notes: "",
+    included: false
   }));
 
+// 👉 Basic inline styles for layout
 const styles = {
   container: {
     padding: 16,
@@ -145,6 +150,7 @@ const InjectionsList = () => {
   const [addHover, setAddHover] = useState(false);
   const [resetHover, setResetHover] = useState(false);
 
+  // 👉 Handle change in field value
   const handleChange = (index, field, value) => {
     const updated = [...injections];
     if (field === "timing" && value === "Now")
@@ -154,26 +160,39 @@ const InjectionsList = () => {
     setInjections(updated);
   };
 
+  // 👉 Toggle inclusion of injection in preview
+  const toggleIncluded = (index) => {
+    const updated = [...injections];
+    updated[index].included = !updated[index].included;
+    setInjections(updated);
+  };
+
+  // 👉 Remove from preview
+  const removeFromPreview = (index) => {
+    const updated = [...injections];
+    updated[index].included = false;
+    setInjections(updated);
+  };
+
+  // 👉 Add blank injection
   const addInjection = () => {
     setInjections([
       ...injections,
       {
-        label: "custom",
-        levels: ["Custom"],
+        label: "schedule",
+        levels: ["schedule"],
         direction: false,
         directionAfter: false,
         timing: "Later",
         directionSelected: "",
-        selectedLevel: "Custom",
-        notes: ""
+        selectedLevel: "schedule",
+        notes: "",
+        included: false
       }
     ]);
   };
 
-  const removeInjection = (index) => {
-    setInjections(injections.filter((_, i) => i !== index));
-  };
-
+  // 👉 Move injection to new position
   const moveInjection = (index, newPosition) => {
     if (newPosition === index + 1) return;
     const updated = [...injections];
@@ -182,13 +201,47 @@ const InjectionsList = () => {
     setInjections(updated);
   };
 
+  // 👉 Reset all injections
   const resetAll = () => setInjections(getInitialInjections());
+
+  // 👉 Keep "Now" injections at the top
+  useEffect(() => {
+    const now = injections.filter(inj => inj.timing === "Now");
+    const later = injections.filter(inj => inj.timing !== "Now");
+    const reordered = [...now, ...later];
+
+    const isSame = reordered.every((inj, idx) => inj === injections[idx]);
+    if (!isSame) setInjections(reordered);
+  }, [injections]);
 
   return (
     <div style={styles.container}>
+      <h2 style={styles.header}>INJECTION PREVIEW:</h2>
+      {injections.filter(inj => inj.included).map((inj, idx) => (
+        <div key={idx} style={{ ...styles.injectionRow, background: "#f9fafb" }}>
+          <strong>{inj.timing}</strong>{" "}
+          {inj.direction && !inj.directionAfter && inj.directionSelected && ` - ${inj.directionSelected}`}{" "}
+          {inj.label} {inj.selectedLevel}{" "}
+          {inj.direction && inj.directionAfter && inj.directionSelected && ` - ${inj.directionSelected}`}{" "}
+          {inj.notes && ` - Notes: ${inj.notes}`}
+          <button
+            onClick={() => removeFromPreview(injections.indexOf(inj))}
+            style={styles.removeButton}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+
       <h2 style={styles.header}>INJECTIONS:</h2>
       {injections.map((inj, index) => (
         <div key={index} style={styles.injectionRow}>
+          <input
+            type="checkbox"
+            checked={inj.included}
+            onChange={() => toggleIncluded(index)}
+          />
+
           <span style={styles.index}>{index + 1}.</span>
 
           {["Now", "Later"].map(t => (
@@ -232,7 +285,7 @@ const InjectionsList = () => {
             </select>
           )}
 
-          {inj.label === "custom" ? (
+          {inj.label === "schedule" ? (
             <input
               type="text"
               placeholder="Enter description"
@@ -262,13 +315,6 @@ const InjectionsList = () => {
               <option key={idx} value={idx + 1}>Move to {idx + 1}</option>
             ))}
           </select>
-
-          <button
-            onClick={() => removeInjection(index)}
-            style={styles.removeButton}
-          >
-            Remove
-          </button>
 
           <input
             type="text"
@@ -312,3 +358,4 @@ const InjectionsList = () => {
 };
 
 export default InjectionsList;
+

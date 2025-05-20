@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import * as yup from "yup";
 
 const styles = {
   input: {
@@ -38,7 +39,41 @@ const styles = {
     gap: "1rem",
     marginBottom: "1rem",
   },
+  error: {
+    color: "red",
+    fontSize: "0.8rem",
+    marginTop: "0.25rem",
+  },
 };
+
+// Yup validation schema
+const schema = yup.object().shape({
+  fileName: yup.string().required("File name is required."),
+  patientName: yup.string().required("Patient name is required."),
+  dob: yup
+    .string()
+    .required("Date of birth is required.")
+    .matches(
+      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/,
+      "Invalid date format (MM/DD/YYYY)"
+    ),
+  dateOfEvaluation: yup
+    .string()
+    .required("Evaluation date is required.")
+    .matches(
+      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/,
+      "Invalid date format (MM/DD/YYYY)"
+    ),
+  dateOfDictation: yup
+    .string()
+    .required("Dictation date is required.")
+    .matches(
+      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/,
+      "Invalid date format (MM/DD/YYYY)"
+    ),
+  provider: yup.string().required("Provider selection is required."),
+  location: yup.string().required("Location selection is required."),
+});
 
 const Demography = ({
   fileName,
@@ -49,6 +84,61 @@ const Demography = ({
   onSubmit,
   setFormData,
 }) => {
+  const [errors, setErrors] = useState({});
+
+  // Pass updated value to validation
+  const validateField = async (fieldName, value) => {
+    try {
+      await schema.validateAt(fieldName, { ...formData, fileName, [fieldName]: value });
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: undefined }));
+    } catch (err) {
+      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: err.message }));
+    }
+  };
+
+  // Validate each field on change
+  useEffect(() => {
+    validateField("fileName", fileName);
+  }, [fileName]);
+
+  useEffect(() => {
+    validateField("patientName", formData.patientName);
+  }, [formData.patientName]);
+
+  useEffect(() => {
+    validateField("dob", formData.dob);
+  }, [formData.dob]);
+
+  useEffect(() => {
+    validateField("dateOfEvaluation", formData.dateOfEvaluation);
+  }, [formData.dateOfEvaluation]);
+
+  useEffect(() => {
+    validateField("dateOfDictation", formData.dateOfDictation);
+  }, [formData.dateOfDictation]);
+
+  useEffect(() => {
+    validateField("provider", formData.provider);
+  }, [formData.provider]);
+
+  useEffect(() => {
+    validateField("location", formData.location);
+  }, [formData.location]);
+
+  const handleValidatedSubmit = async () => {
+    try {
+      await schema.validate({ ...formData, fileName }, { abortEarly: false });
+      setErrors({});
+      onSubmit();
+    } catch (err) {
+      const newErrors = {};
+      err.inner.forEach((e) => {
+        newErrors[e.path] = e.message;
+      });
+      setErrors(newErrors);
+    }
+  };
+
   const renderSelect = (name, options, clearable = false) => (
     <label style={styles.label}>
       {name.charAt(0).toUpperCase() + name.slice(1)}:
@@ -76,6 +166,7 @@ const Demography = ({
           </button>
         )}
       </div>
+      {errors[name] && <span style={styles.error}>{errors[name]}</span>}
     </label>
   );
 
@@ -92,10 +183,11 @@ const Demography = ({
             onChange={(e) => onFileNameChange(e.target.value)}
             placeholder="Follow Up File Name"
           />
+          {errors.fileName && <span style={styles.error}>{errors.fileName}</span>}
         </label>
 
         <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
-          <button type="button" onClick={onSubmit} style={styles.button}>
+          <button type="button" onClick={handleValidatedSubmit} style={styles.button}>
             Generate Document
           </button>
           <button type="button" onClick={onReset} style={styles.button}>
@@ -106,7 +198,7 @@ const Demography = ({
 
       {/* Demography Fields */}
       <div style={styles.section}>
-        {[ 
+        {[
           { label: "PATIENT NAME", name: "patientName" },
           { label: "DATE OF BIRTH", name: "dob" },
           { label: "DATE OF EVALUATION", name: "dateOfEvaluation" },
@@ -120,6 +212,7 @@ const Demography = ({
               value={formData[name]}
               onChange={onChange}
             />
+            {errors[name] && <span style={styles.error}>{errors[name]}</span>}
           </label>
         ))}
 
