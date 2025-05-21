@@ -323,7 +323,7 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
         formattedLines: signatureData?.formattedLines || "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
-        dateTranscribed: signatureData?.dateTranscribed || ""
+        dateTranscribed: formData?.dateTranscribed || ""
       },
 
       // Follow-up-specific fields (IMPORTANT ONES)
@@ -461,7 +461,7 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
           followupData={followupData}
           setFollowupData={setFollowupData}
         /> */}
-        <FollowupPlan setFormData={setFormData} /> // ✅ Correct
+        <FollowupPlan setFormData={setFormData} /> 
       </div>
 
       <div className="form-section">

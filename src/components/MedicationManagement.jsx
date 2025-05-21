@@ -13,11 +13,10 @@ const medicationReasons = [
     id: 3,
     text: "Due to non-compliance with C.S. or illegal drug use, the patient is now on a NNCP (See U-Tox Log for justification)."
   },
-   {
+  {
     id: 4,
     text: "______ Page # Point # ______"
-  },
-
+  }
 ];
 
 const defaultMedication = {
@@ -29,93 +28,85 @@ const defaultMedication = {
 
 const styles = {
   container: {
-    padding: "1rem",
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem"
+    fontFamily: "Arial, sans-serif",
+    maxWidth: 1000,
+    margin: "0 auto",
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+    borderBottom: "2px solid #ddd",
+    paddingBottom: 8
   },
   label: {
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#444",
     display: "block",
-    fontSize: "1.2rem",
-    fontWeight: "500",
-    marginBottom: "0.25rem"
+    marginBottom: 6
   },
   select: {
-    width: "80%",
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    padding: "0.5rem",
-    fontSize: "1rem"
+    padding: "6px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14,
+    minWidth: 300,
+    cursor: "pointer"
   },
   medicationRow: {
     display: "flex",
-    gap: "0.5rem",
-    marginBottom: "0.5rem",
     alignItems: "center",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom:"-0.5rem",
+
+    // marginBottom: 12
   },
-  statusSelect: {
-    width: "7rem",
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    padding: "0.5rem",
-    fontSize: "1rem"
+  input: {
+    padding: "6px 8px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14
   },
-  medicationInput: {
-    flex: 1,
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    padding: "0.5rem",
-    fontSize: "1rem"
+  inputSmall: {
+    width: 70
   },
-  reliefInput: {
-    width: "5rem",
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    padding: "0.5rem",
-    fontSize: "1rem"
+  inputMedium: {
+    width: 140
   },
-  daysInput: {
-    width: "5rem",
-    border: "1px solid #d1d5db",
-    borderRadius: "0.375rem",
-    padding: "0.5rem",
-    fontSize: "1rem"
+  inputLarge: {
+    width: 200
   },
   removeButton: {
+    background: "none",
+    border: "none",
     color: "#ef4444",
-    background: "none",
-    border: "none",
     cursor: "pointer",
     textDecoration: "underline",
-    fontSize: "0.875rem"
-  },
-  resetButton: {
-    color: "#dc2626",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    textDecoration: "underline",
-    fontSize: "1rem"
+    fontSize: 13
   },
   outputContainer: {
-    paddingTop: "1rem"
+    marginTop: 24
   },
   outputHeading: {
-    fontSize: "0.875rem",
-    fontWeight: "600",
-    marginBottom: "0.25rem"
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+    borderBottom: "1px solid #ccc",
+    paddingBottom: 4,
+    color: "#333"
   },
   outputList: {
-    marginLeft: "1.25rem",
     listStyleType: "decimal",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    fontSize: "0.875rem"
+    paddingLeft: 20,
+    color: "#333",
+    fontSize: 14
   }
 };
 
@@ -154,59 +145,25 @@ const MedicationManagement = ({
 
   const handleRemoveMedication = (index) => {
     const updated = medications.filter((_, i) => i !== index);
-    if (updated.length === 0) {
-      setMedications([defaultMedication]);
-    } else {
-      setMedications(updated);
-    }
-  };
-
-  const handleResetMedications = () => {
-    setMedications([defaultMedication]);
+    setMedications(updated.length > 0 ? updated : [defaultMedication]);
   };
 
   useEffect(() => {
+    const reasonText =
+      medicationReasons.find((r) => r.id === selectedReason)?.text || "";
 
-    const reasonText = medicationReasons.find((r) => r.id === selectedReason)?.text || "";
+    const medLines = medications
+      .filter((med) => med.name.trim())
+      .map((med, idx) => {
+        const prefix = med.status ? `${med.status} ` : "";
+        const relief =
+          med.relief !== "" ? `(${med.relief}% pain relief obtained).` : "";
+        const days = med.days !== "" ? `(#${med.days})` : "";
+        const detail = [relief, days].filter(Boolean).join(" ");
+        return `${idx + 2}. ${prefix}${med.name}.${detail ? ` ${detail}` : ""}`;
+      });
 
-    // const medLines = medications
-    //   .filter(med => med.name.trim())
-    //   .map((med) => {
-    //     const prefix = med.status ? `${med.status} ` : "";
-    //     const relief = med.relief !== "" ? `${med.relief}% pain relief` : "";
-    //     const days = med.days !== "" ? `for ${med.days} days` : "";
-    //     const detail = [relief, days].filter(Boolean).join(", ");
-    //     return `${prefix}${med.name}.${detail ? ` (${detail}).` : ""}`;
-    //   });
-    // const medLines = medications
-    //   .filter((med) => med.name.trim())
-    //   .map((med, idx) => {
-    //     const prefix = med.status ? `${med.status} ` : "";
-    //     const relief =
-    //       med.relief !== "" ? `(${med.relief}% pain relief obtained).` : "";
-    //     const days = med.days !== "" ? `(#${med.days})` : "";
-    //     const detail = [relief, days].filter(Boolean).join(" ");
-    //     const heading = "MEDICATION MANAGEMENT:";
-    //     return `${idx + 1}. ${prefix}${med.name}.${detail ? ` ${detail}` : ""}`;
-    //   });
-
-const medLines = medications
-  .filter((med) => med.name.trim())
-  .map((med, idx) => {
-    const prefix = med.status ? `${med.status} ` : "";
-    const relief = med.relief !== "" ? `(${med.relief}% pain relief obtained).` : "";
-    const days = med.days !== "" ? `(#${med.days})` : "";
-    const detail = [relief, days].filter(Boolean).join(" ");
-    return `${idx + 2}. ${prefix}${med.name}.${detail ? ` ${detail}` : ""}`;
-  });
-
-const fullList = [
-  "MEDICATION MANAGEMENT:",
-  `1. ${reasonText}`,
-  ...medLines
-];
-
-
+    const fullList = ["MEDICATION MANAGEMENT:", `1. ${reasonText}`, ...medLines];
     setOutputState(fullList);
 
     if (setInitialFormData) {
@@ -219,6 +176,8 @@ const fullList = [
 
   return (
     <div style={styles.container}>
+      {/* <h3 style={styles.sectionTitle}>Medication Management</h3> */}
+
       <div>
         <label style={styles.label}>Select Reason:</label>
         <select
@@ -227,15 +186,15 @@ const fullList = [
           style={styles.select}
         >
           {medicationReasons.map((reason) => (
-            <option key={reason.id} value={reason.id} disabled={reason.text === ""}>
+            <option key={reason.id} value={reason.id}>
               {reason.text}
             </option>
           ))}
         </select>
       </div>
 
-      <div>
-        <label style={styles.label}>Medications, % Relief, and #Days:</label>
+      <div style={{ marginTop: 16 }}>
+        <label style={styles.label}>Medications:</label>
         {medications.map((med, index) => (
           <div key={index} style={styles.medicationRow}>
             <select
@@ -243,7 +202,7 @@ const fullList = [
               onChange={(e) =>
                 handleMedicationChange(index, "status", e.target.value)
               }
-              style={styles.statusSelect}
+              style={{ ...styles.select, minWidth: 120 }}
             >
               <option value="Continue">Continue</option>
               <option value="Start">Start</option>
@@ -260,7 +219,7 @@ const fullList = [
               onChange={(e) =>
                 handleMedicationChange(index, "name", e.target.value)
               }
-              style={styles.medicationInput}
+              style={{ ...styles.input, ...styles.inputLarge }}
             />
 
             <input
@@ -270,7 +229,7 @@ const fullList = [
               onChange={(e) =>
                 handleMedicationChange(index, "relief", e.target.value)
               }
-              style={styles.reliefInput}
+              style={{ ...styles.input, ...styles.inputSmall }}
             />
 
             <input
@@ -280,7 +239,7 @@ const fullList = [
               onChange={(e) =>
                 handleMedicationChange(index, "days", e.target.value)
               }
-              style={styles.daysInput}
+              style={{ ...styles.input, ...styles.inputSmall }}
             />
 
             {medications.length > 1 && index !== medications.length - 1 && (
@@ -296,18 +255,8 @@ const fullList = [
         ))}
       </div>
 
-      <div>
-        <button
-          type="button"
-          onClick={handleResetMedications}
-          style={styles.resetButton}
-        >
-          Reset Medications List
-        </button>
-      </div>
-
       <div style={styles.outputContainer}>
-        <h3 style={styles.outputHeading}>Formatted Summary:</h3>
+        <h4 style={styles.outputHeading}>Formatted Summary:</h4>
         <ol style={styles.outputList}>
           {outputState.map((line, idx) => (
             <li key={idx}>{line}</li>

@@ -1,121 +1,126 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
+const styles = {
+  container: {
+    fontFamily: "Arial, sans-serif",
+    maxWidth: 1000,
+    margin: "0 auto",
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+    borderBottom: "2px solid #ddd",
+    paddingBottom: 8,
+  },
+  group: {
+    // marginBottom: 16,
+    
+  },
+  inlineGroup: {
+    display: "flex",
+    width:"90%",
+
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 12,
+    // marginBottom: 12,
+  },
+  labelText: {
+    fontWeight: 600,
+    fontSize: 14,
+    color: "#444",
+  },
+  input: {
+    flex: 1,
+    padding: "6px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14,
+  },
+  inputMedium: {
+    
+    width: 200,
+    padding: "6px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14,
+  },
+  select: {
+    padding: "6px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14,
+    minWidth: 160,
+    cursor: "pointer",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: 17,
+    color: "#444",
+    gap: 8,
+    marginBottom: 8,
+  },
+  note: {
+    fontSize: 13,
+    color: "#555",
+    marginLeft: 24,
+    marginBottom: 16,
+    lineHeight: 1.5,
+  },
+};
+
 const FollowupPlan = ({ setFormData }) => {
   const [nonComplianceSeverity, setNonComplianceSeverity] = useState("");
   const [actionTaken, setActionTaken] = useState("");
   const [willOrderUDT, setWillOrderUDT] = useState(false);
   const [willNotOrderUDT, setWillNotOrderUDT] = useState(false);
-  const [unexpectedUTox, setUnexpectedUTox] = useState(""); // Changed to string
+  const [unexpectedUTox, setUnexpectedUTox] = useState("");
   const [ptEval, setPtEval] = useState("");
   const [pillCount, setPillCount] = useState(false);
-
   const [imageType, setImageType] = useState("");
   const [imaging, setImaging] = useState("");
   const [xrayOf, setXrayOf] = useState("");
   const [behavioralFocus, setBehavioralFocus] = useState("");
   const [referral, setReferral] = useState("");
 
-  const sectionStyle = {
-    padding: "16px 0",
-    borderBottom: "1px solid #ddd"
-  };
-
-  const labelStyle = {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "12px",
-    fontWeight: "500"
-  };
-
-  const selectStyle = {
-    marginLeft: "10px",
-    padding: "6px 10px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    flexShrink: 0
-  };
-
-  const inputStyle = {
-    marginLeft: "10px",
-    padding: "6px 10px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    flex: 1
-  };
-
-  const checkboxLabelStyle = {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "12px",
-    cursor: "pointer"
-  };
-
-  const checkboxStyle = {
-    marginRight: "8px"
-  };
-
   const getUDTStatus = () => {
     if (willOrderUDT) {
       return (
         "Will order a Urine Drug Test (UDT) Using an Instrumented Chemistry Analyzer to screen for drug classes of prescribed medications and drug classes for commonly abused substances used locally in the KY/Louisville area\n" +
-        "1.\tIf UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n" +
-        "2.\tIf UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine\n" +
-        "Justification for UDT:  It is medically necessary to monitor adherence to the Prescription Medication Agreement and to identify possible misuse, diversion and/or abuse of both prescribed and unprescribed medications.  Compliance tools used to monitor patients’ include: UDT, The Prescription Drug Monitoring Program database (e.g. KASPER), Risk Stratification Tools (e.g. ORT), and current High-Risk substances in the KY/Louisville area (see below). Based on these compliance tools, especially current High-Risk substance abuse community trend locally. UDT will usually be ordered quarterly (or more frequently as applicable) for patients on opioids.\n" +
-        "1.\tKentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n" +
-        "2.\tSubstance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:"
+        "1.\tIf UDT ordered, will review screen results and confirm all prescribed meds.\n" +
+        "2.\tIf UDT ordered, Confirm all non-prescribed drugs and always test for: Fentanyl, Methamphetamine and Cocaine\n" +
+        "Justification: Monitor adherence, misuse/diversion, quarterly testing recommended for opioid patients."
       );
     }
-    if (willNotOrderUDT) {
-      return "Will not order a Urine Drug Test (UDT)";
-    }
+    if (willNotOrderUDT) return "Will not order a Urine Drug Test (UDT)";
     return "UDT order status unspecified";
   };
 
-  const getUnexpectedUTox = () =>
-    unexpectedUTox
-      ? `Unexpected U-Tox Result: ${unexpectedUTox}`
-      : "";
-
-  const getPT = () =>
-    ptEval
-      ? `Will order Physical Therapy Eval And Tx (ROM, Strengthening, Stretching) for: ${ptEval}`
-      : "";
-
-  const getPillCount = () =>
-    pillCount
-      ? `Will order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate.`
-      : "";
-
-  const getImaging = () =>
-    imaging
-      ? `Will order ${imageType}(MRI/CT) with/without contrast of: ${imaging}\n\tDue to Worsening pain/symptoms\n\tDue to intermittent tingling and/or numbness into extremity.`
-      : "";
-
-  const getXray = () => (xrayOf ? `Will order X-Ray of: ${xrayOf}` : "");
-
-  const getBehavioral = () =>
-    behavioralFocus
-      ? `Will order Behavioral Health Consult with emphasis on: ${behavioralFocus}`
-      : "";
-
-  const getReferral = () => (referral ? `Will Refer to: ${referral}` : "");
+  const followUpSummary = [
+    "Follow-Up Plan:",
+    `${nonComplianceSeverity || "____________"}`,
+    actionTaken ? `\t a. Action taken if non-compliant: ${actionTaken}` : "",
+    getUDTStatus(),
+    unexpectedUTox && `Unexpected U-Tox Result: ${unexpectedUTox}`,
+    pillCount && "Will order a random pill count and U-Tox Screen with possible laboratory confirmation.",
+    ptEval && `Will order Physical Therapy Eval And Tx for: ${ptEval}`,
+    imaging && `Will order ${imageType} of: ${imaging} (with/without contrast)`,
+    xrayOf && `Will order X-Ray of: ${xrayOf}`,
+    behavioralFocus && `Behavioral Health Consult with emphasis on: ${behavioralFocus}`,
+    referral && `Will Refer to: ${referral}`
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   useEffect(() => {
-    const followUpSummary = [
-      "Follow-Up Plan:",
-      `${nonComplianceSeverity || "____________"}`,
-      actionTaken ? `\t a. Action taken if non-compliant: ${actionTaken}` : "",
-      getUDTStatus(),
-      getUnexpectedUTox(),
-      getPillCount(),
-      getPT(),
-      getImaging(),
-      getXray(),
-      getBehavioral(),
-      getReferral()
-    ].filter(Boolean).join("\n");
-
     if (typeof setFormData === "function") {
       setFormData((prev) => ({
         ...prev,
@@ -130,7 +135,7 @@ const FollowupPlan = ({ setFormData }) => {
         behavioralFocus,
         referral,
         udtStatus: getUDTStatus(),
-        followUpPlan: followUpSummary
+        followUpPlan: followUpSummary,
       }));
     }
   }, [
@@ -146,31 +151,51 @@ const FollowupPlan = ({ setFormData }) => {
     xrayOf,
     behavioralFocus,
     referral,
-    setFormData
+    setFormData,
   ]);
 
   return (
-    <div style={{ padding: "16px" }}>
-      <div style={sectionStyle}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "16px" }}>
-          F/u Orders
-        </h2>
+    <div style={styles.container}>
+      {/* <h3 style={styles.sectionTitle}>Follow-Up Orders</h3> */}
 
-        <label style={checkboxLabelStyle}>
+      <div style={styles.group}>
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Non-compliance severity:</span>
+          <input
+            type="text"
+            value={nonComplianceSeverity}
+            onChange={(e) => setNonComplianceSeverity(e.target.value)}
+            style={styles.inputMedium}
+            placeholder="e.g. Mild"
+          />
+        </div>
+
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Action taken:</span>
+          <input
+            type="text"
+            value={actionTaken}
+            onChange={(e) => setActionTaken(e.target.value)}
+            style={styles.inputMedium}
+            placeholder="e.g. Verbal warning"
+          />
+        </div>
+
+        <label style={styles.checkboxLabel}>
           <input
             type="checkbox"
             checked={willNotOrderUDT}
+            
             onChange={() => {
               const newVal = !willNotOrderUDT;
               setWillNotOrderUDT(newVal);
               if (newVal) setWillOrderUDT(false);
             }}
-            style={checkboxStyle}
           />
           Will not order a Urine Drug Test (UDT)
         </label>
 
-        <label style={checkboxLabelStyle}>
+        <label style={styles.checkboxLabel}>
           <input
             type="checkbox"
             checked={willOrderUDT}
@@ -179,113 +204,107 @@ const FollowupPlan = ({ setFormData }) => {
               setWillOrderUDT(newVal);
               if (newVal) setWillNotOrderUDT(false);
             }}
-            style={checkboxStyle}
           />
           Will order a UDT using Instrumented Chemistry Analyzer
         </label>
 
         {willOrderUDT && (
-          <div style={{ marginLeft: "24px", marginBottom: "16px", fontSize: "0.9rem", color: "#444", lineHeight: 1.5 }}>
-            <p>1. Review screen results and confirm all prescribed meds.</p>
-            <p>2. Confirm non-prescribed drugs and always test for Fentanyl, Meth, Cocaine.</p>
-            <p>Justification: Monitor adherence, detect misuse/diversion via tools like UDT, KASPER, ORT, etc.</p>
-            <p>Usually ordered quarterly or more if on opioids.</p>
+          <div style={styles.note}>
+            <p>1. Review UDT screen results and confirm all prescribed meds.</p>
+            <p>2. Confirm positives for non-prescribed drugs (Fentanyl, Meth, Cocaine).</p>
+            <p>Quarterly UDT typically required for opioid patients.</p>
           </div>
         )}
 
-        {/* 🔹 Updated unexpected U-Tox input */}
-        <div style={{ marginBottom: "12px" }}>
-          <label style={labelStyle}>
-            Unexpected U-Tox Result:
-            <input
-              type="text"
-              value={unexpectedUTox}
-              onChange={(e) => setUnexpectedUTox(e.target.value)}
-              placeholder="e.g. THC positive, confirmatory screen needed"
-              style={inputStyle}
-            />
-          </label>
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Unexpected U-Tox Result:</span>
+          <input
+            type="text"
+            value={unexpectedUTox}
+            onChange={(e) => setUnexpectedUTox(e.target.value)}
+            style={styles.input}
+            placeholder="e.g. THC positive"
+          />
         </div>
 
-        <label style={checkboxLabelStyle}>
+        <label style={styles.checkboxLabel}>
           <input
             type="checkbox"
             checked={pillCount}
             onChange={() => setPillCount(!pillCount)}
-            style={checkboxStyle}
           />
           Will order pill count and U-Tox Screen
         </label>
 
-        <label style={labelStyle}>
-          Physical Therapy Eval & Tx for:
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>PT Eval & Tx for:</span>
           <input
             type="text"
             value={ptEval}
             onChange={(e) => setPtEval(e.target.value)}
-            style={inputStyle}
+            style={styles.input}
             placeholder="e.g. ROM, Strengthening"
           />
-        </label>
+        </div>
 
-        <label style={labelStyle}>
-          Imaging:
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Imaging:</span>
           <select
             value={imageType}
             onChange={(e) => setImageType(e.target.value)}
-            style={selectStyle}
+            style={styles.select}
           >
             <option value="">Select Type</option>
             <option value="MRI Scan">MRI Scan</option>
             <option value="CT Scan">CT Scan</option>
           </select>
-          <span style={{ marginLeft: "10px" }}>of:</span>
+          <span style={styles.labelText}>of:</span>
           <input
             type="text"
             value={imaging}
             onChange={(e) => setImaging(e.target.value)}
-            style={inputStyle}
+            style={styles.input}
             placeholder="e.g. lumbar spine"
           />
-        </label>
+        </div>
 
-        <label style={labelStyle}>
-          X-Ray of:
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>X-Ray of:</span>
           <input
             type="text"
             value={xrayOf}
             onChange={(e) => setXrayOf(e.target.value)}
-            style={inputStyle}
+            style={styles.input}
           />
-        </label>
+        </div>
 
-        <label style={labelStyle}>
-          Behavioral Health Consult with emphasis on:
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Behavioral consult focus:</span>
           <input
             type="text"
             value={behavioralFocus}
             onChange={(e) => setBehavioralFocus(e.target.value)}
-            style={inputStyle}
+            style={styles.input}
             placeholder="e.g. coping skills"
           />
-        </label>
+        </div>
 
-        <label style={labelStyle}>
-          Will refer to:
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Will refer to:</span>
           <input
             type="text"
             value={referral}
             onChange={(e) => setReferral(e.target.value)}
-            style={inputStyle}
+            style={styles.input}
           />
-        </label>
+        </div>
       </div>
     </div>
   );
 };
 
 FollowupPlan.propTypes = {
-  setFormData: PropTypes.func
+  setFormData: PropTypes.func,
 };
 
 export default FollowupPlan;

@@ -4,10 +4,10 @@ const SignatureLine = ({ onChange }) => {
   const buttonTexts = {
     "Dr. Klickovich":
       "personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Robert Klickovich currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
-    "APRN": "personally performed todays follow-up evaluation and treatment plan of the patient.",
+    APRN: "personally performed todays follow-up evaluation and treatment plan of the patient.",
     "Dr. Olivia Kelley":
-    "personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
-    "Signature Line Missing": "__________ Page # Point # __________ ",
+      "personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
+    "Signature Line Missing": "__________ Page # Point # __________ "
   };
 
   const initialLines = [
@@ -42,12 +42,25 @@ const SignatureLine = ({ onChange }) => {
 
   const initialFollowUp = "Four weeks";
 
-  const getTodayFormatted = () => {
+  const getTodayISO = () => {
     const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`; // ISO format for input[type="date"]
+    return today.toISOString().split("T")[0]; // returns YYYY-MM-DD
+  };
+
+  const formatDateToMMDDYYYY = (dateStr) => {
+    const date = new Date(dateStr);
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  };
+
+  const getTodayFormatted = (dateStr) => {
+    const date = new Date(dateStr);
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
   };
 
   const [lines, setLines] = useState(initialLines);
@@ -56,7 +69,7 @@ const SignatureLine = ({ onChange }) => {
   const [followUpAppointment, setFollowUpAppointment] =
     useState(initialFollowUp);
   const [selectedButton, setSelectedButton] = useState("");
-  const [dateTranscribed, setDateTranscribed] = useState(getTodayFormatted());
+  const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
   const lineDropdownOptions = lines.reduce((acc, _, idx) => {
     acc[idx] = optionMap[idx] || ["Custom option A", "Custom option B"];
@@ -95,7 +108,7 @@ const SignatureLine = ({ onChange }) => {
         formattedLines: formatProcessedLines(),
         followUpAppointment,
         signatureLine: buttonTexts[selectedButton] || "_________________",
-        dateTranscribed
+        dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
       });
     }
   }, [
@@ -185,6 +198,13 @@ const SignatureLine = ({ onChange }) => {
       borderRadius: "4px",
       border: "1px solid #ccc",
       width: "80%"
+    },
+    inputDate: {
+      width: "15%",
+      padding: "6px",
+      marginRight: "8px",
+      borderRadius: "4px",
+      border: "1px solid #ccc"
     },
     select: {
       padding: "6px",
@@ -317,7 +337,7 @@ const SignatureLine = ({ onChange }) => {
         <label style={styles.label}>Date Transcribed:</label>
         <input
           type="date"
-          style={styles.input}
+          style={styles.inputDate}
           value={dateTranscribed}
           onChange={(e) => setDateTranscribed(e.target.value)}
         />

@@ -44,7 +44,7 @@ const styles = {
   },
 };
 
-const illnessOptions = ["More tolerable", "Less tolerable", "Worse", "The same"];
+const illnessOptions = ["More tolerable", "Less tolerable", "Improved", "Worse", "The same"];
 
 const HistoryOfPresentIllness = () => {
   const [formData, setFormData] = useState({

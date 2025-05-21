@@ -346,7 +346,7 @@ useEffect(() => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>INJECTION PREVIEW:</h2>
+      <h3 style={styles.header}>INJECTION PREVIEW:</h3>
       {injections
         .filter((inj) => inj.included)
         .map((inj, idx) => (
@@ -373,7 +373,7 @@ useEffect(() => {
             </button>
           </div>
         ))}
-      <h2 style={styles.header}>INJECTIONS:</h2>
+      {/* <h2 style={styles.header}>INJECTIONS:</h2> */}
       {injections.map((inj, index) => (
         <div key={index} style={styles.injectionRow}>
           <input
