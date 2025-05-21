@@ -1,32 +1,58 @@
 import React, { useState, useEffect, useCallback } from "react";
 import QualitativePainList from "./QualitativePainList";
 
-const inputStyle = {
-  width: "100px",
+const inputNumericStyle = {
+  width: "80px",
   padding: "6px",
   margin: "4px 8px",
   border: "0.1px solid #ccc",
+  borderRadius: "4px"
+};
+
+const inputStyle = {
+  width: "150px",
+  padding: "6px",
+  margin: "4px 8px",
+  border: "0.1px solid #ccc",
+  borderRadius: "4px"
+};
+
+const inputCommentStyle = {
+  width: "95%",
+  padding: "6px",
+  margin: "4px 0", // remove horizontal margin for cleaner full-width alignment
+  border: "0.1px solid #ccc",
   borderRadius: "4px",
+  boxSizing: "border-box" // ensures padding doesn't exceed container
 };
 
 const labelStyle = {
   display: "flex",
   alignItems: "center",
-  marginBottom: "10px",
+  marginBottom: "10px"
 };
 
 const sectionStyle = {
   border: "1px solid #ddd",
   borderRadius: "8px",
-  padding: "16px",
-  marginBottom: "20px",
+  padding: "10px",
+  marginBottom: "8px",
   backgroundColor: "#f9f9f9",
+  display: "flex"
 };
+const sectionFormatStyle = {
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  padding: "10px",
+  marginBottom: "8px",
+  backgroundColor: "#f9f9f9",
+  fontfamily: "Calibri",
 
+  // display:"flex"
+};
 const headingStyle = {
   fontSize: "1.25rem",
-  fontWeight: "bold",
-  marginBottom: "12px",
+  fontWeight: "bold"
 };
 
 const NumericScaleInput = ({ formData, onUpdate }) => {
@@ -39,17 +65,19 @@ const NumericScaleInput = ({ formData, onUpdate }) => {
           average: match[1] || "",
           best: match[2] || "",
           withMeds: match[3] || "",
-          withoutMeds: match[4] || "",
+          withoutMeds: match[4] || ""
         }
       : {
           average: "",
           best: "",
           withMeds: "",
-          withoutMeds: "",
+          withoutMeds: ""
         };
   };
 
-  const [values, setValues] = useState(parseNumericScale(formData.numericScale));
+  const [values, setValues] = useState(
+    parseNumericScale(formData.numericScale)
+  );
 
   useEffect(() => {
     const formatted = `Average: ${values.average || "__"}/10. Best: ${
@@ -79,7 +107,7 @@ const NumericScaleInput = ({ formData, onUpdate }) => {
           <input
             type="text"
             name={field}
-            style={inputStyle}
+            style={inputNumericStyle}
             value={values[field]}
             onChange={handleInputChange}
             maxLength={2}
@@ -93,15 +121,14 @@ const NumericScaleInput = ({ formData, onUpdate }) => {
 
 const CharacteristicsOfPain = ({ formData, onUpdate }) => {
   const [qualitative, setQualitative] = useState(formData.qualitatively || "");
+  const [overrideTemporally, setOverrideTemporally] = useState(false);
 
-  // Update local qualitative if formData changes externally
   useEffect(() => {
     if (formData.qualitatively !== qualitative) {
       setQualitative(formData.qualitatively || "");
     }
   }, [formData.qualitatively, qualitative]);
 
-  // Callback to update qualitative both locally and upstream
   const updateQualitativeData = useCallback(
     (qualitativeData) => {
       setQualitative(qualitativeData);
@@ -115,20 +142,83 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
     onUpdate({ [name]: value });
   };
 
+  useEffect(() => {
+    if (!formData.temporally) {
+      const defaultPrimary = "Continuous";
+      const defaultSecondary = "Frequent painful exacerbations";
+      const combined = `'${defaultPrimary}' baseline pain with '${defaultSecondary}' painful exacerbations.`;
+      onUpdate({
+        temporallyPrimary: defaultPrimary,
+        temporallySecondary: defaultSecondary,
+        temporally: combined
+      });
+    }
+  }, [formData.temporally, onUpdate]);
+
+  useEffect(() => {
+    if (overrideTemporally) {
+      onUpdate({ temporally: "______ Page # Point # __________" });
+    } else if (formData.temporallyPrimary && formData.temporallySecondary) {
+      const formatted = `'${formData.temporallyPrimary}' baseline pain with '${formData.temporallySecondary}' painful exacerbations.`;
+      onUpdate({ temporally: formatted });
+    }
+  }, [
+    overrideTemporally,
+    formData.temporallyPrimary,
+    formData.temporallySecondary,
+    onUpdate
+  ]);
+
   return (
     <div>
-      {/* <h3 style={headingStyle}>CHARACTERISTICS OF PAIN INCLUDE:</h3> */}
-
       <div style={sectionStyle}>
+        {!overrideTemporally && (
+          <label style={labelStyle}>
+            Temporally it is:
+            <select
+              style={inputStyle}
+              value={formData.temporallyPrimary || "Continuous"}
+              onChange={(e) => {
+                const newPrimary = e.target.value;
+                const secondary = formData.temporallySecondary || "";
+                const combined = `'${newPrimary}' baseline pain with '${secondary}' painful exacerbations.`;
+                onUpdate({
+                  temporallyPrimary: newPrimary,
+                  temporally: combined
+                });
+              }}
+            >
+              <option value="Continuous">Continuous</option>
+              <option value="No">No</option>
+            </select>
+            <span style={{ margin: "0 8px" }}>baseline pain with</span>
+            <select
+              style={inputStyle}
+              value={formData.temporallySecondary || "Frequent"}
+              onChange={(e) => {
+                const primary = formData.temporallyPrimary || "";
+                const newSecondary = e.target.value;
+                const combined = `'${primary}' baseline pain with '${newSecondary}' painful exacerbations.`;
+                onUpdate({
+                  temporallySecondary: newSecondary,
+                  temporally: combined
+                });
+              }}
+            >
+              <option value="Frequent">Frequent</option>
+              <option value="No">No</option>
+            </select>
+            <span style={{ margin: "0 8px" }}>painful exacerbations </span>
+          </label>
+        )}
         <label style={labelStyle}>
-          Temporally it is:
           <input
-            type="text"
-            name="temporally"
-            style={{...inputStyle, width: "80%"}}
-            value={formData.temporally || ""}
-            onChange={handleChange}
+            type="checkbox"
+            checked={overrideTemporally}
+            onChange={(e) => setOverrideTemporally(e.target.checked)}
+            style={{ marginRight: "10px" }}
           />
+          Nothing checked
         </label>
       </div>
 
@@ -136,62 +226,46 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
         <QualitativePainList updateFormData={updateQualitativeData} />
       </div>
 
-      <div style={sectionStyle}>
-        <label style={headingStyle}>Numeric Scale (each out of 10):</label>
+      <div style={sectionFormatStyle}>
+        <strong>Numeric Scale (each out of 10):</strong>
         <NumericScaleInput formData={formData} onUpdate={onUpdate} />
       </div>
 
       <div style={sectionStyle}>
         <label style={labelStyle}>
           Working status of:
-          <input
-            list="working-status-options"
+          <select
             name="workingStatus"
-            placeholder="Working Status"
             style={inputStyle}
             value={formData.workingStatus || ""}
             onChange={handleChange}
-          />
-          <button
-            type="button"
-            onClick={() => onUpdate({ workingStatus: "" })}
-            style={{
-              marginLeft: "10px",
-              padding: "6px 12px",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
           >
-            Clear
-          </button>
+            <option value="">Select Status</option>
+            {[
+              "Full-time",
+              "Part-time",
+              "Self-employed",
+              "Seeking employment",
+              "Unemployed",
+              "Homemaker",
+              "Retired",
+              "Disabled",
+              "Seeking disability",
+              "Going to school"
+            ].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </label>
-        <datalist id="working-status-options">
-          {[
-            "Full-time",
-            "Part-time",
-            "Self-employed",
-            "Seeking employment",
-            "Unemployed",
-            "Homemaker",
-            "Retired",
-            "Disabled",
-            "Seeking disability",
-            "Going to school",
-          ].map((option) => (
-            <option key={option} value={option} />
-          ))}
-        </datalist>
       </div>
 
-      <div style={sectionStyle}>
-          <strong>Comments (Compliance, MRI, X-ray etc):</strong>
-        <label style={labelStyle}>
-          <input
+      <div style={sectionFormatStyle}>
+        <label>Comments (Compliance, MRI, X-ray etc):</label>
+        <input
             name="comments"
-            style={{...inputStyle, width: "100%"}}
+            style={inputCommentStyle}
             value={
               formData.comments?.replace(
                 "Comments (Compliance, MRI, X-ray etc): ",
@@ -202,12 +276,11 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
               handleChange({
                 target: {
                   name: "comments",
-                  value: `Comments (Compliance, MRI, X-ray etc): ${e.target.value}`,
-                },
+                  value: `Comments (Compliance, MRI, X-ray etc): ${e.target.value}`
+                }
               })
             }
           />
-        </label>
       </div>
     </div>
   );

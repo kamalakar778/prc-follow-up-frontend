@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 600,
+    maxWidth: 1000,
     margin: "0 auto",
-    padding: 20,
+    padding: 2,
     backgroundColor: "#f9f9f9",
     borderRadius: 8,
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
@@ -19,13 +19,14 @@ const styles = {
     paddingBottom: 8,
   },
   group: {
-    marginBottom: 16,
+    marginBottom: "-0.85rem",
   },
   labelText: {
     fontWeight: "600",
     marginRight: 6,
     fontSize: 14,
     color: "#444",
+
   },
   input: {
     width: 60,

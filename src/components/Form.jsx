@@ -7,7 +7,7 @@ import ChiefComplaint from "./ChiefComplaint";
 import ComplianceWithTreatmentPlan from "./ComplianceWithTreatmentPlan";
 import PhysicalExamination from "./PhysicalExamination";
 import EstablishedComplaints from "./EstablishedComplaints";
-import AssessmeCodes from "./AssessmeCodes";
+import AssessmentCodes from "./AssessmentCodes";
 import FollowupPlan from "./FollowupPlan";
 import MedicationManagement from "./MedicationManagement";
 import SignatureLine from "./SignatureLine";
@@ -20,7 +20,9 @@ const Form = () => {
   const [initialFormData, setInitialFormData] = useState({});
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
-  const [establishedComplaintsLines, setEstablishedComplaintsLines] = useState([]);
+  const [establishedComplaintsLines, setEstablishedComplaintsLines] = useState(
+    []
+  );
   const [medications, setMedications] = useState([]);
   // const [medicationOutput, setMedicationOutput] = useState("");
   const [signatureData, setSignatureData] = useState("");
@@ -34,9 +36,13 @@ const Form = () => {
     physician: "Robert Klickovich, M.D",
     provider: "",
     referringPhysician: "",
-    insurance: "",
+    insurance1: "",
+    insurance1Other: "",
+    insurance2: "",
+    insurance2Other: "",
     location: "",
-    cma: "",
+    CMA: "",
+    CMAInput: "",
     roomNumber: "",
     allergic_symptom_1: "",
     allergic_symptom_2: "",
@@ -72,6 +78,17 @@ const Form = () => {
       hip: { enabled: true, side: "bilaterally" },
       patella: { enabled: true, side: "bilaterally" }
     },
+    nonComplianceSeverity: "",
+    actionTaken: "",
+    udtStatus:"",
+    willOrderUDT: false,
+    unexpectedUTox: false,
+    pillCount: false,
+    ptEval: "",
+    imaging: "",
+    xrayOf: "",
+    behavioralFocus: "",
+    referral: "",
     injections: "",
     INJECTION_SUMMARY: "",
     otherPlans: "",
@@ -85,6 +102,7 @@ const Form = () => {
     nonComplianceSeverity: "",
     actionTaken: "",
     willOrderUDT: false,
+    willNotOrderUDT:false,
     unexpectedUTox: false,
     pillCount: false,
     ptEval: "",
@@ -104,10 +122,11 @@ const Form = () => {
     const complaints = formData.complaintsData;
     if (!complaints) return "";
     return Object.entries(complaints)
-      .map(([region, { enabled, side }]) =>
-        `${region.charAt(0).toUpperCase() + region.slice(1)}: ${
-          enabled ? "Yes" : "No"
-        } (Side: ${side})`
+      .map(
+        ([region, { enabled, side }]) =>
+          `${region.charAt(0).toUpperCase() + region.slice(1)}: ${
+            enabled ? "Yes" : "No"
+          } (Side: ${side})`
       )
       .join("; ");
   };
@@ -135,7 +154,8 @@ const Form = () => {
       stationStance: examData.stationStance || prev.stationStance,
       cardiovascular: examData.cardiovascular || prev.cardiovascular,
       lymphadenopathy: examData.lymphadenopathy || prev.lymphadenopathy,
-      coordinationBalance: examData.coordinationBalance || prev.coordinationBalance,
+      coordinationBalance:
+        examData.coordinationBalance || prev.coordinationBalance,
       motorFunction: examData.motorFunction || prev.motorFunction
     }));
   };
@@ -229,6 +249,14 @@ const Form = () => {
       lymphadenopathy: "",
       coordinationBalance: "",
       motorFunction: "",
+      nonComplianceSeverity: "",
+      actionTaken: "",
+      unexpectedUTox: false,
+      ptEval: "",
+      imaging: "",
+      xrayOf: "",
+      behavioralFocus: "",
+      referral: "",
       INJECTION_SUMMARY: "",
       complaintsData: {
         cervical: { enabled: true, side: "bilaterally" },
@@ -241,33 +269,81 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    const finalText = `
-Patient Form Summary:
-${formData?.INJECTION_SUMMARY || "No injections selected."}
-... more summary if needed ...
-`;
+    if (!fileName.trim() || !formData.patientName?.trim()) {
+      alert("File name and patient name are required.");
+      return;
+    }
+
+    const insuranceFinal1 =
+      formData.insurance1Input?.trim() || formData.insurance1 || "";
+    const insuranceFinal2 =
+      formData.insurance2Input?.trim() || formData.insurance2 || "";
+    const finalCMA = formData.CMAInput?.trim() || formData.CMA || "";
 
     const complaintsSummary = getComplaintsSummary();
     const establishedComplaintsText =
-      establishedComplaintsLines.length > 0
+      establishedComplaintsLines?.length > 0
         ? establishedComplaintsLines.join("\n")
         : "";
-    const assessmentCodesFinalList = Array.from(selected).join("\n");
+
+    const assessmentCodesFinalList = Array.from(selected || []).join("\n");
+
+    const cleanString = (v) => (typeof v === "string" ? v.trim() : v || "");
+
+    const finalText = `
+Patient Form Summary:
+${formData?.INJECTION_SUMMARY || "No injections selected."}
+`.trim();
 
     const payload = {
-      fileName,
-      ...formData,
-      chiefComplaint: chiefComplaint.finalText,
+      fileName: cleanString(fileName),
+      patientName: cleanString(formData.patientName),
+
+      // Insurance / CMA fields
+      insurance1: insuranceFinal1,
+      insurance2: insuranceFinal2,
+      CMA: finalCMA,
+
+      // Complaint summaries
+      chiefComplaint: cleanString(chiefComplaint?.finalText),
       complaintsSummary,
-      earlier_followups: earlierFollowupsText,
       establishedComplaintsText,
       assessment_codes: assessmentCodesFinalList,
+
+      // Injection and medication
       INJECTION_SUMMARY: finalText,
-      followUpPlan: formData.followUpPlan,
-      medicationOutput: formData.medicationOutput,
-      ...followupData,
-      signature: signatureData
+      medicationOutput: Array.isArray(formData.medicationOutput)
+        ? formData.medicationOutput.join("\n")
+        : cleanString(formData.medicationOutput),
+
+      // Follow-up and signature
+      followUpPlan: cleanString(formData.followUpPlan),
+      signature: {
+        ...signatureData,
+        formattedLines: signatureData?.formattedLines || "",
+        followUpAppointment: signatureData?.followUpAppointment || "",
+        signatureLine: signatureData?.signatureLine || "",
+        dateTranscribed: signatureData?.dateTranscribed || ""
+      },
+
+      // Follow-up-specific fields (IMPORTANT ONES)
+      udtStatus: formData.udtStatus,
+      willNotOrderUDT: !!formData.willNotOrderUDT,
+      nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
+      actionTaken: cleanString(formData?.actionTaken),
+      unexpectedUTox: !!formData?.unexpectedUTox,
+      pillCount: !!formData?.pillCount,
+      ptEval: cleanString(formData?.ptEval),
+      imaging: cleanString(formData?.imaging),
+      xrayOf: cleanString(formData?.xrayOf),
+      behavioralFocus: cleanString(formData?.behavioralFocus),
+      referral: cleanString(formData?.referral),
+
+      // Earlier followups
+      earlier_followups: cleanString(earlierFollowupsText)
     };
+
+    console.log("Payload being sent to backend:", payload); // ← Add this to debug
 
     try {
       const response = await fetch("http://localhost:8000/generate-doc", {
@@ -283,10 +359,10 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
-      const match = contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/i);
-      const extractedFilename = match
-        ? match[1]
-        : (fileName || formData.patientName || "follow_up") + ".docx";
+      const match = contentDisposition?.match(/filename="?([^"]+)"?/i);
+      const extractedFilename =
+        match?.[1] ||
+        (fileName || formData.patientName || "follow_up") + ".docx";
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -295,6 +371,7 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
       document.body.appendChild(link);
       link.click();
       link.remove();
+
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error generating or downloading DOCX:", error);
@@ -306,13 +383,13 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
       <div className="form-section">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
         <Demography
-          formData={formData}
-          onFileNameChange={handleFileNameChange}
-          onChange={handleChange}
-          onReset={handleReset}
-          onSubmit={handleSubmit}
-          setFormData={setFormData}
           fileName={fileName}
+          onFileNameChange={handleFileNameChange}
+          formData={formData}
+          setFormData={setFormData}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          onReset={handleReset}
         />
       </div>
 
@@ -346,8 +423,13 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
       </div>
 
       <div className="form-section">
-        <h2 className="section-title">Patient Compliance with Treatment Plan</h2>
-        <ComplianceWithTreatmentPlan formData={formData} setFormData={setFormData} />
+        <h2 className="section-title">
+          Patient Compliance with Treatment Plan
+        </h2>
+        <ComplianceWithTreatmentPlan
+          formData={formData}
+          setFormData={setFormData}
+        />
       </div>
 
       <div className="form-section">
@@ -370,20 +452,31 @@ ${formData?.INJECTION_SUMMARY || "No injections selected."}
 
       <div className="form-section">
         <h2 className="section-title">Assessme Codes</h2>
-        <AssessmeCodes selected={selected} setSelected={setSelected} />
+        <AssessmentCodes selected={selected} setSelected={setSelected} />
       </div>
 
       <div className="form-section">
         <h2 className="section-title">Follow-Up Plan</h2>
-        <FollowupPlan setFormData={setFormData} />
+        {/* <FollowupPlan
+          followupData={followupData}
+          setFollowupData={setFollowupData}
+        /> */}
+        <FollowupPlan setFormData={setFormData} /> // ✅ Correct
       </div>
 
       <div className="form-section">
         <h2 className="section-title">Medication Management</h2>
-        <MedicationManagement
+        {/* <MedicationManagement
           medications={medications}
           setMedications={setMedications}
           setInitialFormData={setFormData}
+        /> */}
+        <MedicationManagement
+          medications={medications}
+          setMedications={setMedications}
+          onFormattedOutputChange={(output) =>
+            setFormData((prev) => ({ ...prev, medicationOutput: output }))
+          }
         />
       </div>
 

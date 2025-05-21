@@ -26,7 +26,7 @@ const neurologicalSymptoms = [
 
 const styles = {
   container: {
-    maxWidth: "100%",
+    maxWidth: "1000px",
     margin: "auto",
     padding: "24px",
     fontFamily: "Arial, sans-serif",
@@ -59,25 +59,26 @@ const styles = {
     verticalAlign: "top",
     borderBottom: "1px solid #eee",
   },
-  fieldWrapper: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-  },
-  label: {
-    fontWeight: "500",
-    color: "#444",
-    flex: 1,
-  },
   select: {
-    flex: "0 0 40%",
+    marginTop: "8px",
+    width: "100%",
     padding: "8px",
     borderRadius: "6px",
     border: "1px solid #ccc",
     backgroundColor: "#fff",
     fontSize: "14px",
-    marginBottom:"-1.0rem"
+  },
+  label: {
+    fontWeight: "500",
+    color: "#444",
+  },
+  row: {
+    display: "flex",
+    gap: "32px",
+    flexWrap: "wrap",
+  },
+  column: {
+    flex: "1 1 45%",
   },
 };
 
@@ -109,6 +110,7 @@ const ReviewOfSystems = ({ onReviewChange }) => {
 
   return (
     <div style={styles.container}>
+      {/* <h2 style={styles.heading}>REVIEW OF SYSTEMS</h2> */}
       <table style={styles.table}>
         <thead>
           <tr>
@@ -120,40 +122,32 @@ const ReviewOfSystems = ({ onReviewChange }) => {
           {Array.from({ length: 5 }).map((_, idx) => (
             <tr key={idx}>
               <td style={styles.td}>
-                <div style={styles.fieldWrapper}>
-                  <label style={styles.label}>{allergicSymptoms[idx]}</label>
-                  <select
-                    value={allergicData[idx]}
-                    onChange={(e) =>
-                      handleAllergicChange(idx, e.target.value)
-                    }
-                    style={styles.select}
-                  >
-                    {options.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <label style={styles.label}>{allergicSymptoms[idx]}</label>
+                <select
+                  value={allergicData[idx]}
+                  onChange={(e) => handleAllergicChange(idx, e.target.value)}
+                  style={styles.select}
+                >
+                  {options.map((option, i) => (
+                    <option key={i} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td style={styles.td}>
-                <div style={styles.fieldWrapper}>
-                  <label style={styles.label}>
-                    {neurologicalSymptoms[idx]}
-                  </label>
-                  <select
-                    value={neuroData[idx]}
-                    onChange={(e) => handleNeuroChange(idx, e.target.value)}
-                    style={styles.select}
-                  >
-                    {options.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <label style={styles.label}>{neurologicalSymptoms[idx]}</label>
+                <select
+                  value={neuroData[idx]}
+                  onChange={(e) => handleNeuroChange(idx, e.target.value)}
+                  style={styles.select}
+                >
+                  {options.map((option, i) => (
+                    <option key={i} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
           ))}

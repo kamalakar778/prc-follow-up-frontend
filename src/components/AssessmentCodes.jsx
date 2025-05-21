@@ -116,7 +116,7 @@ const codes = [
 
 
 
-const AssessmeCodes = ({ selected, setSelected }) => {
+const AssessmentCodes = ({ selected, setSelected }) => {
   const toggleItem = (item) => {
     const newSelected = new Set(selected);
     if (newSelected.has(item)) {
@@ -155,4 +155,4 @@ const AssessmeCodes = ({ selected, setSelected }) => {
   );
 };
 
-export default AssessmeCodes;
+export default AssessmentCodes;

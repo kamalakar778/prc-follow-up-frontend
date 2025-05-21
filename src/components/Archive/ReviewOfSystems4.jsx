@@ -24,60 +24,44 @@ const neurologicalSymptoms = [
   "New convulsions or seizures",
 ];
 
+/* ─────────────────────────  NEW, unified style object  ───────────────────────── */
 const styles = {
   container: {
-    maxWidth: "100%",
-    margin: "auto",
-    padding: "24px",
+    marginTop: "1rem",
+    padding: "0.5rem",
+    border: "1px solid black",
+    borderRadius: "0.5rem",
+    fontSize: "0.875rem",
+    lineHeight: "1.25rem",
     fontFamily: "Arial, sans-serif",
-  },
-  heading: {
-    fontWeight: "bold",
-    fontSize: "24px",
-    marginBottom: "20px",
-    textAlign: "center",
-    color: "#333",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    backgroundColor: "#f9f9f9",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    overflow: "hidden",
   },
   th: {
-    textAlign: "left",
+    border: "1px solid black",
+    padding: "0.25rem",
+    textAlign: "center",
     fontWeight: "600",
-    fontSize: "18px",
-    backgroundColor: "#f0f0f0",
-    padding: "12px 16px",
-    borderBottom: "1px solid #ddd",
   },
   td: {
-    padding: "16px",
+    border: "1px solid black",
+    padding: "0.25rem",
     verticalAlign: "top",
-    borderBottom: "1px solid #eee",
-  },
-  fieldWrapper: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
   },
   label: {
     fontWeight: "500",
-    color: "#444",
-    flex: 1,
+    color: "#333",
   },
   select: {
-    flex: "0 0 40%",
-    padding: "8px",
-    borderRadius: "6px",
+    marginTop: "0.25rem",
+    width: "100%",
+    padding: "0.125rem",
     border: "1px solid #ccc",
+    borderRadius: "4px",
     backgroundColor: "#fff",
-    fontSize: "14px",
-    marginBottom:"-1.0rem"
+    fontSize: "0.875rem",
   },
 };
 
@@ -85,6 +69,7 @@ const ReviewOfSystems = ({ onReviewChange }) => {
   const [allergicData, setAllergicData] = useState(Array(5).fill("No"));
   const [neuroData, setNeuroData] = useState(Array(5).fill("No"));
 
+  /* keep the side‑effect logic unchanged */
   useEffect(() => {
     const allergic = allergicData.map(
       (val, i) => `${allergicSymptoms[i]}: ${val}`
@@ -93,7 +78,7 @@ const ReviewOfSystems = ({ onReviewChange }) => {
       (val, i) => `${neurologicalSymptoms[i]}: ${val}`
     );
     onReviewChange({ allergic, neuro });
-  }, [allergicData, neuroData]);
+  }, [allergicData, neuroData, onReviewChange]);
 
   const handleAllergicChange = (idx, value) => {
     const updated = [...allergicData];
@@ -120,40 +105,32 @@ const ReviewOfSystems = ({ onReviewChange }) => {
           {Array.from({ length: 5 }).map((_, idx) => (
             <tr key={idx}>
               <td style={styles.td}>
-                <div style={styles.fieldWrapper}>
-                  <label style={styles.label}>{allergicSymptoms[idx]}</label>
-                  <select
-                    value={allergicData[idx]}
-                    onChange={(e) =>
-                      handleAllergicChange(idx, e.target.value)
-                    }
-                    style={styles.select}
-                  >
-                    {options.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <label style={styles.label}>{allergicSymptoms[idx]}</label>
+                <select
+                  value={allergicData[idx]}
+                  onChange={(e) => handleAllergicChange(idx, e.target.value)}
+                  style={styles.select}
+                >
+                  {options.map((option, i) => (
+                    <option key={i} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td style={styles.td}>
-                <div style={styles.fieldWrapper}>
-                  <label style={styles.label}>
-                    {neurologicalSymptoms[idx]}
-                  </label>
-                  <select
-                    value={neuroData[idx]}
-                    onChange={(e) => handleNeuroChange(idx, e.target.value)}
-                    style={styles.select}
-                  >
-                    {options.map((option, i) => (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <label style={styles.label}>{neurologicalSymptoms[idx]}</label>
+                <select
+                  value={neuroData[idx]}
+                  onChange={(e) => handleNeuroChange(idx, e.target.value)}
+                  style={styles.select}
+                >
+                  {options.map((option, i) => (
+                    <option key={i} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </td>
             </tr>
           ))}

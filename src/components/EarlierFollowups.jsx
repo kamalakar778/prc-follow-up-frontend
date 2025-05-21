@@ -1,37 +1,144 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const createEmptySection = () => ({
-  date: '',
-  preExisting: '',
-  cc: '',
-  palpationMuscle: '',
-  palpationJoint: '',
-  rom: '',
-  comments: '',
-  sensory: '',
+  date: "",
+  preExisting: "Pre-existing",
+  cc: "",
+  palpationMuscle: "_______",
+  palpationJoint: "_______",
+  rom: "_______",
+  comments: "",
+  sensoryFrequency: "continuously",
+  sensoryLevels: [],
+  sensoryNote: ""
 });
+
+const sensoryLevelOptions = ["L3, L4, L5, S1, S2", "C6, C7, C8", "T1, T2"];
+
+const styles = {
+  container: {
+    padding: "24px",
+    border: "1px solid #e5e7eb", // Tailwind gray-200
+    borderRadius: "12px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    marginBottom: "8px",
+    // marginBottom: "24px",
+  },
+  headerRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    borderBottom: "2px solid #e5e7eb",
+    paddingBottom: "8px",
+    // marginBottom: "16px",
+  },
+  header: {
+    fontSize: "1.5rem",
+    fontWeight: "600",
+    margin: 0,
+    color: "#111827", // Tailwind gray-900
+  },
+  section: {
+    minWidth: "350px",
+    maxWidth: "400px",
+    border: "1px solid #d1d5db",
+    padding: "16px",
+    borderRadius: "10px",
+    backgroundColor: "#f9fafb",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    flexShrink: 0,
+    
+  },
+  subHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  input: {
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    padding: "8px",
+    width: "95%",
+    fontSize: "14px",
+    marginBottom:"-0.08rem"
+  },
+  select: {
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    padding: "8px",
+    width: "100%",
+    fontSize: "14px",
+    marginBottom:"-0.08rem"
+  },
+  label: {
+    fontWeight: 500,
+    fontSize: "14px",
+    marginBottom: "6px",
+  },
+  sensoryTag: (selected) => ({
+    marginRight: "8px",
+    marginBottom: "2px",
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "9999px",
+    border: `1px solid ${selected ? "#10b981" : "#9ca3af"}`, // green-500 vs gray-400
+    backgroundColor: selected ? "#d1fae5" : "#f3f4f6", // green-100 vs gray-100
+    color: selected ? "#065f46" : "#6b7280", // green-900 vs gray-500
+    display: "inline-block",
+    fontSize: "14px",
+  }),
+  addButton: {
+    backgroundColor: "#2563eb", // blue-600
+    color: "white",
+    fontWeight: 600,
+    padding: "10px 20px",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    transition: "background-color 0.2s ease",
+  },
+  addButtonHover: {
+    backgroundColor: "#1d4ed8", // blue-700
+  },
+  removeButton: {
+    color: "#dc2626", // red-600
+    fontSize: "14px",
+    textDecoration: "underline",
+    cursor: "pointer",
+    background: "none",
+    border: "none",
+  },
+};
+
 
 const EarlierFollowups = ({ onDataChange }) => {
   const [sections, setSections] = useState([createEmptySection()]);
 
   useEffect(() => {
-    const formatted = sections.map((s, i) => (
-      // `Section ${i + 1}:\n` +
-      `Date: ${s.date}\n` +
-      `Pre-existing: ${s.preExisting}\n` +
-      `CC: ${s.cc}\n` +
-      `\n`+
-      `Palpation revealed: \n`+
-      `${s.palpationMuscle} muscle tenderness`+
-      `${s.palpationJoint} joint tenderness\n` +
-      `\n`+
-      `R.O.M. revealed: \n` +
-      `${s.rom} decrease in gross movement\n` +
-      `\n`+
-      `Comments: ${s.comments}\n` +
-      `\n`+
-      `Sensory changes: ${s.sensory}\n`
-    )).join('\n');
+    const formatted = sections
+      .map(
+        (s) =>
+          `Date: ${s.date}\n` +
+          `Pre-existing: ${s.preExisting}\n` +
+          `CC: ${s.cc}\n\n` +
+          `Palpation revealed: \n` +
+          `${s.palpationMuscle} muscle tenderness, ` +
+          `${s.palpationJoint} joint tenderness\n\n` +
+          `R.O.M. revealed: \n` +
+          `${s.rom} decrease in gross movement\n\n` +
+          `Comments: ${s.comments}\n\n` +
+          `Sensory changes: (paresthesia and numbness) occur ${
+            s.sensoryFrequency
+          } at the levels of ${s.sensoryLevels.join(", ") || "____"} ${
+            s.sensoryNote
+          }\n`
+      )
+      .join("\n");
     onDataChange(formatted);
   }, [sections, onDataChange]);
 
@@ -41,9 +148,19 @@ const EarlierFollowups = ({ onDataChange }) => {
     setSections(updated);
   };
 
-  const addSection = () => {
-    setSections([...sections, createEmptySection()]);
+  const toggleLevel = (index, level) => {
+    setSections((prev) => {
+      const updated = [...prev];
+      const currentLevels = new Set(updated[index].sensoryLevels);
+      currentLevels.has(level)
+        ? currentLevels.delete(level)
+        : currentLevels.add(level);
+      updated[index].sensoryLevels = Array.from(currentLevels);
+      return updated;
+    });
   };
+
+  const addSection = () => setSections([...sections, createEmptySection()]);
 
   const removeSection = (index) => {
     if (sections.length === 1) return;
@@ -53,29 +170,169 @@ const EarlierFollowups = ({ onDataChange }) => {
   };
 
   return (
-    <div className="p-4 space-y-6 border rounded shadow">
-      <h2 className="font-bold text-lg">Earlier Followups</h2>
-      {sections.map((section, index) => (
-        <div key={index} className="border p-4 rounded space-y-2">
-          <h3 className="font-semibold">Section {index + 1}</h3>
-          <input
-            type="date"
-            value={section.date}
-            onChange={e => handleChange(index, 'date', e.target.value)}
-            className="block w-full border p-1"
-          />
-          <input placeholder="Pre-existing" value={section.preExisting} onChange={e => handleChange(index, 'preExisting', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="CC" value={section.cc} onChange={e => handleChange(index, 'cc', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="Muscle tenderness" value={section.palpationMuscle} onChange={e => handleChange(index, 'palpationMuscle', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="Joint tenderness" value={section.palpationJoint} onChange={e => handleChange(index, 'palpationJoint', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="R.O.M. decrease" value={section.rom} onChange={e => handleChange(index, 'rom', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="Comments" value={section.comments} onChange={e => handleChange(index, 'comments', e.target.value)} className="block w-full border p-1" />
-          <input placeholder="Sensory changes" value={section.sensory} onChange={e => handleChange(index, 'sensory', e.target.value)} className="block w-full border p-1" />
-          <button onClick={() => removeSection(index)} className="text-red-500 mt-2">Remove</button>
-        </div>
-      ))}
+    <div style={styles.container}>
+    <div style={styles.container}>
+  <div style={styles.headerRow}>
+    <h2 style={styles.header}>Earlier Followups</h2>
+    <button
+      onClick={addSection}
+      style={styles.addButton}
+      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = styles.addButtonHover.backgroundColor)}
+      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = styles.addButton.backgroundColor)}
+    >
+      Add Section
+    </button>
+  </div>
+  {/* ...rest of your component... */}
+</div>
 
-      <button onClick={addSection} className="bg-green-500 text-white px-4 py-2 rounded">Add Section</button>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "24px",
+          overflowX: "auto"
+        }}
+      >
+        {sections.map((section, index) => (
+          <div key={index} style={styles.section}>
+            <div style={styles.subHeader}>
+              <h3 style={{ fontWeight: "600", marginBottom:"-0.1rem", marginTop:"-0.2rem" }}>Section {index + 1}</h3>
+              {sections.length > 1 && (
+                <button
+                  onClick={() => removeSection(index)}
+                  style={styles.removeButton}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+
+            <input
+              type="date"
+              value={section.date}
+              onChange={(e) => handleChange(index, "date", e.target.value)}
+              style={styles.input}
+            />
+
+            <select
+              value={section.preExisting}
+              onChange={(e) =>
+                handleChange(index, "preExisting", e.target.value)
+              }
+              style={styles.select}
+            >
+              <option value="Pre-existing">Pre-existing</option>
+              <option value="New">New</option>
+              <option value="_______">_______</option>
+            </select>
+
+            <input
+              placeholder="Chief Complaint (CC)"
+              value={section.cc}
+              onChange={(e) => handleChange(index, "cc", e.target.value)}
+              style={styles.input}
+            />
+
+            <div>
+              <label style={styles.label}>Palpation revealed:</label>
+              <select
+                value={section.palpationMuscle}
+                onChange={(e) =>
+                  handleChange(index, "palpationMuscle", e.target.value)
+                }
+                style={styles.select}
+              >
+                <option value="Positive">Positive muscle tenderness</option>
+                <option value="Negative">Negative muscle tenderness</option>
+                <option value="_______">_______</option>
+              </select>
+
+              <select
+                value={section.palpationJoint}
+                onChange={(e) =>
+                  handleChange(index, "palpationJoint", e.target.value)
+                }
+                style={styles.select}
+              >
+                <option value="Positive">Positive joint tenderness</option>
+                <option value="Negative">Negative joint tenderness</option>
+                <option value="_______">_______</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={styles.label}>R.O.M. revealed:</label>
+              <select
+                value={section.rom}
+                onChange={(e) => handleChange(index, "rom", e.target.value)}
+                style={styles.select}
+              >
+                <option value="Positive">
+                  Positive decrease in gross movement
+                </option>
+                <option value="Negative">
+                  Negative decrease in gross movement
+                </option>
+                <option value="_______">_______</option>
+              </select>
+            </div>
+
+            <input
+              placeholder="Comments"
+              value={section.comments}
+              onChange={(e) => handleChange(index, "comments", e.target.value)}
+              style={styles.input}
+            />
+
+            <div>
+              <label style={styles.label}>
+                Sensory changes (paresthesia and numbness):
+              </label>
+              <select
+                value={section.sensoryFrequency}
+                onChange={(e) =>
+                  handleChange(index, "sensoryFrequency", e.target.value)
+                }
+                style={styles.select}
+              >
+                <option value="continuously">Continuously</option>
+                <option value="intermittently">Intermittently</option>
+              </select>
+
+              <div style={{ marginTop: "6px" }}>
+                {sensoryLevelOptions.map((level) => {
+                  const isSelected = section.sensoryLevels.includes(level);
+                  return (
+                    <span
+                      key={level}
+                      style={styles.sensoryTag(isSelected)}
+                      onClick={() => toggleLevel(index, level)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyPress={(e) =>
+                        (e.key === "Enter" || e.key === " ") &&
+                        toggleLevel(index, level)
+                      }
+                    >
+                      {level}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <input
+                placeholder="Additional sensory notes"
+                value={section.sensoryNote}
+                onChange={(e) =>
+                  handleChange(index, "sensoryNote", e.target.value)
+                }
+                style={styles.input}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

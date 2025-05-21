@@ -4,9 +4,10 @@ const SignatureLine = ({ onChange }) => {
   const buttonTexts = {
     "Dr. Klickovich":
       "personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Robert Klickovich currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
-    APRN: "personally performed todays follow-up evaluation and treatment plan of the patient.",
+    "APRN": "personally performed todays follow-up evaluation and treatment plan of the patient.",
     "Dr. Olivia Kelley":
-      "personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan."
+    "personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter.  A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.",
+    "Signature Line Missing": "__________ Page # Point # __________ ",
   };
 
   const initialLines = [
@@ -46,7 +47,7 @@ const SignatureLine = ({ onChange }) => {
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
-    return `${mm}/${dd}/${yyyy}`;
+    return `${yyyy}-${mm}-${dd}`; // ISO format for input[type="date"]
   };
 
   const [lines, setLines] = useState(initialLines);
@@ -73,14 +74,6 @@ const SignatureLine = ({ onChange }) => {
       .join("\n");
   }, [lines, selectedOptions]);
 
-  // const formatOtherPlans = () => {
-  //   return otherPlans
-  //     .filter((line, idx, arr) => idx < arr.length - 1 || line.trim() !== "")
-  //     // .map((line, idx) => `${line.trim() || "_________"}`)
-
-  //     .map((line, idx) => `${idx + 1}. ${line.trim() || "_________"}`)
-  //     .join("\n");
-  // };
   const formatOtherPlans = () => {
     const filteredLines = otherPlans.filter(
       (line, idx, arr) => idx < arr.length - 1 || line.trim() !== ""
@@ -91,7 +84,6 @@ const SignatureLine = ({ onChange }) => {
     );
 
     return {
-      // heading: "Other Plans:",
       lines
     };
   };
@@ -172,94 +164,160 @@ const SignatureLine = ({ onChange }) => {
     setSelectedButton(name);
   };
 
+  const styles = {
+    containerStyle: {
+      fontFamily: "Arial, sans-serif",
+      maxWidth: "1000px",
+      margin: "0 auto"
+    },
+
+    section: {
+      border: "1px solid #ccc",
+      padding: "16px",
+      borderRadius: "8px",
+      marginBottom: "16px",
+      backgroundColor: "#f9f9f9"
+    },
+    label: { fontWeight: "bold", marginRight: "8px" },
+    input: {
+      padding: "6px",
+      marginRight: "8px",
+      borderRadius: "4px",
+      border: "1px solid #ccc",
+      width: "80%"
+    },
+    select: {
+      padding: "6px",
+      marginRight: "8px",
+      borderRadius: "4px",
+      border: "1px solid #ccc"
+    },
+    button: {
+      padding: "6px 12px",
+      borderRadius: "4px",
+      marginRight: "8px",
+      border: "none",
+      cursor: "pointer"
+    },
+    removeButton: {
+      backgroundColor: "#e74c3c",
+      color: "white"
+    },
+    physicianButton: (active) => ({
+      backgroundColor: active ? "#ffa500" : "#ccc",
+      color: "#000",
+      fontWeight: "bold"
+    })
+  };
+
   return (
-    <div>
-      <h3>Other Plans:</h3>
-      {otherPlans.map((plan, idx) => (
-        <div key={idx}>
-          <label>{idx + 1}.</label>{" "}
-          <input
-            type="text"
-            value={plan}
-            onChange={(e) => handleChangeOtherPlan(e, idx)}
-          />
-          {otherPlans.length > 1 && (
-            <button onClick={(e) => handleRemoveOtherPlan(e, idx)}>
-              Remove
-            </button>
-          )}
-        </div>
-      ))}
-
-      <h3>Facet, RFA, & ESI/Caudal Injection Notes:</h3>
-      {lines.map((line, index) => (
-        <div key={index}>
-          {line}{" "}
-          <em style={{ color: "orange" }}>
-            <b>{(selectedOptions[index] || []).join(", ") || "(none)"}</b>
-          </em>{" "}
-          {lineDropdownOptions[index] && (
-            <select value="" onChange={(e) => handleSelectChange(e, index)}>
-              <option value="">-- Add option --</option>
-              {lineDropdownOptions[index].map((option, i) => (
-                <option key={i} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          )}
-          <button onClick={(e) => handleRemoveLine(e, index)}>Remove</button>
-        </div>
-      ))}
-
-      <div>
-        <button onClick={handleReset}>Reset</button>
+    <div style={styles.containerStyle}>
+      <div style={styles.section}>
+        <h3>Other Plans:</h3>
+        {otherPlans.map((plan, idx) => (
+          <div key={idx} style={{ marginBottom: "8px" }}>
+            <label style={styles.label}>{idx + 1}.</label>
+            <input
+              type="text"
+              style={styles.input}
+              value={plan}
+              onChange={(e) => handleChangeOtherPlan(e, idx)}
+            />
+            {otherPlans.length > 1 && (
+              <button
+                style={{ ...styles.button, ...styles.removeButton }}
+                onClick={(e) => handleRemoveOtherPlan(e, idx)}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
       </div>
 
-      <p>
-        <b>Follow-up Appointment in:</b>{" "}
-        <select
-          value={followUpAppointment}
-          onChange={(e) => setFollowUpAppointment(e.target.value)}
-        >
-          {[
-            "Four weeks",
-            "Two weeks",
-            "Three weeks",
-            "Six weeks",
-            "Eight weeks",
-            "Twelve weeks",
-            "Several weeks after procedure",
-            "Yet to be determined",
-            "Discharge"
-          ].map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      </p>
+      <div style={styles.section}>
+        <h3>Facet, RFA, & ESI/Caudal Injection Notes:</h3>
+        {lines.map((line, index) => (
+          <div key={index} style={{ marginBottom: "8px" }}>
+            <span>{line} </span>
+            <em style={{ color: "orange", fontWeight: "bold" }}>
+              {(selectedOptions[index] || []).join(", ") || "(none)"}
+            </em>{" "}
+            {lineDropdownOptions[index] && (
+              <select
+                style={styles.select}
+                value=""
+                onChange={(e) => handleSelectChange(e, index)}
+              >
+                <option value="">-- Add option --</option>
+                {lineDropdownOptions[index].map((option, i) => (
+                  <option key={i} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            )}
+            <button
+              style={{ ...styles.button, ...styles.removeButton }}
+              onClick={(e) => handleRemoveLine(e, index)}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button style={styles.button} onClick={handleReset}>
+          Reset
+        </button>
+      </div>
 
-      <h3>Physician Signatures</h3>
-      <div>
+      <div style={styles.section}>
+        <p>
+          <strong>Follow-up Appointment in:</strong>{" "}
+          <select
+            style={styles.select}
+            value={followUpAppointment}
+            onChange={(e) => setFollowUpAppointment(e.target.value)}
+          >
+            {[
+              "Four weeks",
+              "Two weeks",
+              "Three weeks",
+              "Six weeks",
+              "Eight weeks",
+              "Twelve weeks",
+              "Several weeks after procedure",
+              "Yet to be determined",
+              "Discharge"
+            ].map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </p>
+      </div>
+
+      <div style={styles.section}>
+        <h3>Physician Signatures</h3>
         {Object.keys(buttonTexts).map((name) => (
           <button
             key={name}
-            onClick={(e) => handleButtonClick(e, name)}
             style={{
-              margin: "5px",
-              backgroundColor: selectedButton === name ? "orange" : "grey"
+              ...styles.button,
+              ...styles.physicianButton(selectedButton === name)
             }}
+            onClick={(e) => handleButtonClick(e, name)}
           >
             {name}
           </button>
         ))}
       </div>
 
-      <div>
-        Date Transcribed:{" "}
+      <div style={styles.section}>
+        <label style={styles.label}>Date Transcribed:</label>
         <input
           type="date"
+          style={styles.input}
           value={dateTranscribed}
           onChange={(e) => setDateTranscribed(e.target.value)}
         />
