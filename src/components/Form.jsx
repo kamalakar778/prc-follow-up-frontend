@@ -90,7 +90,6 @@ const Form = () => {
     referral: "",
     injections: "",
     INJECTION_SUMMARY: "",
-    otherPlans: "",
     formattedLines: "",
     followUpAppointment: "",
     signature: {
@@ -311,19 +310,18 @@ const Form = () => {
       ...formData,
       fileName: cleanString(fileName),
       patientName: cleanString(formData.patientName),
+      dob: cleanString(formData.dob),
+      dateOfEvaluation: cleanString(formData.dateOfEvaluation),
+      provider: cleanString(formData.provider),
+      referringPhysician: cleanString(formData.referringPhysician),
       insurance1: insuranceFinal1,
       insurance2: insuranceFinal2,
+      location: cleanString(formData.location),
       CMA: finalCMA,
+      roomNumber: cleanString(formData.roomNumber),
       chiefComplaint: cleanString(chiefComplaint?.finalText),
       complaintsSummary,
 
-      //History of Present Illness
-      // pain_illnessLevel: formData.historyOfPresentIllness.pain_illnessLevel,
-      // activity_illnessLevel:
-      //   formData.historyOfPresentIllness.activity_illnessLevel,
-      // social_illnessLevel: formData.historyOfPresentIllness.social_illnessLevel,
-      // job_illnessLevel: formData.historyOfPresentIllness.job_illnessLevel,
-      // sleep_illnessLevel: formData.historyOfPresentIllness.sleep_illnessLevel,
       pain_illnessLevel: getOrNoValue(
         formData.historyOfPresentIllness.pain_illnessLevel
       ),
@@ -340,7 +338,15 @@ const Form = () => {
         formData.historyOfPresentIllness.sleep_illnessLevel
       ),
 
-      // Compliance with Treatment Plan
+      // Characteristics of Pain Include
+      temporally: formData.pain?.temporally || "",
+      qualitativePain: formData.pain?.qualitativePain || "",
+      // numericScaleFormatted: pain.numericScaleFormatted,
+      numericScaleFormatted: formData.pain.numericScaleFormatted,
+      workingStatus: formData.pain?.workingStatus || "",
+      comments: formData.pain?.comments || "",
+
+      // REVIEW OF SYSTEMS:
       allergic_symptom_1: formData.formatted_allergic_1,
       allergic_symptom_2: formData.formatted_allergic_2,
       allergic_symptom_3: formData.formatted_allergic_3,
@@ -352,17 +358,10 @@ const Form = () => {
       neurological_symptom_4: formData.formatted_neuro_4,
       neurological_symptom_5: formData.formatted_neuro_5,
 
-      temporally: formData.pain?.temporally || "",
-      // numericScaleFormatted: pain.numericScaleFormatted,
-      numericScaleFormatted: formData.pain.numericScaleFormatted,
-      workingStatus: formData.pain?.workingStatus || "",
-      comments: formData.pain?.comments || "",
-      intervalComments: formData.intervalComments,
-      qualitativePain: formData.pain?.qualitativePain || "",
-
-      // qualitativePain: formData.qualitativePain,
-      // qualitatively: formData.qualitatively,
+      // Compliance with Treatment Plan
       complianceComments: formData.complianceComments,
+      intervalComments: formData.intervalComments,
+      // complianceComments: formData.complianceComments,
 
       // Physical Examination Default Data
       vitals: formData.vitals,
@@ -376,30 +375,17 @@ const Form = () => {
       coordinationBalance: formData.coordinationBalance,
       motorFunction: formData.motorFunction,
 
-      establishedComplaints: formData.establishedComplaints,
-      assessment_codes: assessmentCodesFinalList,
-      medication_management: formData.medication_management,
-      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY || "",
-      // medicationOutput: Array.isArray(formData.medicationOutput)
-      //   ? formData.medicationOutput.join("\n") // convert only when needed
-      //   : "",
-      // medicationOutput: Array.isArray(formData.medicationOutput)
-      //   ? formData.medicationOutput.join("\n")
-      //   : cleanString(formData.medicationOutput),
-      followUpPlan: cleanString(formData.followUpPlan),
-      signature: {
-        ...signatureData,
-        otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
-        formattedLines: signatureData?.formattedLines || "",
-        followUpAppointment: signatureData?.followUpAppointment || "",
-        signatureLine: signatureData?.signatureLine || "",
-        dateTranscribed: formData?.dateTranscribed || ""
-      },
+      earlier_followups: cleanString(earlierFollowupsText || ""),
 
-      udtStatus: formData.udtStatus,
+      establishedComplaints: formData.establishedComplaints,
+
+      assessment_codes: assessmentCodesFinalList,
+
+      // followUpPlan: cleanString(formData.followUpPlan),
       nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
-      willNotOrderUDT: !!formData.willNotOrderUDT,
       actionTaken: formData.actionTaken,
+      udtStatus: formData.udtStatus,
+      // willNotOrderUDT: !!formData.willNotOrderUDT,
       // udtStatus: formData.udtStatusFormatted,
       unexpectedUTox: formData.formattedUnexpectedUTox,
       pillCount: formData.formattedPillCount,
@@ -408,8 +394,21 @@ const Form = () => {
       xrayOf: formData.formattedXrayOf,
       behavioralFocus: formData.formattedBehavioralFocus,
       referral: formData.formattedReferral,
-      earlier_followups: cleanString(earlierFollowupsText || ""),
-      complianceComments: formData.complianceComments
+
+      medication_management: formData.medication_management,
+
+      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY || "",
+      // medicationOutput: Array.isArray(formData.medicationOutput)
+      //   ? formData.medicationOutput.join("\n")
+      //   : cleanString(formData.medicationOutput),
+      signature: {
+        ...signatureData,
+        otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
+        formattedLines: signatureData?.formattedLines || "",
+        followUpAppointment: signatureData?.followUpAppointment || "",
+        signatureLine: signatureData?.signatureLine || "",
+        dateTranscribed: formData?.dateTranscribed || ""
+      }
     };
 
     try {

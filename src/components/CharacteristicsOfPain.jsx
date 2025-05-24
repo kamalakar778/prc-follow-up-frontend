@@ -3,6 +3,19 @@ import QualitativePainList from "./QualitativePainList";
 
 const baselineOptions = ["continuous", "no"];
 const exacerbationOptions = ["frequent", "no"];
+const workingStatusOptions = [
+  "no",
+  "Full-time",
+  "Part-time",
+  "Self-employed",
+  "Seeking employment",
+  "Unemployed",
+  "Homemaker",
+  "Retired",
+  "Disabled",
+  "Seeking disability",
+  "Going to school"
+];
 
 const styles = {
   input: {
@@ -48,7 +61,18 @@ const styles = {
   },
   fontCalibri: {
     fontFamily: "Calibri"
-  }
+  },
+  optionButton: (isSelected) => ({
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "10px",
+    border: "1px solid",
+    borderColor: isSelected ? "green" : "gray",
+    backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
+    color: isSelected ? "green" : "gray",
+    fontWeight: isSelected ? "bold" : "normal",
+    transition: "all 0.3s ease"
+  })
 };
 
 const CharacteristicsOfPain = ({ formData, onUpdate }) => {
@@ -75,25 +99,13 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
       comments
     } = state;
 
-    const temporally = `${baseline || "_"} baseline pain with ${
-      exacerbation || "_"
-    } painful exacerbations.`;
+    const temporally = `${baseline || "_"} baseline pain with ${exacerbation || "_"} painful exacerbations.`;
     const getVal = (v) => (v === "" ? "_" : v);
-    const numericScaleFormatted = `Average: ${getVal(
-      average
-    )}/10. Best: ${getVal(best)}/10. W/meds: ${getVal(
-      withMeds
-    )}/10. W/o meds: ${getVal(withoutMeds)}/10.`;
+    const numericScaleFormatted = `Average: ${getVal(average)}/10. Best: ${getVal(best)}/10. W/meds: ${getVal(withMeds)}/10. W/o meds: ${getVal(withoutMeds)}/10.`;
 
-    // onUpdate({
-    //   temporally,
-    //   numericScaleFormatted,
-    //   workingStatus,
-    //   comments: comments ? `Comments: ${comments}` : ""
-    // });
     onUpdate({
       pain: {
-        ...formData.pain, // ensure you retain qualitativePain and others
+        ...formData.pain,
         temporally,
         numericScaleFormatted,
         workingStatus,
@@ -147,12 +159,6 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
       </div>
 
       <div style={styles.container}>
-        {/* <QualitativePainList
-          formData={formData}
-          updateFormData={(newValues) => {
-            onUpdate({ ...newValues }); // relay up to Form.jsx
-          }}
-        /> */}
         <QualitativePainList
           formData={formData.pain}
           updateFormData={(newValues) => {
@@ -185,33 +191,30 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
       </div>
 
       <div style={styles.container}>
-        <label style={styles.label}>
-          Working status of:
-          <select
-            name="workingStatus"
-            style={styles.select}
-            value={state.workingStatus}
-            onChange={handleChange}
-          >
-            {[
-              "no",
-              "Full-time",
-              "Part-time",
-              "Self-employed",
-              "Seeking employment",
-              "Unemployed",
-              "Homemaker",
-              "Retired",
-              "Disabled",
-              "Seeking disability",
-              "Going to school"
-            ].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div style={{ ...styles.label, flexDirection: "column", alignItems: "flex-start" }}>
+          <strong>Working status of:</strong>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
+            {workingStatusOptions.map((option) => {
+              const isSelected = state.workingStatus === option;
+              return (
+                <span
+                  key={option}
+                  onClick={() => setState((prev) => ({ ...prev, workingStatus: option }))}
+                  style={styles.optionButton(isSelected)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setState((prev) => ({ ...prev, workingStatus: option }));
+                    }
+                  }}
+                >
+                  {option}
+                </span>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div style={{ ...styles.container, ...styles.fontCalibri }}>
