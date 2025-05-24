@@ -18,12 +18,11 @@ const sensoryLevelOptions = ["L3, L4, L5, S1, S2", "C6, C7, C8", "T1, T2"];
 const styles = {
   container: {
     padding: "24px",
-    border: "1px solid #e5e7eb", // Tailwind gray-200
+    border: "1px solid #e5e7eb",
     borderRadius: "12px",
     backgroundColor: "#ffffff",
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    marginBottom: "8px",
-    // marginBottom: "24px",
+    marginBottom: "8px"
   },
   headerRow: {
     display: "flex",
@@ -31,14 +30,13 @@ const styles = {
     justifyContent: "space-between",
     flexWrap: "wrap",
     borderBottom: "2px solid #e5e7eb",
-    paddingBottom: "8px",
-    // marginBottom: "16px",
+    paddingBottom: "8px"
   },
   header: {
     fontSize: "1.5rem",
     fontWeight: "600",
     margin: 0,
-    color: "#111827", // Tailwind gray-900
+    color: "#111827"
   },
   section: {
     minWidth: "350px",
@@ -50,13 +48,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "12px",
-    flexShrink: 0,
-    
+    flexShrink: 0
   },
   subHeader: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "center"
   },
   input: {
     border: "1px solid #d1d5db",
@@ -64,7 +61,7 @@ const styles = {
     padding: "8px",
     width: "95%",
     fontSize: "14px",
-    marginBottom:"-0.08rem"
+    marginBottom: "-0.08rem"
   },
   select: {
     border: "1px solid #d1d5db",
@@ -72,12 +69,12 @@ const styles = {
     padding: "8px",
     width: "100%",
     fontSize: "14px",
-    marginBottom:"-0.08rem"
+    marginBottom: "-0.08rem"
   },
   label: {
     fontWeight: 500,
     fontSize: "14px",
-    marginBottom: "6px",
+    marginBottom: "6px"
   },
   sensoryTag: (selected) => ({
     marginRight: "8px",
@@ -85,14 +82,14 @@ const styles = {
     cursor: "pointer",
     padding: "6px 12px",
     borderRadius: "9999px",
-    border: `1px solid ${selected ? "#10b981" : "#9ca3af"}`, // green-500 vs gray-400
-    backgroundColor: selected ? "#d1fae5" : "#f3f4f6", // green-100 vs gray-100
-    color: selected ? "#065f46" : "#6b7280", // green-900 vs gray-500
+    border: `1px solid ${selected ? "#10b981" : "#9ca3af"}`,
+    backgroundColor: selected ? "#d1fae5" : "#f3f4f6",
+    color: selected ? "#065f46" : "#6b7280",
     display: "inline-block",
-    fontSize: "14px",
+    fontSize: "14px"
   }),
   addButton: {
-    backgroundColor: "#2563eb", // blue-600
+    backgroundColor: "#2563eb",
     color: "white",
     fontWeight: 600,
     padding: "10px 20px",
@@ -100,46 +97,96 @@ const styles = {
     border: "none",
     cursor: "pointer",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    transition: "background-color 0.2s ease",
+    transition: "background-color 0.2s ease"
   },
   addButtonHover: {
-    backgroundColor: "#1d4ed8", // blue-700
+    backgroundColor: "#1d4ed8"
   },
   removeButton: {
-    color: "#dc2626", // red-600
+    color: "#dc2626",
     fontSize: "14px",
     textDecoration: "underline",
     cursor: "pointer",
     background: "none",
-    border: "none",
-  },
+    border: "none"
+  }
 };
-
 
 const EarlierFollowups = ({ onDataChange }) => {
   const [sections, setSections] = useState([createEmptySection()]);
 
   useEffect(() => {
+    const hasAnyInput = sections.some((s) =>
+      Object.values({
+        ...s,
+        sensoryLevels: s.sensoryLevels.join(",")
+      }).some((value) => value && value.toString().trim() !== "")
+    );
+
+    if (!hasAnyInput) {
+      onDataChange("");
+      return;
+    }
+
+    // const formatted = sections
+    //   .map(
+    //     (s) =>
+    //       `Date: ${s.date}\n` +
+    //       `Pre-existing: ${s.preExisting}\n` +
+    //       `CC: ${s.cc}\n\n` +
+    //       `Palpation revealed: \n` +
+    //       `${s.palpationMuscle} muscle tenderness, ` +
+    //       `${s.palpationJoint} joint tenderness\n\n` +
+    //       `R.O.M. revealed: \n` +
+    //       `${s.rom} decrease in gross movement\n\n` +
+    //       `Comments: ${s.comments}\n\n` +
+    //       `Sensory changes: (paresthesia and numbness) occur ${
+    //         s.sensoryFrequency
+    //       } at the levels of ${s.sensoryLevels.join(", ") || "____"} ${
+    //         s.sensoryNote
+    //       }\n`
+    //   )
+    //   .join("\n");
     const formatted = sections
-      .map(
-        (s) =>
+      .map((s) => {
+        const hasInput =
+          s.date.trim() ||
+          s.preExisting.trim() !== "Pre-existing" ||
+          s.cc.trim() ||
+          s.palpationMuscle.trim() !== "_______" ||
+          s.palpationJoint.trim() !== "_______" ||
+          s.rom.trim() !== "_______" ||
+          s.comments.trim() ||
+          s.sensoryLevels.length > 0 ||
+          s.sensoryNote.trim();
+
+        if (!hasInput) return ""; // Skip this section entirely
+
+        return (
           `Date: ${s.date}\n` +
           `Pre-existing: ${s.preExisting}\n` +
           `CC: ${s.cc}\n\n` +
           `Palpation revealed: \n` +
-          `${s.palpationMuscle} muscle tenderness, ` +
+          `${s.palpationMuscle} muscle tenderness,\n` +
           `${s.palpationJoint} joint tenderness\n\n` +
           `R.O.M. revealed: \n` +
           `${s.rom} decrease in gross movement\n\n` +
           `Comments: ${s.comments}\n\n` +
-          `Sensory changes: (paresthesia and numbness) occur ${
-            s.sensoryFrequency
-          } at the levels of ${s.sensoryLevels.join(", ") || "____"} ${
-            s.sensoryNote
-          }\n`
-      )
+          `Sensory changes: (paresthesia and numbness) occur ` +
+          `${s.sensoryFrequency} at the levels of ` +
+          `${s.sensoryLevels.join(", ") || "____"} ${s.sensoryNote}\n`
+        );
+      })
+      .filter(Boolean) // remove empty strings
       .join("\n");
-    onDataChange(formatted);
+
+    if (formatted.trim() === "") {
+      onDataChange("");
+    } else {
+      onDataChange(formatted);
+    }
+
+    // onDataChange(formatted);
   }, [sections, onDataChange]);
 
   const handleChange = (index, field, value) => {
@@ -171,20 +218,23 @@ const EarlierFollowups = ({ onDataChange }) => {
 
   return (
     <div style={styles.container}>
-    <div style={styles.container}>
-  <div style={styles.headerRow}>
-    <h2 style={styles.header}>Earlier Followups</h2>
-    <button
-      onClick={addSection}
-      style={styles.addButton}
-      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = styles.addButtonHover.backgroundColor)}
-      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = styles.addButton.backgroundColor)}
-    >
-      Add Section
-    </button>
-  </div>
-  {/* ...rest of your component... */}
-</div>
+      <div style={styles.headerRow}>
+        <h2 style={styles.header}>Earlier Followups</h2>
+        <button
+          onClick={addSection}
+          style={styles.addButton}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor =
+              styles.addButtonHover.backgroundColor)
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor =
+              styles.addButton.backgroundColor)
+          }
+        >
+          Add Section
+        </button>
+      </div>
 
       <div
         style={{
@@ -197,7 +247,15 @@ const EarlierFollowups = ({ onDataChange }) => {
         {sections.map((section, index) => (
           <div key={index} style={styles.section}>
             <div style={styles.subHeader}>
-              <h3 style={{ fontWeight: "600", marginBottom:"-0.1rem", marginTop:"-0.2rem" }}>Section {index + 1}</h3>
+              <h3
+                style={{
+                  fontWeight: "600",
+                  marginBottom: "-0.1rem",
+                  marginTop: "-0.2rem"
+                }}
+              >
+                Section {index + 1}
+              </h3>
               {sections.length > 1 && (
                 <button
                   onClick={() => removeSection(index)}
@@ -209,7 +267,7 @@ const EarlierFollowups = ({ onDataChange }) => {
             </div>
 
             <input
-              type="date"
+              type="text"
               value={section.date}
               onChange={(e) => handleChange(index, "date", e.target.value)}
               style={styles.input}

@@ -59,6 +59,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
     input8: "",
     input9: "",
     input10: "",
+    input11: "",
     ...initialValues
   });
 
@@ -66,7 +67,8 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
     flareUp: false,
     reEvaluation: false,
     spLine: false,
-    currentDecrease: false
+    currentDecrease: false,
+    newComplaint: false
   });
 
   const [addedProcedureReport, setAddedProcedureReport] = useState(false);
@@ -88,17 +90,21 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
     names.some((name) => inputs[name]?.trim() !== "");
 
   const renderFinalText = () => {
-    if (!hasValue("input1", "input2"))
-      return <em>No information entered yet.</em>;
+    if (!hasValue("input1")) return <em>No information entered yet.</em>;
 
     const parts = [];
 
     parts.push(
       <>
         The patients worst pain complaint today is located in their{" "}
-        <strong>{inputs.input1 || "__________"}</strong>, in addition to their
-        other <strong>{inputs.input2 || "__________"}</strong> pain complaints
-        and presents today to the clinic today for a routine f/u of their usual
+        <strong>{inputs.input1 || "__________"}</strong>
+        {inputs.input2?.trim() && (
+          <>
+            , in addition to their other{" "}
+            <strong>{inputs.input2}</strong> pain complaints
+          </>
+        )}
+        {" "}and presents today to the clinic today for a routine f/u of their usual
         pain complaints and/or medication refill
       </>
     );
@@ -108,6 +114,15 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
         <>
           ; flare up of known pain complaints especially pain in the{" "}
           <strong>{inputs.input3 || "__________"}</strong>
+        </>
+      );
+    }
+
+    if (!removedLines.newComplaint && hasValue("input11")) {
+      parts.push(
+        <>
+          ; W/U of a new pain complaint, specifically:{" "}
+          <strong>{inputs.input11 || "__________"}</strong>
         </>
       );
     }
@@ -161,12 +176,20 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
   };
 
   const finalText = (() => {
-    if (!hasValue("input1", "input2")) return "";
+    if (!hasValue("input1")) return "";
 
-    let text = `The patients worst pain complaint today is located in their ${inputs.input1}, in addition to their other ${inputs.input2} pain complaints and presents today to the clinic today for a routine f/u of their usual pain complaints and/or medication refill`;
+    let text = `The patients worst pain complaint today is located in their ${inputs.input1}`;
+    if (inputs.input2?.trim()) {
+      text += `, in addition to their other ${inputs.input2} pain complaints`;
+    }
+    text += ` and presents today to the clinic today for a routine f/u of their usual pain complaints and/or medication refill`;
 
     if (!removedLines.flareUp && hasValue("input3")) {
       text += `; flare up of known pain complaints especially pain in the ${inputs.input3}`;
+    }
+
+    if (!removedLines.newComplaint && hasValue("input11")) {
+      text += `; W/U of a new pain complaint, specifically: ${inputs.input11}`;
     }
 
     if (!removedLines.reEvaluation && hasValue("input4", "input5", "input6")) {
@@ -204,8 +227,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
 
   return (
     <div style={styles.container}>
-      <strong>CHIEF COMPLAINT:</strong>
-      <h3>Final Text Output:</h3>
       <div style={styles.outputBox}>{renderFinalText()}</div>
 
       <div style={styles.section}>
@@ -245,6 +266,24 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           style={styles.button(removedLines.flareUp)}
         >
           {removedLines.flareUp ? "Add" : "Remove"}
+        </button>
+      </div>
+
+      <div style={styles.section}>
+        W/U of a new pain complaint, specifically:
+        <input
+          type="text"
+          name="input11"
+          value={inputs.input11}
+          onChange={handleChange}
+          style={styles.input}
+          placeholder="New pain complaint"
+        />
+        <button
+          onClick={() => toggleRemoveLine("newComplaint")}
+          style={styles.button(removedLines.newComplaint)}
+        >
+          {removedLines.newComplaint ? "Add" : "Remove"}
         </button>
       </div>
 

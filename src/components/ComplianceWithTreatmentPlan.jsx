@@ -10,37 +10,32 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     }));
   };
 
-  const handleCommentChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [`${key}_comment`]: value }));
-  };
-
-  const handleSpecialWeightChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleManualWeightCommentChange = (value) => {
-    setFormData((prev) => ({ ...prev, weightloss_manual_comment: value }));
-  };
-
-  const handleKasperFieldChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleManualKasperCommentChange = (value) => {
-    setFormData((prev) => ({ ...prev, kasper_manual_comment: value }));
-  };
+  const questions = [
+    { label: "U-tox and/or Pill Count O.K.?", key: "tox_count" },
+    { label: "KASPER report O.K.?", key: "kasper" },
+    { label: "Participates in PT or home exercise prgm", key: "pt" },
+    { label: "Ordered imaging studies completed", key: "imaging" },
+    { label: "Participated in Weight Loss Prgm", key: "weightloss" },
+    { label: "Participated with Counselor if recommended", key: "counselor" }
+  ];
 
   useEffect(() => {
-    const autoComment = `${formData.weightloss_change_type || "—"} ${
-      formData.weightloss_lbs || "—"
-    } lbs. BMI: ${formData.weightloss_bmi || "—"}. Weight: ${
-      formData.weightloss_weight_status || "—"
-    }`;
+    const changeType = formData.weightloss_change_type || "";
+    const lbs = formData.weightloss_lbs || "";
+    const bmi = formData.weightloss_bmi || "";
+    const weightStatus = formData.weightloss_weight_status || "";
     const manualComment = formData.weightloss_manual_comment || "";
+
+    const hasAnyValue = changeType || lbs || bmi || weightStatus;
+
+    const autoComment = hasAnyValue
+      ? `${changeType} ${lbs} lbs. BMI: ${bmi}. Weight: ${weightStatus}`
+      : "";
+
     setFormData((prev) => ({
       ...prev,
       weightloss_comment: `${autoComment}${
-        manualComment ? ".  " + manualComment : ""
+        manualComment ? (autoComment ? ".  " : "") + manualComment : ""
       }`
     }));
   }, [
@@ -52,17 +47,23 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
   ]);
 
   useEffect(() => {
-    const base = formData.kasper_source || "—";
-    const frequency = formData.kasper_frequency || "—";
+    const base = formData.kasper_source || "";
+    const frequency = formData.kasper_frequency || "";
     const unit = formData.kasper_frequency_unit || "";
-    const sessions = formData.kasper_sessions || "—";
-    const status = formData.kasper_status || "—";
-    const autoComment = `${base} ${frequency} ${unit}. Number of sessions done: ${sessions} (${status})`;
+    const sessions = formData.kasper_sessions || "";
+    const status = formData.kasper_status || "";
     const manualComment = formData.kasper_manual_comment || "";
+
+    const hasAnyValue = base || frequency || unit || sessions || status;
+
+    const autoComment = hasAnyValue
+      ? `${base} ${frequency} ${unit}. Number of sessions done: ${sessions} (${status})`
+      : "";
+
     setFormData((prev) => ({
       ...prev,
       kasper_comment: `${autoComment}${
-        manualComment ? ".  " + manualComment : ""
+        manualComment ? (autoComment ? ".  " : "") + manualComment : ""
       }`
     }));
   }, [
@@ -74,88 +75,122 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     formData.kasper_manual_comment
   ]);
 
-  const questions = [
-    { label: "U-tox and/or Pill Count O.K.?", key: "tox_count" },
-    { label: "KASPER report O.K.?", key: "kasper" },
-    { label: "Participates in PT or home exercise prgm", key: "pt" },
-    { label: "Ordered imaging studies completed", key: "imaging" },
-    { label: "Participated in Weight Loss Prgm", key: "weightloss" },
-    { label: "Participated with Counselor if recommended", key: "counselor" }
-  ];
-
-  // inside the styles object
-const styles = {
-  container: {
-    marginTop: '0.5rem',
-    padding: '0.75rem',
-    border: '1px solid #ccc',
-    borderRadius: '0.75rem',
-    fontSize: '0.9rem',
-    lineHeight: '1.3rem', // slightly reduced
-    backgroundColor: '#fafafa'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse'
-  },
-  th: {
-    border: '1px solid #aaa',
-    backgroundColor: '#f0f0f0',
-    padding: '0.3rem',
-    textAlign: 'center'
-  },
-  td: {
-    border: '1px solid #ddd',
-    padding: '0.3rem',
-    verticalAlign: 'top'
-  },
-  inputText: {
-    width: '95%',
-    padding: '0.25rem',
-    border: '1px solid #ccc',
-    borderRadius: '0.25rem',
-    marginBottom: '0.3rem'
-  },
-  select: {
-    padding: '0.25rem',
-    border: '1px solid #ccc',
-    borderRadius: '0.25rem',
-    minWidth: '7rem',
-    marginBottom: '0.3rem'
-  },
-  miniInput: {
-    width: '4rem',
-    padding: '0.25rem',
-    border: '1px solid #ccc',
-    borderRadius: '0.25rem',
-    marginBottom: '0.3rem'
-  },
-  textarea: {
-    width: '95%',
-    padding: '0.25rem',
-    border: '1px solid #ccc',
-    borderRadius: '0.25rem',
-    resize: 'vertical',
-    marginBottom: '0.3rem'
-  },
-  radio: {
-    textAlign: 'center'
-  },
-  subFieldRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '0.3rem',
-    alignItems: 'center',
-    marginBottom: '0.3rem'
-  },
-  commentGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.3rem',
-    marginBottom: '0.3rem'
-  }
-};
-
+  const styles = {
+    container: {
+      marginTop: 8,
+      padding: 12,
+      border: "1px solid #ccc",
+      borderRadius: 8,
+      fontSize: 14,
+      lineHeight: "18px",
+      backgroundColor: "#fafafa",
+      maxWidth: 1000
+    },
+    table: {
+      width: "100%",
+      borderCollapse: "collapse"
+    },
+    th: {
+      borderBottom: "1px solid #aaa",
+      padding: "4px 6px",
+      textAlign: "center",
+      fontWeight: "600",
+      fontSize: 13
+    },
+    td: {
+      borderBottom: "1px solid #ddd",
+      padding: "0px 8px",
+      verticalAlign: "top",
+      textAlign: "center",
+      whiteSpace: "nowrap"
+    },
+    btnGroup: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 6
+    },
+    button: {
+      width: "100%",
+      padding: "2px 6px",
+      margin: "1px 2px",
+      fontSize: 13,
+      borderRadius: 4,
+      border: "0.7px solid #ccc",
+      cursor: "pointer",
+      userSelect: "none",
+      backgroundColor: "#fff7f2",
+      color: "black",
+      transition: "background-color 0.2s, border-color 0.2s",
+      boxSizing: "border-box"
+    },
+    buttonSelected: {
+      backgroundColor: "#25ab13",
+      color: "white",
+      borderColor: "#0a0a0d"
+    },
+    inputText: {
+      width: "100%",
+      padding: "10px 6px",
+      border: "1px solid #ccc",
+      borderRadius: 4,
+      marginBottom: 6,
+      fontSize: 15
+    },
+    select: {
+      padding: "4px 6px",
+      border: "1px solid #ccc",
+      borderRadius: 4,
+      minWidth: 90,
+      marginBottom: 6,
+      fontSize: 13
+    },
+    miniInput: {
+      width: 60,
+      padding: "4px 6px",
+      border: "1px solid #ccc",
+      borderRadius: 4,
+      marginBottom: 6,
+      fontSize: 13
+    },
+    textarea: {
+      width: "100%",
+      padding: "4px 6px",
+      border: "1px solid #ccc",
+      borderRadius: 4,
+      resize: "vertical",
+      marginBottom: 6,
+      fontSize: 15
+    },
+    subFieldRow: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      alignItems: "center",
+      marginBottom: 6,
+      fontSize: 13
+    },
+    commentGroup: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6
+    },
+    commentSection: {
+      marginTop: 12
+    },
+    commentLabel: {
+      display: "block",
+      fontWeight: "600",
+      marginBottom: 6,
+      fontSize: 14
+    },
+    commentInput: {
+      width: "100%",
+      padding: "6px 8px",
+      border: "1px solid #ccc",
+      borderRadius: 4,
+      fontSize: 13
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -173,19 +208,27 @@ const styles = {
           {questions.map(({ label, key }, index) => (
             <tr key={index}>
               <td style={styles.td}>{label}</td>
-              {["Yes", "No", "NA"].map((option) => (
-                <td style={{ ...styles.td, ...styles.radio }} key={option}>
-                  <input
-                    type="radio"
-                    name={key}
-                    checked={
-                      formData[`${key}_${option.toLowerCase()}`] === option
-                    }
-                    onChange={() => handleChange(key, option)}
-                  />
-                </td>
-              ))}
-              <td style={styles.td}>
+
+              {["Yes", "No", "NA"].map((option) => {
+                const isSelected =
+                  formData[`${key}_${option.toLowerCase()}`] === option;
+                return (
+                  <td style={styles.td} key={option}>
+                    <button
+                      type="button"
+                      style={{
+                        ...styles.button,
+                        ...(isSelected ? styles.buttonSelected : {})
+                      }}
+                      onClick={() => handleChange(key, option)}
+                    >
+                      {option}
+                    </button>
+                  </td>
+                );
+              })}
+
+              <td style={{ ...styles.td, textAlign: "left" }}>
                 {key === "weightloss" ? (
                   <div style={styles.commentGroup}>
                     <input
@@ -193,17 +236,19 @@ const styles = {
                       style={styles.inputText}
                       readOnly
                       placeholder="Auto-generated comment"
+                      name="weightloss_comment"
                       value={formData.weightloss_comment || ""}
                     />
                     <div style={styles.subFieldRow}>
                       <select
+                        name="weightloss_change_type"
                         style={styles.select}
                         value={formData.weightloss_change_type || ""}
                         onChange={(e) =>
-                          handleSpecialWeightChange(
-                            "weightloss_change_type",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       >
                         <option value="">Select</option>
@@ -212,37 +257,40 @@ const styles = {
                       </select>
                       <input
                         type="number"
+                        name="weightloss_lbs"
                         placeholder="lbs"
                         style={styles.miniInput}
                         value={formData.weightloss_lbs || ""}
                         onChange={(e) =>
-                          handleSpecialWeightChange(
-                            "weightloss_lbs",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       />
                       <span>BMI:</span>
                       <input
                         type="number"
+                        name="weightloss_bmi"
                         placeholder="BMI"
                         style={styles.miniInput}
                         value={formData.weightloss_bmi || ""}
                         onChange={(e) =>
-                          handleSpecialWeightChange(
-                            "weightloss_bmi",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       />
                       <select
+                        name="weightloss_weight_status"
                         style={styles.select}
                         value={formData.weightloss_weight_status || ""}
                         onChange={(e) =>
-                          handleSpecialWeightChange(
-                            "weightloss_weight_status",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       >
                         <option value="">Weight Status</option>
@@ -253,11 +301,15 @@ const styles = {
                     </div>
                     <textarea
                       rows={2}
+                      name="weightloss_manual_comment"
                       style={styles.textarea}
                       placeholder="Additional comments (optional)"
                       value={formData.weightloss_manual_comment || ""}
                       onChange={(e) =>
-                        handleManualWeightCommentChange(e.target.value)
+                        setFormData((prev) => ({
+                          ...prev,
+                          [e.target.name]: e.target.value
+                        }))
                       }
                     />
                   </div>
@@ -265,6 +317,7 @@ const styles = {
                   <div style={styles.commentGroup}>
                     <input
                       type="text"
+                      name="kasper_comment"
                       style={styles.inputText}
                       readOnly
                       placeholder="Auto-generated comment"
@@ -272,13 +325,14 @@ const styles = {
                     />
                     <div style={styles.subFieldRow}>
                       <select
+                        name="kasper_source"
                         style={styles.select}
                         value={formData.kasper_source || ""}
                         onChange={(e) =>
-                          handleKasperFieldChange(
-                            "kasper_source",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       >
                         <option value="">Select Source</option>
@@ -288,66 +342,72 @@ const styles = {
                       </select>
                       <input
                         type="text"
+                        name="kasper_frequency"
                         placeholder="e.g. 2"
                         style={styles.miniInput}
                         value={formData.kasper_frequency || ""}
                         onChange={(e) =>
-                          handleKasperFieldChange(
-                            "kasper_frequency",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       />
                       <select
+                        name="kasper_frequency_unit"
                         style={styles.select}
                         value={formData.kasper_frequency_unit || ""}
                         onChange={(e) =>
-                          handleKasperFieldChange(
-                            "kasper_frequency_unit",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       >
-                        <option value="">Frequency</option>
-                        <option value="years +">years +</option>
-                        <option value="times a week">times a week</option>
-                        <option value="times a month">times a month</option>
+                        <option value="">Unit</option>
+                        <option value="per week">per week</option>
+                        <option value="per month">per month</option>
                       </select>
-                      <span>Sessions:</span>
                       <input
                         type="text"
-                        placeholder="#"
+                        name="kasper_sessions"
+                        placeholder="Sessions"
                         style={styles.miniInput}
                         value={formData.kasper_sessions || ""}
                         onChange={(e) =>
-                          handleKasperFieldChange(
-                            "kasper_sessions",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       />
                       <select
+                        name="kasper_status"
                         style={styles.select}
                         value={formData.kasper_status || ""}
                         onChange={(e) =>
-                          handleKasperFieldChange(
-                            "kasper_status",
-                            e.target.value
-                          )
+                          setFormData((prev) => ({
+                            ...prev,
+                            [e.target.name]: e.target.value
+                          }))
                         }
                       >
                         <option value="">Status</option>
-                        <option value="Ongoing">Ongoing</option>
-                        <option value="Hold">Hold</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Incomplete">Incomplete</option>
                       </select>
                     </div>
                     <textarea
                       rows={2}
+                      name="kasper_manual_comment"
                       style={styles.textarea}
                       placeholder="Additional comments (optional)"
                       value={formData.kasper_manual_comment || ""}
                       onChange={(e) =>
-                        handleManualKasperCommentChange(e.target.value)
+                        setFormData((prev) => ({
+                          ...prev,
+                          [e.target.name]: e.target.value
+                        }))
                       }
                     />
                   </div>
@@ -355,9 +415,14 @@ const styles = {
                   <input
                     type="text"
                     style={styles.inputText}
-                    placeholder="Enter comments"
+                    placeholder="Comments"
                     value={formData[`${key}_comment`] || ""}
-                    onChange={(e) => handleCommentChange(key, e.target.value)}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        [`${key}_comment`]: e.target.value
+                      }))
+                    }
                   />
                 )}
               </td>

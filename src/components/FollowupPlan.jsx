@@ -9,7 +9,7 @@ const styles = {
     padding: 16,
     backgroundColor: "#f9f9f9",
     borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
   },
   sectionTitle: {
     fontSize: 20,
@@ -17,40 +17,34 @@ const styles = {
     marginBottom: 20,
     color: "#333",
     borderBottom: "2px solid #ddd",
-    paddingBottom: 8,
+    paddingBottom: 8
   },
-  group: {
-    // marginBottom: 16,
-    
-  },
+  group: {},
   inlineGroup: {
     display: "flex",
-    width:"90%",
-
+    width: "90%",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: 12,
-    // marginBottom: 12,
+    gap: 12
   },
   labelText: {
     fontWeight: 600,
     fontSize: 14,
-    color: "#444",
+    color: "#444"
   },
   input: {
     flex: 1,
     padding: "6px 10px",
     borderRadius: 4,
     border: "1px solid #ccc",
-    fontSize: 14,
+    fontSize: 14
   },
   inputMedium: {
-    
     width: 200,
     padding: "6px 10px",
     borderRadius: 4,
     border: "1px solid #ccc",
-    fontSize: 14,
+    fontSize: 14
   },
   select: {
     padding: "6px 10px",
@@ -58,7 +52,7 @@ const styles = {
     border: "1px solid #ccc",
     fontSize: 14,
     minWidth: 160,
-    cursor: "pointer",
+    cursor: "pointer"
   },
   checkboxLabel: {
     display: "flex",
@@ -66,15 +60,15 @@ const styles = {
     fontSize: 17,
     color: "#444",
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 8
   },
   note: {
     fontSize: 13,
     color: "#555",
     marginLeft: 24,
     marginBottom: 16,
-    lineHeight: 1.5,
-  },
+    lineHeight: 1.5
+  }
 };
 
 const FollowupPlan = ({ setFormData }) => {
@@ -104,38 +98,96 @@ const FollowupPlan = ({ setFormData }) => {
     return "UDT order status unspecified";
   };
 
+  const formattedUnexpectedUTox = unexpectedUTox
+    ? `Unexpected U-Tox Result: ${unexpectedUTox}`
+    : "";
+  const formattedPillCount = pillCount
+    ? "Will order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate."
+    : "";
+  const formattedPtEval = ptEval
+    ? `Will order Physical Therapy Eval And Tx for: ${ptEval}`
+    : "";
+  const formattedImaging =
+    imageType && imaging
+      ? `Will order ${imageType} of: ${imaging} (with/without contrast)`
+      : "";
+  const formattedXrayOf = xrayOf ? `Will order X-Ray of: ${xrayOf}` : "";
+  const formattedBehavioralFocus = behavioralFocus
+    ? `Behavioral Health Consult with emphasis on: ${behavioralFocus}`
+    : "";
+  const formattedReferral = referral ? `Will Refer to: ${referral}` : "";
+
   const followUpSummary = [
     "Follow-Up Plan:",
     `${nonComplianceSeverity || "____________"}`,
     actionTaken ? `\t a. Action taken if non-compliant: ${actionTaken}` : "",
     getUDTStatus(),
-    unexpectedUTox && `Unexpected U-Tox Result: ${unexpectedUTox}`,
-    pillCount && "Will order a random pill count and U-Tox Screen with possible laboratory confirmation.",
-    ptEval && `Will order Physical Therapy Eval And Tx for: ${ptEval}`,
-    imaging && `Will order ${imageType} of: ${imaging} (with/without contrast)`,
-    xrayOf && `Will order X-Ray of: ${xrayOf}`,
-    behavioralFocus && `Behavioral Health Consult with emphasis on: ${behavioralFocus}`,
-    referral && `Will Refer to: ${referral}`
+    formattedUnexpectedUTox,
+    formattedPillCount,
+    formattedPtEval,
+    formattedImaging,
+    formattedXrayOf,
+    formattedBehavioralFocus,
+    formattedReferral
   ]
     .filter(Boolean)
     .join("\n");
 
   useEffect(() => {
+    const udtStatusFormatted = (() => {
+      if (willOrderUDT) {
+        return (
+          "Will order a Urine Drug Test (UDT) Using an Instrumented Chemistry Analyzer to screen for drug classes of prescribed medications and drug classes for commonly abused substances used locally in the KY/Louisville area\n" +
+          "1.\tIf UDT ordered, will review screen results and confirm all prescribed meds.\n" +
+          "2.\tIf UDT ordered, Confirm all non-prescribed drugs and always test for: Fentanyl, Methamphetamine and Cocaine\n" +
+          "Justification: Monitor adherence, misuse/diversion, quarterly testing recommended for opioid patients."
+        );
+      }
+      if (willNotOrderUDT) return "Will not order a Urine Drug Test (UDT)";
+      return "";
+    })();
+
+    const formattedUnexpectedUTox = unexpectedUTox
+      ? `Unexpected U-Tox Result: ${unexpectedUTox}`
+      : "";
+
+    const formattedPillCount = pillCount
+      ? "Will order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate."
+      : "";
+
+    const formattedPtEval = ptEval
+      ? `Will order Physical Therapy Eval And Tx for: ${ptEval}`
+      : "";
+
+    const formattedImaging =
+      imageType && imaging
+        ? `Will order ${imageType} of: ${imaging} (with/without contrast)`
+        : "";
+
+    const formattedXrayOf = xrayOf ? `Will order X-Ray of: ${xrayOf}` : "";
+
+    const formattedBehavioralFocus = behavioralFocus
+      ? `Behavioral Health Consult with emphasis on: ${behavioralFocus}`
+      : "";
+
+    const formattedReferral = referral ? `Will Refer to: ${referral}` : "";
+
     if (typeof setFormData === "function") {
       setFormData((prev) => ({
         ...prev,
-        nonComplianceSeverity,
-        actionTaken,
-        unexpectedUTox,
-        ptEval,
-        pillCount,
-        imageType,
-        imaging,
-        xrayOf,
-        behavioralFocus,
-        referral,
-        udtStatus: getUDTStatus(),
-        followUpPlan: followUpSummary,
+        nonComplianceSeverity, // This is not a formatted field — it's raw text
+        actionTaken: actionTaken
+          ? `Action taken if non-compliant: ${actionTaken}`
+          : "",
+
+        udtStatus: udtStatusFormatted,
+        formattedUnexpectedUTox,
+        formattedPillCount,
+        formattedPtEval,
+        formattedImaging,
+        formattedXrayOf,
+        formattedBehavioralFocus,
+        formattedReferral
       }));
     }
   }, [
@@ -151,13 +203,11 @@ const FollowupPlan = ({ setFormData }) => {
     xrayOf,
     behavioralFocus,
     referral,
-    setFormData,
+    setFormData
   ]);
 
   return (
     <div style={styles.container}>
-      {/* <h3 style={styles.sectionTitle}>Follow-Up Orders</h3> */}
-
       <div style={styles.group}>
         <div style={styles.inlineGroup}>
           <span style={styles.labelText}>Non-compliance severity:</span>
@@ -185,7 +235,6 @@ const FollowupPlan = ({ setFormData }) => {
           <input
             type="checkbox"
             checked={willNotOrderUDT}
-            
             onChange={() => {
               const newVal = !willNotOrderUDT;
               setWillNotOrderUDT(newVal);
@@ -211,7 +260,10 @@ const FollowupPlan = ({ setFormData }) => {
         {willOrderUDT && (
           <div style={styles.note}>
             <p>1. Review UDT screen results and confirm all prescribed meds.</p>
-            <p>2. Confirm positives for non-prescribed drugs (Fentanyl, Meth, Cocaine).</p>
+            <p>
+              2. Confirm positives for non-prescribed drugs (Fentanyl, Meth,
+              Cocaine).
+            </p>
             <p>Quarterly UDT typically required for opioid patients.</p>
           </div>
         )}
@@ -304,7 +356,7 @@ const FollowupPlan = ({ setFormData }) => {
 };
 
 FollowupPlan.propTypes = {
-  setFormData: PropTypes.func,
+  setFormData: PropTypes.func
 };
 
 export default FollowupPlan;

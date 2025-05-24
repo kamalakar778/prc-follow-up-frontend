@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const styles = {
   container: {
@@ -8,7 +8,7 @@ const styles = {
     padding: 2,
     backgroundColor: "#f9f9f9",
     borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
   },
   sectionTitle: {
     fontSize: 20,
@@ -16,17 +16,16 @@ const styles = {
     marginBottom: 20,
     color: "#333",
     borderBottom: "2px solid #ddd",
-    paddingBottom: 8,
+    paddingBottom: 8
   },
   group: {
-    marginBottom: "-0.85rem",
+    marginBottom: "-0.85rem"
   },
   labelText: {
     fontWeight: "600",
     marginRight: 6,
     fontSize: 14,
-    color: "#444",
-
+    color: "#444"
   },
   input: {
     width: 60,
@@ -34,7 +33,7 @@ const styles = {
     borderRadius: 4,
     border: "1px solid #ccc",
     fontSize: 14,
-    marginRight: 8,
+    marginRight: 8
   },
   inputSmall: {
     width: 40,
@@ -42,7 +41,7 @@ const styles = {
     borderRadius: 4,
     border: "1px solid #ccc",
     fontSize: 14,
-    marginRight: 8,
+    marginRight: 8
   },
   inputMedium: {
     width: 120,
@@ -50,7 +49,7 @@ const styles = {
     borderRadius: 4,
     border: "1px solid #ccc",
     fontSize: 14,
-    marginRight: 8,
+    marginRight: 8
   },
   select: {
     padding: "6px 10px",
@@ -59,28 +58,35 @@ const styles = {
     fontSize: 14,
     marginRight: 12,
     minWidth: 160,
-    cursor: "pointer",
+    cursor: "pointer"
   },
   inlineGroup: {
     display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: 12,
-  },
+    marginBottom: 12
+  }
 };
 
 const PhysicalExamination = ({ onChange }) => {
+  const onChangeRef = useRef(onChange);
+
+  // Keep ref updated
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   // Vitals state
   const [vitals, setVitals] = useState({
     bp: "",
     heightFeet: "",
     heightInches: "",
     weight: "",
-    bmi: "",
+    bmi: ""
   });
 
-  // Other physical exam states
+  // Other states
   const [generalAppearance, setGeneralAppearance] = useState(
     "Well groomed and content"
   );
@@ -95,14 +101,14 @@ const PhysicalExamination = ({ onChange }) => {
   const [coordinationBalance, setCoordinationBalance] = useState("Negative");
   const [motorFunction, setMotorFunction] = useState("No change");
 
-  // Send combined data up to parent whenever any input changes
   useEffect(() => {
     const vitalsFormatted = `BP: ${vitals.bp || "--"}. Ht: ${
       vitals.heightFeet || "--"
     } feet ${vitals.heightInches || "--"} inches. Wt: ${
       vitals.weight || "--"
     } lbs. BMI: ${vitals.bmi || "--"}`;
-    onChange({
+
+    onChangeRef.current({
       vitals: vitalsFormatted,
       generalAppearance,
       orientation,
@@ -115,7 +121,7 @@ const PhysicalExamination = ({ onChange }) => {
           : cardiovascular,
       lymphadenopathy,
       coordinationBalance,
-      motorFunction,
+      motorFunction
     });
   }, [
     vitals,
@@ -129,13 +135,12 @@ const PhysicalExamination = ({ onChange }) => {
     pittingEdema,
     lymphadenopathy,
     coordinationBalance,
-    motorFunction,
-    onChange,
+    motorFunction
   ]);
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.sectionTitle}>Physical Examination - Section 1</h3>
+      {/* <h3 style={styles.sectionTitle}>Physical Examination - Section 1</h3> */}
 
       <div style={styles.group}>
         <span style={styles.labelText}>Vitals:</span>
@@ -200,7 +205,9 @@ const PhysicalExamination = ({ onChange }) => {
       </div>
 
       <div style={styles.group}>
-        <span style={styles.labelText}>Orientation to person, place, and time is:</span>
+        <span style={styles.labelText}>
+          Orientation to person, place, and time is:
+        </span>
         <select
           value={orientation}
           onChange={(e) => setOrientation(e.target.value)}
@@ -228,7 +235,11 @@ const PhysicalExamination = ({ onChange }) => {
 
       <div style={{ ...styles.group, ...styles.inlineGroup }}>
         <span style={styles.labelText}>Gait is:</span>
-        <select value={gait} onChange={(e) => setGait(e.target.value)} style={styles.select}>
+        <select
+          value={gait}
+          onChange={(e) => setGait(e.target.value)}
+          style={styles.select}
+        >
           <option>Within normal limits</option>
           <option>Antalgic</option>
           <option>Ataxic</option>
@@ -262,7 +273,9 @@ const PhysicalExamination = ({ onChange }) => {
       </div>
 
       <div style={styles.group}>
-        <span style={styles.labelText}>Cardiovascularly ankle swelling is:</span>
+        <span style={styles.labelText}>
+          Cardiovascularly ankle swelling is:
+        </span>
         <select
           value={cardiovascular}
           onChange={(e) => setCardiovascular(e.target.value)}
@@ -284,7 +297,9 @@ const PhysicalExamination = ({ onChange }) => {
       </div>
 
       <div style={styles.group}>
-        <span style={styles.labelText}>Lymphadenopathy in cervical/inguinal nodes:</span>
+        <span style={styles.labelText}>
+          Lymphadenopathy in cervical/inguinal nodes:
+        </span>
         <select
           value={lymphadenopathy}
           onChange={(e) => setLymphadenopathy(e.target.value)}
@@ -296,7 +311,9 @@ const PhysicalExamination = ({ onChange }) => {
       </div>
 
       <div style={styles.group}>
-        <span style={styles.labelText}>Coordination and Balance shows Romberg test is:</span>
+        <span style={styles.labelText}>
+          Coordination and Balance shows Romberg test is:
+        </span>
         <select
           value={coordinationBalance}
           onChange={(e) => setCoordinationBalance(e.target.value)}

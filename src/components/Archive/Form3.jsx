@@ -1,70 +1,61 @@
 import React, { useState } from "react";
-import Demography from "./Demography";
-import ReviewOfSystems from "./ReviewOfSystems";
-import HistoryOfPresentIllness from "./HistoryOfPresentIllness";
-import CharacteristicsOfPain from "./CharacteristicsOfPain";
-import ChiefComplaint from "./ChiefComplaint";
-import ComplianceWithTreatmentPlan from "./ComplianceWithTreatmentPlan";
-import PhysicalExamination from "./PhysicalExamination";
-import EstablishedComplaints from "./EstablishedComplaints";
-import AssessmentCodes from "./AssessmentCodes";
-import FollowupPlan from "./FollowupPlan";
-import MedicationManagement from "./MedicationManagement";
-import SignatureLine from "./SignatureLine";
-import InjectionsList from "./InjectionsList";
-import EarlierFollowups from "./EarlierFollowups";
+import Demography from "../Demography";
+import ReviewOfSystems from "../ReviewOfSystems";
+import HistoryOfPresentIllness from "../HistoryOfPresentIllness";
+import CharacteristicsOfPain from "../CharacteristicsOfPain";
+import ChiefComplaint from "../ChiefComplaint";
+import ComplianceWithTreatmentPlan from "../ComplianceWithTreatmentPlan";
+import PhysicalExamination from "../PhysicalExamination";
+import EstablishedComplaints from "../EstablishedComplaints";
+import AssessmentCodes from "../AssessmentCodes";
+import FollowupPlan from "../FollowupPlan";
+import MedicationManagement from "../MedicationManagement";
+import SignatureLine from "../SignatureLine";
+import InjectionsList from "../InjectionsList";
+import EarlierFollowups from "../EarlierFollowups";
 import "./Form.css";
 
 const Form = () => {
   const [fileName, setFileName] = useState("");
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
+  const [medications, setMedications] = useState([]);
   const [signatureData, setSignatureData] = useState("");
   const [formData, setFormData] = useState({
-    patientName: "________________",
-    dob: "________________",
-    dateOfEvaluation: "________________",
-    dateOfDictation: "________________",
+    patientName: "",
+    dob: "",
+    dateOfEvaluation: "",
+    dateOfDictation: "",
     physician: "Robert Klickovich, M.D",
-    provider: "________________",
-    referringPhysician: "________________",
-    insurance1Input: "",
+    provider: "",
+    referringPhysician: "",
+    insurance1: "",
     insurance1Other: "",
-    insurance2Input: "",
+    insurance2: "",
     insurance2Other: "",
-    location: "Louisville",
+    location: "",
     CMA: "",
     CMAInput: "",
     roomNumber: "",
-    allergic_symptom_1: "No",
-    allergic_symptom_2: "No",
-    allergic_symptom_3: "No",
-    allergic_symptom_4: "No",
-    allergic_symptom_5: "No",
-    neurological_symptom_1: "No",
-    neurological_symptom_2: "No",
-    neurological_symptom_3: "No",
-    neurological_symptom_4: "No",
-    neurological_symptom_5: "No",
-    pain: {
-      temporally: "",
-      qualitativePain: "________________",
-      numericScaleFormatted: "________________",
-      workingStatus: "",
-      comments: ""
-    },
+    allergic_symptom_1: "",
+    allergic_symptom_2: "",
+    allergic_symptom_3: "",
+    allergic_symptom_4: "",
+    allergic_symptom_5: "",
+    neurological_symptom_1: "",
+    neurological_symptom_2: "",
+    neurological_symptom_3: "",
+    neurological_symptom_4: "",
+    neurological_symptom_5: "",
+    temporally: "",
     numericScale: "",
+    workingStatus: "",
+    comments: "",
+    qualitatively: "",
     intervalComments: "",
-    historyOfPresentIllness: {
-      pain_illnessLevel: "",
-      activity_illnessLevel: "",
-      social_illnessLevel: "",
-      job_illnessLevel: "",
-      sleep_illnessLevel: ""
-    },
-
     complianceComments: "",
-    vitals: "", // Physical Examination
+    establishedComplaints: [],
+    vitals: "",
     generalAppearance: "",
     orientation: "",
     moodAffect: "",
@@ -74,15 +65,21 @@ const Form = () => {
     lymphadenopathy: "",
     coordinationBalance: "",
     motorFunction: "",
-    establishedComplaints: [], // Established Complaints lumbar cervical thoracic
-    // followUpPlan: "",
-    medication_management: "", // Medication Management
+    followUpPlan: "",
+    medicationOutput: [],
+    complaintsData: {
+      cervical: { enabled: true, side: "bilaterally" },
+      thoracic: { enabled: true, side: "bilaterally" },
+      lumbar: { enabled: true, side: "bilaterally" },
+      hip: { enabled: true, side: "bilaterally" },
+      patella: { enabled: true, side: "bilaterally" }
+    },
     nonComplianceSeverity: "",
     actionTaken: "",
     udtStatus: "",
     willOrderUDT: false,
-    unexpectedUTox: "",
-    pillCount: "",
+    unexpectedUTox: false,
+    pillCount: false,
     ptEval: "",
     imaging: "",
     xrayOf: "",
@@ -93,13 +90,6 @@ const Form = () => {
     otherPlans: "",
     formattedLines: "",
     followUpAppointment: "",
-    signature: {
-      otherPlans: "",
-      formattedLines: "",
-      followUpAppointment: "",
-      signatureLine: "",
-      dateTranscribed: ""
-    },
     signatureLine: "",
     dateTranscribed: ""
   });
@@ -163,37 +153,13 @@ const Form = () => {
     setFileName(newFileName);
   };
 
-  // const handleCharacteristicPainData = (updatedData) => {
-  //   setFormData((prev) => ({ ...prev, ...updatedData }));
-  // };
-
-  const handleReviewChange = (updatedFields) => {
-    setFormData((prev) => ({ ...prev, ...updatedFields }));
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePainUpdate = (updatedPainSection) => {
-    setFormData((prev) => ({
-      ...prev,
-      pain: {
-        ...prev.pain,
-        ...updatedPainSection.pain // assuming `CharacteristicsOfPain` sends { pain: { ... } }
-      }
-    }));
-  };
-  const handleSectionUpdate = (sectionUpdate) => {
-    setFormData((prev) => ({
-      ...prev,
-      ...sectionUpdate,
-      pain: {
-        ...prev.pain,
-        ...sectionUpdate.pain
-      }
-    }));
+  const handlePainUpdate = (updatedPainData) => {
+    setFormData((prev) => ({ ...prev, ...updatedPainData }));
   };
 
   const handleInjectionChange = ({ injections, INJECTION_SUMMARY }) => {
@@ -203,13 +169,6 @@ const Form = () => {
       INJECTION_SUMMARY
     }));
   };
-
-  // const handleSetMedicationListData = (text) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     medication_management: text
-  //   }));
-  // };
 
   const handleReset = () => {
     setFileName("");
@@ -231,14 +190,22 @@ const Form = () => {
       CMA: "",
       CMAInput: "",
       roomNumber: "",
-      pain: {
-        temporally: "",
-        numericScaleFormatted: "",
-        workingStatus: "",
-        comments: ""
-      },
-
-      // qualitatively: "",
+      allergic_symptom_1: "",
+      allergic_symptom_2: "",
+      allergic_symptom_3: "",
+      allergic_symptom_4: "",
+      allergic_symptom_5: "",
+      neurological_symptom_1: "",
+      neurological_symptom_2: "",
+      neurological_symptom_3: "",
+      neurological_symptom_4: "",
+      neurological_symptom_5: "",
+      temporally: "",
+      numericScale: "",
+      workingStatus: "",
+      comments: "",
+      qualitatively: "",
+      intervalComments: "",
       complianceComments: "",
       establishedComplaints: [],
       vitals: "",
@@ -263,8 +230,8 @@ const Form = () => {
       nonComplianceSeverity: "",
       actionTaken: "",
       udtStatus: "",
-      willOrderUDT: "",
-      unexpectedUTox: "",
+      willOrderUDT: false,
+      unexpectedUTox: false,
       pillCount: false,
       ptEval: "",
       imaging: "",
@@ -282,21 +249,15 @@ const Form = () => {
   };
 
   const handleSubmit = async () => {
-    // if (!fileName.trim() || !formData.patientName?.trim()) {
-    //   alert("File name and patient name are required.");
-    //   return;
-    // }
+    if (!fileName.trim() || !formData.patientName?.trim()) {
+      alert("File name and patient name are required.");
+      return;
+    }
 
     const insuranceFinal1 =
-      formData.insurance1Input?.trim() ||
-      formData.insurance1 ||
-      formData.insurance1Other ||
-      "";
+      formData.insurance1Input?.trim() || formData.insurance1 || "";
     const insuranceFinal2 =
-      formData.insurance2Input?.trim() ||
-      formData.insurance2 ||
-      formData.insurance2Other ||
-      "";
+      formData.insurance2Input?.trim() || formData.insurance2 || "";
     const finalCMA = formData.CMAInput?.trim() || formData.CMA || "";
 
     const complaintsSummary = getComplaintsSummary();
@@ -304,11 +265,7 @@ const Form = () => {
 
     const cleanString = (v) => (typeof v === "string" ? v.trim() : v || "");
 
-    // console.log("Form Data Before Payload:", formData);
-    console.log("Form Data Before Payload:", formData);
-    const getOrNoValue = (val) => val?.trim() || "No Value";
     const payload = {
-      ...formData,
       fileName: cleanString(fileName),
       patientName: cleanString(formData.patientName),
       insurance1: insuranceFinal1,
@@ -316,99 +273,33 @@ const Form = () => {
       CMA: finalCMA,
       chiefComplaint: cleanString(chiefComplaint?.finalText),
       complaintsSummary,
-
-      //History of Present Illness
-      // pain_illnessLevel: formData.historyOfPresentIllness.pain_illnessLevel,
-      // activity_illnessLevel:
-      //   formData.historyOfPresentIllness.activity_illnessLevel,
-      // social_illnessLevel: formData.historyOfPresentIllness.social_illnessLevel,
-      // job_illnessLevel: formData.historyOfPresentIllness.job_illnessLevel,
-      // sleep_illnessLevel: formData.historyOfPresentIllness.sleep_illnessLevel,
-      pain_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.pain_illnessLevel
-      ),
-      activity_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.activity_illnessLevel
-      ),
-      social_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.social_illnessLevel
-      ),
-      job_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.job_illnessLevel
-      ),
-      sleep_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.sleep_illnessLevel
-      ),
-
-      // Compliance with Treatment Plan
-      allergic_symptom_1: formData.formatted_allergic_1,
-      allergic_symptom_2: formData.formatted_allergic_2,
-      allergic_symptom_3: formData.formatted_allergic_3,
-      allergic_symptom_4: formData.formatted_allergic_4,
-      allergic_symptom_5: formData.formatted_allergic_5,
-      neurological_symptom_1: formData.formatted_neuro_1,
-      neurological_symptom_2: formData.formatted_neuro_2,
-      neurological_symptom_3: formData.formatted_neuro_3,
-      neurological_symptom_4: formData.formatted_neuro_4,
-      neurological_symptom_5: formData.formatted_neuro_5,
-
-      temporally: formData.pain?.temporally || "",
-      // numericScaleFormatted: pain.numericScaleFormatted,
-      numericScaleFormatted: formData.pain.numericScaleFormatted,
-      workingStatus: formData.pain?.workingStatus || "",
-      comments: formData.pain?.comments || "",
-      intervalComments: formData.intervalComments,
-      qualitativePain: formData.pain?.qualitativePain || "",
-
-      // qualitativePain: formData.qualitativePain,
-      // qualitatively: formData.qualitatively,
-      complianceComments: formData.complianceComments,
-
-      // Physical Examination Default Data
-      vitals: formData.vitals,
-      generalAppearance: formData.generalAppearance,
-      orientation: formData.orientation,
-      moodAffect: formData.moodAffect,
-      gait: formData.gait,
-      stationStance: formData.stationStance,
-      cardiovascular: formData.cardiovascular,
-      lymphadenopathy: formData.lymphadenopathy,
-      coordinationBalance: formData.coordinationBalance,
-      motorFunction: formData.motorFunction,
-
       establishedComplaints: formData.establishedComplaints,
       assessment_codes: assessmentCodesFinalList,
-      medication_management: formData.medication_management,
       INJECTION_SUMMARY: formData?.INJECTION_SUMMARY || "",
-      // medicationOutput: Array.isArray(formData.medicationOutput)
-      //   ? formData.medicationOutput.join("\n") // convert only when needed
-      //   : "",
-      // medicationOutput: Array.isArray(formData.medicationOutput)
-      //   ? formData.medicationOutput.join("\n")
-      //   : cleanString(formData.medicationOutput),
+      medicationOutput: Array.isArray(formData.medicationOutput)
+        ? formData.medicationOutput.join("\n")
+        : cleanString(formData.medicationOutput),
       followUpPlan: cleanString(formData.followUpPlan),
       signature: {
         ...signatureData,
-        otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
         formattedLines: signatureData?.formattedLines || "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
         dateTranscribed: formData?.dateTranscribed || ""
       },
-
       udtStatus: formData.udtStatus,
-      nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
       willNotOrderUDT: !!formData.willNotOrderUDT,
-      actionTaken: formData.actionTaken,
-      // udtStatus: formData.udtStatusFormatted,
-      unexpectedUTox: formData.formattedUnexpectedUTox,
-      pillCount: formData.formattedPillCount,
-      ptEval: formData.formattedPtEval,
-      imaging: formData.formattedImaging,
-      xrayOf: formData.formattedXrayOf,
-      behavioralFocus: formData.formattedBehavioralFocus,
-      referral: formData.formattedReferral,
-      earlier_followups: cleanString(earlierFollowupsText || ""),
+      nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
+      actionTaken: cleanString(formData?.actionTaken),
+      unexpectedUTox: !!formData?.unexpectedUTox,
+      pillCount: !!formData?.pillCount,
+      ptEval: cleanString(formData?.ptEval),
+      imaging: cleanString(formData?.imaging),
+      xrayOf: cleanString(formData?.xrayOf),
+      behavioralFocus: cleanString(formData?.behavioralFocus),
+      referral: cleanString(formData?.referral),
+      earlier_followups: cleanString(earlierFollowupsText),
+      intervalComments: formData.intervalComments,
       complianceComments: formData.complianceComments
     };
 
@@ -448,7 +339,6 @@ const Form = () => {
     <>
       <div className="form-section">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
-
         <Demography
           fileName={fileName}
           onFileNameChange={handleFileNameChange}
@@ -467,24 +357,19 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">History Of Present Illness</h2>
-        <HistoryOfPresentIllness
-          formData={formData.historyOfPresentIllness}
-          setFormData={(updatedSection) =>
-            setFormData((prev) => ({
-              ...prev,
-              historyOfPresentIllness: {
-                ...prev.historyOfPresentIllness,
-                ...updatedSection
-              }
-            }))
-          }
-        />
+        <HistoryOfPresentIllness />
       </div>
 
       <div className="form-section">
         <h2 className="section-title">Characteristics Of Pain Include:</h2>
         <CharacteristicsOfPain
-          formData={formData.pain}
+          formData={{
+            temporally: formData.temporally,
+            numericScale: formData.numericScale,
+            workingStatus: formData.workingStatus,
+            comments: formData.comments,
+            qualitatively: formData.qualitatively
+          }}
           onUpdate={handlePainUpdate}
         />
       </div>
@@ -494,19 +379,17 @@ const Form = () => {
         <ReviewOfSystems
           formData={formData}
           setFormData={setFormData}
-          onReviewChange={handleReviewChange}
         />
-        {/* <ReviewOfSystems formData={formData} setFormData={setFormData} /> */}
       </div>
+
       <div className="form-section">
-        <h2 className="section-title">
-          Patient Compliance with Treatment Plan
-        </h2>
+        <h2 className="section-title">Patient Compliance with Treatment Plan</h2>
         <ComplianceWithTreatmentPlan
           formData={formData}
           setFormData={setFormData}
         />
       </div>
+
       <div className="form-section">
         <h2 className="section-title">Physical Examination</h2>
         <PhysicalExamination onChange={handlePhysicalExamChange} />
@@ -535,8 +418,13 @@ const Form = () => {
       <div className="form-section">
         <h2 className="section-title">Medication Management</h2>
         <MedicationManagement
-          setMedicationListData={(text) =>
-            setFormData((prev) => ({ ...prev, medication_management: text }))
+          medications={medications}
+          setMedications={setMedications}
+          onOutputChange={(outputArray) =>
+            setFormData((prev) => ({
+              ...prev,
+              medicationOutput: outputArray
+            }))
           }
         />
       </div>

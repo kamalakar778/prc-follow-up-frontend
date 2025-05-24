@@ -8,26 +8,26 @@ const styles = {
     padding: "1rem",
     backgroundColor: "#fff",
     borderRadius: "8px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)"
   },
   section: {
     padding: "1.5rem",
     border: "1px solid #e0e0e0",
     borderRadius: "8px",
     backgroundColor: "#f9f9f9",
-    marginTop: "1.5rem",
+    marginTop: "1.5rem"
   },
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "1.5rem",
+    gap: "1.5rem"
   },
   label: {
     display: "flex",
     flexDirection: "column",
     fontSize: "15px",
     color: "#333",
-    marginBottom: "-1.0rem",
+    marginBottom: "-1.0rem"
   },
   input: {
     width: "90%",
@@ -35,7 +35,7 @@ const styles = {
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
-    fontSize: "15px",
+    fontSize: "15px"
   },
   select: {
     width: "95%",
@@ -44,13 +44,13 @@ const styles = {
     borderRadius: "6px",
     border: "1px solid #ccc",
     fontSize: "15px",
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
   },
   buttonRow: {
     display: "flex",
     justifyContent: "flex-end",
     gap: "1rem",
-    marginTop: "1rem",
+    marginTop: "1rem"
   },
   button: {
     padding: "0.6rem 1.2rem",
@@ -61,14 +61,27 @@ const styles = {
     cursor: "pointer",
     backgroundColor: "#3498db",
     color: "#fff",
-    transition: "background-color 0.2s ease",
-  },
+    transition: "background-color 0.2s ease"
+  }
 };
 
 const insuranceOptions = [
-  "Aetna", "BCBS", "Ambetter", "Commercial", "Humana", "PP",
-  "Medicare", "Medicaid", "TriCare", "Trieast", "WellCare",
-  "Work. Comp", "UHC", "Other"
+  "Aetna",
+  "BCBS",
+  "Ambetter",
+  "Cigna",
+  "Commercial",
+  "Humana",
+  "PP",
+  "Medicare",
+  "Medicare B",
+  "Medicaid",
+  "TriCare",
+  "Trieast",
+  "WellCare",
+  "Work. Comp",
+  "UHC",
+  "Other"
 ];
 
 const Demography = ({
@@ -85,7 +98,7 @@ const Demography = ({
     onChange(e);
     setFormData((prev) => ({
       ...prev,
-      [`${name}Input`]: "",
+      [`${name}Input`]: ""
     }));
   };
 
@@ -95,7 +108,7 @@ const Demography = ({
     onChange(e);
     setFormData((prev) => ({
       ...prev,
-      [selectName]: "",
+      [selectName]: ""
     }));
   };
 
@@ -118,7 +131,6 @@ const Demography = ({
             </option>
           ))}
         </select>
-
         <input
           name={inputName}
           placeholder={`Or type ${label}`}
@@ -141,8 +153,20 @@ const Demography = ({
       >
         <option value="">-- Select CMA --</option>
         {[
-          "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie",
-          "MS", "Nick", "PP", "SC", "Steph", "Tony", "Tina", "DJ",
+          "Alyson",
+          "Brenda",
+          "Erika",
+          "Janelle",
+          "Laurie",
+          "Melanie",
+          "MS",
+          "Nick",
+          "PP",
+          "SC",
+          "Steph",
+          "Tony",
+          "Tina",
+          "DJ"
         ].map((cma) => (
           <option key={cma} value={cma}>
             {cma}
@@ -190,10 +214,11 @@ const Demography = ({
       {/* Demographic Section */}
       <div style={styles.section}>
         <div style={styles.grid}>
-          {[{ label: "PATIENT NAME", name: "patientName" },
+          {[
+            { label: "PATIENT NAME", name: "patientName" },
             { label: "DATE OF BIRTH", name: "dob" },
             { label: "DATE OF EVALUATION", name: "dateOfEvaluation" },
-            { label: "DATE OF DICTATION", name: "dateOfDictation" },
+            { label: "DATE OF DICTATION", name: "dateOfDictation" }
           ].map(({ label, name }) => (
             <div key={name} style={styles.label}>
               {label}:

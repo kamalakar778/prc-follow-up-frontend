@@ -1,5 +1,59 @@
 import React, { useState, useEffect } from "react";
 
+const styles = {
+  container: {
+    fontFamily: "Arial, sans-serif",
+    maxWidth: 1000,
+    margin: "0 auto",
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+  },
+  label: {
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#444",
+    display: "block",
+    marginBottom: 6
+  },
+  select: {
+    padding: "6px 10px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14,
+    minWidth: 300,
+    cursor: "pointer"
+  },
+  medicationRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: "-0.5rem"
+  },
+  input: {
+    padding: "6px 8px",
+    borderRadius: 4,
+    border: "1px solid #ccc",
+    fontSize: 14
+  },
+  inputSmall: {
+    width: 70
+  },
+  inputLarge: {
+    width: 200
+  },
+  removeButton: {
+    background: "none",
+    border: "none",
+    color: "#ef4444",
+    cursor: "pointer",
+    textDecoration: "underline",
+    fontSize: 13
+  }
+};
+
 const medicationReasons = [
   {
     id: 1,
@@ -26,103 +80,9 @@ const defaultMedication = {
   status: "Continue"
 };
 
-const styles = {
-  container: {
-    fontFamily: "Arial, sans-serif",
-    maxWidth: 1000,
-    margin: "0 auto",
-    padding: 16,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
-    borderBottom: "2px solid #ddd",
-    paddingBottom: 8
-  },
-  label: {
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#444",
-    display: "block",
-    marginBottom: 6
-  },
-  select: {
-    padding: "6px 10px",
-    borderRadius: 4,
-    border: "1px solid #ccc",
-    fontSize: 14,
-    minWidth: 300,
-    cursor: "pointer"
-  },
-  medicationRow: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom:"-0.5rem",
-
-    // marginBottom: 12
-  },
-  input: {
-    padding: "6px 8px",
-    borderRadius: 4,
-    border: "1px solid #ccc",
-    fontSize: 14
-  },
-  inputSmall: {
-    width: 70
-  },
-  inputMedium: {
-    width: 140
-  },
-  inputLarge: {
-    width: 200
-  },
-  removeButton: {
-    background: "none",
-    border: "none",
-    color: "#ef4444",
-    cursor: "pointer",
-    textDecoration: "underline",
-    fontSize: 13
-  },
-  outputContainer: {
-    marginTop: 24
-  },
-  outputHeading: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    borderBottom: "1px solid #ccc",
-    paddingBottom: 4,
-    color: "#333"
-  },
-  outputList: {
-    listStyleType: "decimal",
-    paddingLeft: 20,
-    color: "#333",
-    fontSize: 14
-  }
-};
-
-const MedicationManagement = ({
-  medications,
-  setMedications,
-  setInitialFormData
-}) => {
+const MedicationManagement = ({ setMedicationListData = () => {} }) => {
   const [selectedReason, setSelectedReason] = useState(medicationReasons[0].id);
-  const [outputState, setOutputState] = useState([]);
-
-  useEffect(() => {
-    if (medications.length === 0) {
-      setMedications([defaultMedication]);
-    }
-  }, []);
+  const [medications, setMedications] = useState([defaultMedication]);
 
   const handleReasonChange = (e) => {
     setSelectedReason(parseInt(e.target.value));
@@ -137,7 +97,6 @@ const MedicationManagement = ({
     const isFilled = Object.values(updated[index]).some(
       (v) => v?.toString().trim() !== ""
     );
-
     if (isLast && isFilled) {
       setMedications([...updated, defaultMedication]);
     }
@@ -152,32 +111,29 @@ const MedicationManagement = ({
     const reasonText =
       medicationReasons.find((r) => r.id === selectedReason)?.text || "";
 
-    const medLines = medications
+    const medicationLines = medications
       .filter((med) => med.name.trim())
       .map((med, idx) => {
         const prefix = med.status ? `${med.status} ` : "";
-        const relief =
-          med.relief !== "" ? `(${med.relief}% pain relief obtained).` : "";
-        const days = med.days !== "" ? `(#${med.days})` : "";
-        const detail = [relief, days].filter(Boolean).join(" ");
-        return `${idx + 2}. ${prefix}${med.name}.${detail ? ` ${detail}` : ""}`;
+        const relief = med.relief
+          ? `(${med.relief}% pain relief obtained)`
+          : "";
+        const days = med.days ? `(#${med.days})` : "";
+        const extra = [relief, days].filter(Boolean).join(" ");
+        return `${idx + 2}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
       });
 
-    const fullList = ["MEDICATION MANAGEMENT:", `1. ${reasonText}`, ...medLines];
-    setOutputState(fullList);
+    const formattedText = [
+      "MEDICATION MANAGEMENT:",
+      `1. ${reasonText}`,
+      ...medicationLines
+    ].join("\n");
 
-    if (setInitialFormData) {
-      setInitialFormData((prev) => ({
-        ...prev,
-        medicationOutput: fullList.join("\n")
-      }));
-    }
-  }, [selectedReason, medications, setInitialFormData]);
+    setMedicationListData(formattedText);
+  }, [selectedReason, medications, setMedicationListData]);
 
   return (
     <div style={styles.container}>
-      {/* <h3 style={styles.sectionTitle}>Medication Management</h3> */}
-
       <div>
         <label style={styles.label}>Select Reason:</label>
         <select
@@ -253,15 +209,6 @@ const MedicationManagement = ({
             )}
           </div>
         ))}
-      </div>
-
-      <div style={styles.outputContainer}>
-        <h4 style={styles.outputHeading}>Formatted Summary:</h4>
-        <ol style={styles.outputList}>
-          {outputState.map((line, idx) => (
-            <li key={idx}>{line}</li>
-          ))}
-        </ol>
       </div>
     </div>
   );

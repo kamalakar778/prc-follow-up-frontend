@@ -53,13 +53,13 @@ const styles = {
 
 const CharacteristicsOfPain = ({ formData, onUpdate }) => {
   const [state, setState] = useState({
-    baseline: "continuous",
-    exacerbation: "frequent",
+    baseline: "no",
+    exacerbation: "no",
     average: "",
     best: "",
     withMeds: "",
     withoutMeds: "",
-    workingStatus: formData.workingStatus || "_________",
+    workingStatus: formData.workingStatus || "no",
     comments: ""
   });
 

@@ -79,7 +79,7 @@ const Form = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
         <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           File Name:
           <input
@@ -184,7 +184,7 @@ const Form = () => {
             <option key={option} value={option} />
           ))}
         </datalist>
-      </fieldset> */}
+      </fieldset>
       <PatientDemography formData={formData} onChange={handleChange} />
       <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
         <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
