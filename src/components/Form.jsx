@@ -56,11 +56,11 @@ const Form = () => {
     numericScale: "",
     intervalComments: "",
     historyOfPresentIllness: {
-      pain_illnessLevel: "",
-      activity_illnessLevel: "",
-      social_illnessLevel: "",
-      job_illnessLevel: "",
-      sleep_illnessLevel: ""
+      pain_illnessLevel: "The same",
+      activity_illnessLevel: "The same",
+      social_illnessLevel: "The same",
+      job_illnessLevel: "The same",
+      sleep_illnessLevel: "The same"
     },
 
     complianceComments: "",

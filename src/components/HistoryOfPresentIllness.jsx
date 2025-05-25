@@ -86,7 +86,7 @@ const HistoryOfPresentIllness = ({ formData = {}, setFormData }) => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.sectionTitle}>History of Present Illness</div>
+      {/* <div style={styles.sectionTitle}>History of Present Illness</div> */}
       {items.map(({ label, name }) => (
         <div key={name} style={styles.inlineGroup}>
           <label style={styles.labelText}>{label} &nbsp;&nbsp;

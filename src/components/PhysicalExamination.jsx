@@ -167,7 +167,7 @@ const PhysicalExamination = ({ onChange }) => {
       <div style={styles.group}>
         <label style={styles.labelText}>Vitals:</label>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          BP:
+          {/* BP: */}
           <input
             type="text"
             value={vitals.bp}
