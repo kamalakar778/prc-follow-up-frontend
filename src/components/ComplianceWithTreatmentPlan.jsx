@@ -120,7 +120,9 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       border: "0.7px solid #ccc",
       cursor: "pointer",
       userSelect: "none",
-      backgroundColor: "#fff7f2",
+      // backgroundColor: "#fff7f2",
+    backgroundColor: "#f5f5f5",
+
       color: "black",
       transition: "background-color 0.2s, border-color 0.2s",
       boxSizing: "border-box"
