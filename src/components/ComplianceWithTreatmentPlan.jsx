@@ -98,6 +98,8 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       fontSize: 13
     },
     td: {
+      // width:"10px",
+      // height:"80px",
       borderBottom: "1px solid #ddd",
       padding: "0px 8px",
       verticalAlign: "top",
@@ -111,7 +113,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     },
     button: {
       width: "100%",
-      padding: "2px 6px",
+      padding: "6px 5px",
       margin: "1px 2px",
       fontSize: 13,
       borderRadius: 4,

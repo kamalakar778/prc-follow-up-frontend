@@ -138,11 +138,11 @@ const FollowupPlan = ({ setFormData }) => {
       if (willOrderUDT) {
         return (
           "Will order a Urine Drug Test (UDT) Using an Instrumented Chemistry Analyzer to screen for drug classes of prescribed medications and drug classes for commonly abused substances used locally in the KY/Louisville area\n"+
-          "\t  1.If UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n"+
-          "\t  2.If UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine\n"+
+          "\t\t1.If UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n"+
+          "\t\t2.If UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine\n"+
           "Justification for UDT:  It is medically necessary to monitor adherence to the Prescription Medication Agreement and to identify possible misuse, diversion and/or abuse of both prescribed and unprescribed medications.  Compliance tools used to monitor patients’ include: UDT, The Prescription Drug Monitoring Program database (e.g. KASPER), Risk Stratification Tools (e.g. ORT), and current High-Risk substances in the KY/Louisville area (see below). Based on these compliance tools, especially current High-Risk substance abuse community trend locally. UDT will usually be ordered quarterly (or more frequently as applicable) for patients on opioids.\n"+
-          "\t  1.Kentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n"+
-          "\t  2.Substance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:\n"
+          "\t\t1.Kentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n"+
+          "\t\t2.Substance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:\n"
         );
       }
       if (willNotOrderUDT) return "Will not order a Urine Drug Test (UDT)";
