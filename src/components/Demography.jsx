@@ -3,7 +3,7 @@ import React from "react";
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 900,
+    maxWidth: 950,
     margin: "30px 50px",
     padding: "1rem",
     backgroundColor: "#fff",
@@ -20,7 +20,7 @@ const styles = {
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "1.5rem"
+    gap: "0.5rem"
   },
   label: {
     display: "flex",
@@ -32,6 +32,7 @@ const styles = {
   },
   input: {
     flex: 1,
+    // marginTop:"-0.2rem",
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
@@ -247,10 +248,10 @@ const Demography = ({
       <div style={styles.section}>
         <div style={styles.grid}>
           {[
-            { label: "PATIENT NAME", name: "patientName", type: "input" },
+            { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Referring Physician", name: "referringPhysician", type: "input" },
-            { label: "DATE OF BIRTH", name: "dob", type: "input" },
-            { label: "DATE OF EVALUATION", name: "dateOfEvaluation", type: "input" },
+            { label: "Date of Birth", name: "dob", type: "input" },
+            { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
             { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
             { label: "Location", name: "location", type: "toggle", options: locationOptions },
             { label: "Insurance 1", name: "insurance1", type: "insurance" },
