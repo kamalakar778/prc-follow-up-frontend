@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
+const severityOptions = ["None", "Mild", "Moderate", "Significant"];
+
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
@@ -25,12 +27,15 @@ const styles = {
     width: "90%",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: 12
+    gap: 12,
+    marginBottom: 12
   },
   labelText: {
     fontWeight: 600,
     fontSize: 14,
-    color: "#444"
+    color: "#444",
+    display: "block",
+    marginBottom: 4
   },
   input: {
     flex: 1,
@@ -68,7 +73,21 @@ const styles = {
     marginLeft: 24,
     marginBottom: 16,
     lineHeight: 1.5
-  }
+  },
+  optionButton: (isSelected) => ({
+    marginRight: 4,
+    marginBottom: 3,
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "10px",
+    border: "1px solid",
+    borderColor: isSelected ? "green" : "gray",
+    backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
+    color: isSelected ? "green" : "gray",
+    display: "inline-block",
+    fontWeight: isSelected ? "bold" : "normal",
+    transition: "all 0.3s ease"
+  })
 };
 
 const FollowupPlan = ({ setFormData }) => {
@@ -98,56 +117,8 @@ const FollowupPlan = ({ setFormData }) => {
     return "UDT order status unspecified";
   };
 
-  const formattedUnexpectedUTox = unexpectedUTox
-    ? `Unexpected U-Tox Result: ${unexpectedUTox}`
-    : "";
-  const formattedPillCount = pillCount
-    ? "Will order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate."
-    : "";
-  const formattedPtEval = ptEval
-    ? `Will order Physical Therapy Eval And Tx for: ${ptEval}`
-    : "";
-  const formattedImaging =
-    imageType && imaging
-      ? `Will order ${imageType} of: ${imaging} (with/without contrast)`
-      : "";
-  const formattedXrayOf = xrayOf ? `Will order X-Ray of: ${xrayOf}` : "";
-  const formattedBehavioralFocus = behavioralFocus
-    ? `Behavioral Health Consult with emphasis on: ${behavioralFocus}`
-    : "";
-  const formattedReferral = referral ? `Will Refer to: ${referral}` : "";
-
-  const followUpSummary = [
-    "Follow-Up Plan:",
-    `${nonComplianceSeverity || "____________"}`,
-    actionTaken ? `\t a. Action taken if non-compliant: ${actionTaken}` : "",
-    getUDTStatus(),
-    formattedUnexpectedUTox,
-    formattedPillCount,
-    formattedPtEval,
-    formattedImaging,
-    formattedXrayOf,
-    formattedBehavioralFocus,
-    formattedReferral
-  ]
-    .filter(Boolean)
-    .join("\n");
-
   useEffect(() => {
-    const udtStatusFormatted = (() => {
-      if (willOrderUDT) {
-        return (
-          "Will order a Urine Drug Test (UDT) Using an Instrumented Chemistry Analyzer to screen for drug classes of prescribed medications and drug classes for commonly abused substances used locally in the KY/Louisville area\n"+
-          "\t\t1.If UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n"+
-          "\t\t2.If UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine\n"+
-          "Justification for UDT:  It is medically necessary to monitor adherence to the Prescription Medication Agreement and to identify possible misuse, diversion and/or abuse of both prescribed and unprescribed medications.  Compliance tools used to monitor patients’ include: UDT, The Prescription Drug Monitoring Program database (e.g. KASPER), Risk Stratification Tools (e.g. ORT), and current High-Risk substances in the KY/Louisville area (see below). Based on these compliance tools, especially current High-Risk substance abuse community trend locally. UDT will usually be ordered quarterly (or more frequently as applicable) for patients on opioids.\n"+
-          "\t\t1.Kentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n"+
-          "\t\t2.Substance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:\n"
-        );
-      }
-      if (willNotOrderUDT) return "Will not order a Urine Drug Test (UDT)";
-      return "";
-    })();
+    const udtStatusFormatted = getUDTStatus();
 
     const formattedUnexpectedUTox = unexpectedUTox
       ? `Unexpected U-Tox Result: ${unexpectedUTox}`
@@ -177,11 +148,10 @@ const FollowupPlan = ({ setFormData }) => {
     if (typeof setFormData === "function") {
       setFormData((prev) => ({
         ...prev,
-        nonComplianceSeverity, // This is not a formatted field — it's raw text
+        nonComplianceSeverity,
         actionTaken: actionTaken
           ? `Action taken if non-compliant: ${actionTaken}`
           : "",
-
         udtStatus: udtStatusFormatted,
         formattedUnexpectedUTox,
         formattedPillCount,
@@ -211,15 +181,31 @@ const FollowupPlan = ({ setFormData }) => {
   return (
     <div style={styles.container}>
       <div style={styles.group}>
-        <div style={styles.inlineGroup}>
-          <span style={styles.labelText}>Non-compliance severity:</span>
-          <input
-            type="text"
-            value={nonComplianceSeverity}
-            onChange={(e) => setNonComplianceSeverity(e.target.value)}
-            style={styles.inputMedium}
-            placeholder="e.g. Mild"
-          />
+        <div style={{ marginBottom: 12 }}>
+          <label style={styles.labelText}>
+            Non-compliance severity: &nbsp; &nbsp;
+            {severityOptions.map((option) => {
+              const isSelected = nonComplianceSeverity === option;
+              return (
+                <span
+                  key={option}
+                  style={styles.optionButton(isSelected)}
+                  onClick={() =>
+                    setNonComplianceSeverity(isSelected ? "" : option)
+                  }
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setNonComplianceSeverity(isSelected ? "" : option);
+                    }
+                  }}
+                >
+                  {option}
+                </span>
+              );
+            })}
+          </label>
         </div>
 
         <div style={styles.inlineGroup}>
@@ -233,31 +219,50 @@ const FollowupPlan = ({ setFormData }) => {
           />
         </div>
 
-        <label style={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={willNotOrderUDT}
-            onChange={() => {
-              const newVal = !willNotOrderUDT;
-              setWillNotOrderUDT(newVal);
-              if (newVal) setWillOrderUDT(false);
-            }}
-          />
-          Will not order a Urine Drug Test (UDT)
-        </label>
+        <div style={{ marginBottom: 12 }}>
+          <label style={styles.labelText}>UDT Plan:</label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <span
+              style={styles.optionButton(willOrderUDT)}
+              onClick={() => {
+                const newVal = !willOrderUDT;
+                setWillOrderUDT(newVal);
+                if (newVal) setWillNotOrderUDT(false);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  const newVal = !willOrderUDT;
+                  setWillOrderUDT(newVal);
+                  if (newVal) setWillNotOrderUDT(false);
+                }
+              }}
+            >
+              Will order a (UDT)
+            </span>
 
-        <label style={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={willOrderUDT}
-            onChange={() => {
-              const newVal = !willOrderUDT;
-              setWillOrderUDT(newVal);
-              if (newVal) setWillNotOrderUDT(false);
-            }}
-          />
-          Will order a UDT using Instrumented Chemistry Analyzer
-        </label>
+            <span
+              style={styles.optionButton(willNotOrderUDT)}
+              onClick={() => {
+                const newVal = !willNotOrderUDT;
+                setWillNotOrderUDT(newVal);
+                if (newVal) setWillOrderUDT(false);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  const newVal = !willNotOrderUDT;
+                  setWillNotOrderUDT(newVal);
+                  if (newVal) setWillOrderUDT(false);
+                }
+              }}
+            >
+              Will not order (UDT)
+            </span>
+          </div>
+        </div>
 
         {willOrderUDT && (
           <div style={styles.note}>

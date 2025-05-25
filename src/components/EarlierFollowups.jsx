@@ -116,77 +116,45 @@ const EarlierFollowups = ({ onDataChange }) => {
   const [sections, setSections] = useState([createEmptySection()]);
 
   useEffect(() => {
-    const hasAnyInput = sections.some((s) =>
-      Object.values({
-        ...s,
-        sensoryLevels: s.sensoryLevels.join(",")
-      }).some((value) => value && value.toString().trim() !== "")
-    );
-
-    if (!hasAnyInput) {
-      onDataChange("");
-      return;
-    }
-
-    // const formatted = sections
-    //   .map(
-    //     (s) =>
-    //       `Date: ${s.date}\n` +
-    //       `Pre-existing: ${s.preExisting}\n` +
-    //       `CC: ${s.cc}\n\n` +
-    //       `Palpation revealed: \n` +
-    //       `${s.palpationMuscle} muscle tenderness, ` +
-    //       `${s.palpationJoint} joint tenderness\n\n` +
-    //       `R.O.M. revealed: \n` +
-    //       `${s.rom} decrease in gross movement\n\n` +
-    //       `Comments: ${s.comments}\n\n` +
-    //       `Sensory changes: (paresthesia and numbness) occur ${
-    //         s.sensoryFrequency
-    //       } at the levels of ${s.sensoryLevels.join(", ") || "____"} ${
-    //         s.sensoryNote
-    //       }\n`
-    //   )
-    //   .join("\n");
     const formatted = sections
       .map((s) => {
-        const hasInput =
-          s.date.trim() ||
-          s.preExisting.trim() !== "Pre-existing" ||
-          s.cc.trim() ||
+        const lines = [];
+
+        if (s.date.trim()) lines.push(`Date: ${s.date}`);
+        if (s.preExisting.trim() && s.preExisting.trim() !== "Pre-existing") lines.push(`Pre-existing: ${s.preExisting}`);
+        if (s.cc.trim()) lines.push(`CC: ${s.cc}`);
+
+        if (
           s.palpationMuscle.trim() !== "_______" ||
-          s.palpationJoint.trim() !== "_______" ||
-          s.rom.trim() !== "_______" ||
-          s.comments.trim() ||
+          s.palpationJoint.trim() !== "_______"
+        ) {
+          lines.push(`\nPalpation revealed:`);
+          if (s.palpationMuscle.trim() !== "_______") lines.push(`${s.palpationMuscle} muscle tenderness`);
+          if (s.palpationJoint.trim() !== "_______") lines.push(`${s.palpationJoint} joint tenderness`);
+        }
+
+        if (s.rom.trim() !== "_______") {
+          lines.push(`\nR.O.M. revealed:`);
+          lines.push(`${s.rom} decrease in gross movement`);
+        }
+
+        if (s.comments.trim()) {
+          lines.push(`\nComments: ${s.comments}`);
+        }
+
+        if (
           s.sensoryLevels.length > 0 ||
-          s.sensoryNote.trim();
+          s.sensoryNote.trim()
+        ) {
+          lines.push(`\nSensory changes: (paresthesia and numbness) occur ${s.sensoryFrequency} at the levels of ${s.sensoryLevels.join(", ") || "____"} ${s.sensoryNote}`);
+        }
 
-        if (!hasInput) return ""; // Skip this section entirely
-
-        return (
-          `Date: ${s.date}\n` +
-          `Pre-existing: ${s.preExisting}\n` +
-          `CC: ${s.cc}\n\n` +
-          `Palpation revealed: \n` +
-          `${s.palpationMuscle} muscle tenderness,\n` +
-          `${s.palpationJoint} joint tenderness\n\n` +
-          `R.O.M. revealed: \n` +
-          `${s.rom} decrease in gross movement\n\n` +
-          `Comments: ${s.comments}\n\n` +
-          `Sensory changes: (paresthesia and numbness) occur ` +
-          `${s.sensoryFrequency} at the levels of ` +
-          `${s.sensoryLevels.join(", ") || "____"} ${s.sensoryNote}\n`
-        );
+        return lines.length ? lines.join("\n") : "";
       })
-      .filter(Boolean) // remove empty strings
-      .join("\n");
+      .filter(Boolean)
+      .join("\n\n");
 
-    if (formatted.trim() === "") {
-      onDataChange("");
-    } else {
-      onDataChange(formatted);
-    }
-
-    // onDataChange(formatted);
+    onDataChange(formatted.trim());
   }, [sections, onDataChange]);
 
   const handleChange = (index, field, value) => {
@@ -301,9 +269,9 @@ const EarlierFollowups = ({ onDataChange }) => {
                 }
                 style={styles.select}
               >
+                <option value="_______">_______</option>
                 <option value="Positive">Positive muscle tenderness</option>
                 <option value="Negative">Negative muscle tenderness</option>
-                <option value="_______">_______</option>
               </select>
 
               <select
@@ -313,9 +281,9 @@ const EarlierFollowups = ({ onDataChange }) => {
                 }
                 style={styles.select}
               >
+                <option value="_______">_______</option>
                 <option value="Positive">Positive joint tenderness</option>
                 <option value="Negative">Negative joint tenderness</option>
-                <option value="_______">_______</option>
               </select>
             </div>
 
@@ -326,13 +294,9 @@ const EarlierFollowups = ({ onDataChange }) => {
                 onChange={(e) => handleChange(index, "rom", e.target.value)}
                 style={styles.select}
               >
-                <option value="Positive">
-                  Positive decrease in gross movement
-                </option>
-                <option value="Negative">
-                  Negative decrease in gross movement
-                </option>
                 <option value="_______">_______</option>
+                <option value="Positive">Positive decrease in gross movement</option>
+                <option value="Negative">Negative decrease in gross movement</option>
               </select>
             </div>
 

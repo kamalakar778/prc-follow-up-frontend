@@ -1,34 +1,33 @@
 import React, { useState, useEffect } from "react";
-
-/* ───────────  CONFIG  ─────────── */
+import * as Yup from "yup";
 
 const directionOptions = [
-  "Schedule right",
-  "Schedule left",
-  "Schedule right to left",
-  "Schedule left to right",
-  "Schedule bilateral"
+  "right to left",
+  "bilateral",
+  "right",
+  "left",
+  "left to right",
 ];
 
 const baseInjections = [
-  { label: "lumbar medial branch blocks at",  levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"], direction: true },
-  { label: "radiofrequency ablation at",      levels: ["L3/4 , L4/5 , L5/S1", "Level 2", "Level 3"], direction: true },
-  { label: "cervical medial branch blocks at",levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"],   direction: true },
-  { label: "radiofrequency ablation at",      levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"],   direction: true },
-  { label: "thoracic medial branch blocks at",levels: ["T2/3, T3/4, and T4/5","T5/6, T6/7, and T7/8","T9/10, T10/11, and T11/12"], direction: true },
-  { label: "radiofrequency ablation at",      levels: ["T2/3, T3/4, and T4/5","T5/6, T6/7, and T7/8","T9/10, T10/11, and T11/12"], direction: true },
-  { label: "schedule midline epidural steroid injection at", levels: [], direction: false },
-  { label: "schedule midline caudal block at",                 levels: [], direction: false },
-  { label: "schedule TFESI at",                                levels: [], direction: true, directionAfter: true },
-  { label: "schedule hip injection (intra-articular) at",      levels: [], direction: true, directionAfter: true },
-  { label: "schedule trochanteric bursa hip injection at",     levels: [], direction: true, directionAfter: true },
-  { label: "schedule knee injection (intra-articular) at",     levels: [], direction: true, directionAfter: true },
-  { label: "schedule subacromial shoulder injection at",       levels: [], direction: true, directionAfter: true },
-  { label: "schedule shoulder injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
-  { label: "schedule SCS trial lumbar at",                     levels: [], direction: false },
-  { label: "schedule SCS implantation lumbar at",              levels: [], direction: false },
-  { label: "schedule trigger point injection at",              levels: [], direction: false },
-  { label: "schedule",                                         levels: ["schedule at"], direction: false }
+  { direction: true, label: "lumbar medial branch blocks at", levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"] },
+  { direction: true, label: "radiofrequency ablation at", levels: ["L3/4 , L4/5 , L5/S1", "Level 2", "Level 3"] },
+  { direction: true, label: "cervical medial branch blocks at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
+  { direction: true, label: "radiofrequency ablation at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
+  { label: "thoracic medial branch blocks at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
+  { label: "radiofrequency ablation at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
+  { label: "midline epidural steroid injection at", levels: [], direction: false },
+  { label: "midline caudal block at", levels: [], direction: false },
+  { label: "TFESI at", levels: [], direction: true, directionAfter: true },
+  { label: "hip injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "trochanteric bursa hip injection at", levels: [], direction: true, directionAfter: true },
+  { label: "knee injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "subacromial shoulder injection at", levels: [], direction: true, directionAfter: true },
+  { label: "shoulder injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "SCS trial lumbar at", levels: [], direction: false },
+  { label: "SCS implantation lumbar at", levels: [], direction: false },
+  { label: "trigger point injection at", levels: [], direction: false },
+  { label: "", levels: ["schedule at"], direction: false }
 ];
 
 const getInitialInjections = () =>
@@ -41,41 +40,48 @@ const getInitialInjections = () =>
     included: false
   }));
 
-/* ───────────  STYLES  ─────────── */
+const injectionSchema = Yup.object().shape({
+  label: Yup.string().required("Label is required"),
+  timing: Yup.string().oneOf(["Now", "Later"]).required(),
+  directionSelected: Yup.string().when("direction", {
+    is: true,
+    then: Yup.string().required("Direction is required"),
+    otherwise: Yup.string().notRequired()
+  }),
+  selectedLevel: Yup.string().required("Level is required"),
+  notes: Yup.string().max(200, "Notes must be under 200 characters"),
+  included: Yup.boolean()
+});
+
+const fullInjectionSchema = Yup.array().of(injectionSchema);
 
 const styles = {
-  container:   { padding: 16, maxWidth: 900, margin: "auto", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" },
-  header:      { fontSize: 20, fontWeight: 700, textDecoration: "underline", marginBottom: 12 },
-  injectionRow:{ display: "flex", flexWrap: "nowrap", alignItems: "center", gap: 8, marginBottom: 4, borderBottom: "1px solid #ddd", paddingBottom: 4, whiteSpace: "nowrap", overflowX: "auto" },
-  index:       { fontWeight: 600, minWidth: 20 },
-  radioLabel:  { display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 13 },
-  select:      { border: "1px solid #ccc", borderRadius: 4, padding: "2px 6px", fontSize: 13, minWidth: 100, maxWidth: 60 },
-  textInput:   { border: "1px solid #ccc", borderRadius: 4, padding: "4px 6px", fontSize: 13, minWidth: 150 },
-  notesInput:  { border: "1px solid #ccc", borderRadius: 4, padding: "8px 1px", fontSize: 13, minWidth: 280 },
-  moveSelect:  { border: "1px solid #ccc", borderRadius: 4, padding: "2px 6px", fontSize: 13, minWidth: 80 },
-  removeButton:{ color: "#dc2626", cursor: "pointer", background: "none", border: "none", fontSize: 13, fontWeight: 600, padding: "2px 6px" },
-  buttonGroup: { marginTop: 16, display: "flex", gap: 12 },
-  button:      { padding: "6px 12px", borderRadius: 6, border: "none", fontWeight: 600, cursor: "pointer", fontSize: 14 },
-  addButton:   { backgroundColor: "#2563eb", color: "white" },
-  addButtonHover:{ backgroundColor: "#1d4ed8" },
+  container: { padding: 8, maxWidth: 900, margin: "auto", marginBottom: "0px 30px", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" },
+  header: { fontSize: 20, fontWeight: 700, textDecoration: "underline", marginBottom: 8 },
+  injectionRow: { display: "flex", flexWrap: "nowrap", alignItems: "center", gap: 2, margin: "0px -60px", borderBottom: "1px solid #ddd", paddingBottom: 2, whiteSpace: "nowrap", overflowX: "auto" },
+  injectionRowEditable: { display: "flex", flexWrap: "nowrap", alignItems: "center", gap: 1, margin: "-5px -60px", borderBottom: "1px solid #ddd", paddingBottom: 2, whiteSpace: "nowrap", overflowX: "auto" },
+  index: { fontWeight: 600, minWidth: 20 },
+  select: { border: "1px solid #ccc", borderRadius: 4, padding: "6px 4px", margin: "10px 0px", fontSize: 13, minWidth: 100, maxWidth: 60 },
+  textInput: { border: "1px solid #ccc", borderRadius: 4, padding: "5px 4px", fontSize: 13, minWidth: 150 },
+  notesInput: { border: "1px solid #ccc", borderRadius: 4, padding: "6px 1px", margin: "10px 0px", fontSize: 13, minWidth: 220 },
+  moveSelect: { border: "1px solid #ccc", borderRadius: 4, padding: "6px 4px", margin: "10px 0px", fontSize: 13, minWidth: 80, maxWidth: 20 },
+  removeButton: { color: "#dc2626", cursor: "pointer", background: "none", border: "none", fontSize: 13, fontWeight: 600, padding: "1px 4px" },
+  buttonGroup: { marginTop: 12, display: "flex", gap: 8 },
+  button: { padding: "4px 8px", borderRadius: 6, border: "none", fontWeight: 600, cursor: "pointer", fontSize: 14 },
+  addButton: { backgroundColor: "#2563eb", color: "white", gap: 4 },
+  addButtonHover: { backgroundColor: "#1d4ed8" },
   resetButton: { backgroundColor: "#6b7280", color: "white" },
-  resetButtonHover:{ backgroundColor: "#4b5563" }
+  resetButtonHover: { backgroundColor: "#4b5563" }
 };
-
-/* ───────────  COMPONENT  ─────────── */
 
 const InjectionsList = ({ onInjectionChange }) => {
   const [injections, setInjections] = useState(getInitialInjections);
-  const [addHover,   setAddHover]   = useState(false);
+  const [addHover, setAddHover] = useState(false);
   const [resetHover, setResetHover] = useState(false);
-
-  /* ---------- handlers ---------- */
 
   const handleChange = (index, field, value) => {
     const updated = [...injections];
-
     if (field === "timing") {
-      // exclusive "Now" logic
       updated.forEach((inj, i) => {
         if (i === index) {
           inj.timing = value;
@@ -87,7 +93,6 @@ const InjectionsList = ({ onInjectionChange }) => {
     } else {
       updated[index][field] = field === "notes" ? value.trim() : value || "";
     }
-
     setInjections(updated);
   };
 
@@ -103,6 +108,12 @@ const InjectionsList = ({ onInjectionChange }) => {
     setInjections(updated);
   };
 
+  const removeInjection = (index) => {
+    const updated = [...injections];
+    updated.splice(index, 1);
+    setInjections(updated);
+  };
+
   const addInjection = () =>
     setInjections([
       ...injections,
@@ -113,7 +124,7 @@ const InjectionsList = ({ onInjectionChange }) => {
         directionAfter: false,
         timing: "Later",
         directionSelected: "",
-        selectedLevel: "schedule",
+        selectedLevel: "",
         notes: "",
         included: false
       }
@@ -129,21 +140,13 @@ const InjectionsList = ({ onInjectionChange }) => {
 
   const resetAll = () => setInjections(getInitialInjections());
 
-  /* ---------- keep “Now” on top ---------- */
-
   useEffect(() => {
-    const now   = injections.filter((inj) => inj.timing === "Now");
+    const now = injections.filter((inj) => inj.timing === "Now");
     const later = injections.filter((inj) => inj.timing !== "Now");
     const reordered = [...now, ...later];
-
-    const sameOrder =
-      reordered.length === injections.length &&
-      reordered.every((inj, idx) => inj === injections[idx]);
-
+    const sameOrder = reordered.length === injections.length && reordered.every((inj, idx) => inj === injections[idx]);
     if (!sameOrder) setInjections(reordered);
   }, [injections]);
-
-  /* ---------- generate summary ---------- */
 
   useEffect(() => {
     const included = injections.filter((inj) => inj.included);
@@ -154,7 +157,7 @@ const InjectionsList = ({ onInjectionChange }) => {
         inj.selectedLevel || inj.levels?.join(", ") || "",
         inj.directionSelected || ""
       ];
-      const line      = parts.filter(Boolean).join(" ").trim();
+      const line = parts.filter(Boolean).join(" ").trim();
       const notesPart = inj.notes ? ` - Notes: ${inj.notes}` : "";
       return `${idx + 1}. ${line}${notesPart}`;
     });
@@ -162,68 +165,67 @@ const InjectionsList = ({ onInjectionChange }) => {
     if (onInjectionChange) {
       onInjectionChange({
         injections: lines.join("\n"),
-        INJECTION_SUMMARY:
-          lines.length ? `Injections:\n  ${lines.join("\n  ")}` : ""
+        INJECTION_SUMMARY: lines.length ? `\n  ${lines.join("\n  ")}` : "_________"
       });
     }
   }, [injections, onInjectionChange]);
 
-  /* ---------- render ---------- */
-
   return (
     <div style={styles.container}>
-      <h3 style={styles.header}>INJECTION PREVIEW:</h3>
+      {injections.filter((inj) => inj.included).map((inj, idx) => (
+        <div key={idx} style={{ ...styles.injectionRow, background: "#f9fafb" }}>
+          <strong>{inj.timing}</strong>
+          {inj.direction && !inj.directionAfter && inj.directionSelected && `${inj.directionSelected}`}
+          {" "}{inj.label} {inj.selectedLevel}
+          {inj.direction && inj.directionAfter && inj.directionSelected && `${inj.directionSelected}`}
+          {inj.notes && ` - Notes: ${inj.notes}`}
+          <button onClick={() => removeFromPreview(injections.indexOf(inj))} style={styles.removeButton}>Remove</button>
+        </div>
+      ))}
 
-      {/* Preview chips */}
-      {injections
-        .filter((inj) => inj.included)
-        .map((inj, idx) => (
-          <div key={idx} style={{ ...styles.injectionRow, background: "#f9fafb" }}>
-            <strong>{inj.timing}</strong>
-            {inj.direction && !inj.directionAfter && inj.directionSelected && ` - ${inj.directionSelected}`}
-            {" "}{inj.label} {inj.selectedLevel}
-            {inj.direction && inj.directionAfter && inj.directionSelected && ` - ${inj.directionSelected}`}
-            {inj.notes && ` - Notes: ${inj.notes}`}
-            <button onClick={() => removeFromPreview(injections.indexOf(inj))} style={styles.removeButton}>
-              Remove
-            </button>
-          </div>
-        ))}
-
-      {/* Editable rows */}
       {injections.map((inj, index) => (
-        <div key={index} style={styles.injectionRow}>
-          <input type="checkbox" checked={inj.included} onChange={() => toggleIncluded(index)} />
+        <div key={index} style={styles.injectionRowEditable}>
+          <button
+            style={{
+              ...styles.button,
+              backgroundColor: inj.included ? "#dc2626" : "#16a34a",
+              color: "white",
+              fontSize: 12,
+              padding: "6px 6px"
+            }}
+            onClick={() => toggleIncluded(index)}
+          >
+            {inj.included ? "Remove" : "Add"}
+          </button>
+
           <span style={styles.index}>{index + 1}.</span>
 
-          {["Now", "Later"].map((t) => (
-            <label key={t} style={styles.radioLabel}>
-              <input
-                type="radio"
-                name={`timing-${index}`}
-                value={t}
-                checked={inj.timing === t}
-                onChange={(e) => handleChange(index, "timing", e.target.value)}
-              />
-              {t}
-            </label>
-          ))}
+          <button
+            style={{
+              ...styles.button,
+              backgroundColor: inj.timing === "Now" ? "#2563eb" : "#6b7280",
+              color: "white",
+              fontSize: 12,
+              padding: "6px 6px"
+            }}
+            onClick={() => handleChange(index, "timing", inj.timing === "Now" ? "Later" : "Now")}
+          >
+            {inj.timing}
+          </button>
 
-          {/* direction (before label) */}
           {inj.direction && !inj.directionAfter && (
             <select
               style={styles.select}
               value={inj.directionSelected}
               onChange={(e) => handleChange(index, "directionSelected", e.target.value)}
             >
-              <option value="">Direction</option>
+              <option value="">-- Select --</option>
               {directionOptions.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           )}
 
           <span style={{ fontWeight: 500 }}>{inj.label}</span>
 
-          {/* direction (after label) */}
           {inj.direction && inj.directionAfter && (
             <select
               style={styles.select}
@@ -235,8 +237,7 @@ const InjectionsList = ({ onInjectionChange }) => {
             </select>
           )}
 
-          {/* level / custom text */}
-          {inj.label === "schedule" ? (
+          {inj.label === "" ? (
             <input
               style={styles.textInput}
               type="text"
@@ -257,7 +258,6 @@ const InjectionsList = ({ onInjectionChange }) => {
             )
           )}
 
-          {/* manual re-ordering */}
           <select
             style={styles.moveSelect}
             value={index + 1}
@@ -270,7 +270,6 @@ const InjectionsList = ({ onInjectionChange }) => {
             ))}
           </select>
 
-          {/* notes */}
           <input
             style={styles.notesInput}
             type="text"
@@ -278,10 +277,16 @@ const InjectionsList = ({ onInjectionChange }) => {
             value={inj.notes}
             onChange={(e) => handleChange(index, "notes", e.target.value)}
           />
+
+          <button
+            style={styles.removeButton}
+            onClick={() => removeInjection(index)}
+          >
+            Remove
+          </button>
         </div>
       ))}
 
-      {/* Buttons */}
       <div style={styles.buttonGroup}>
         <button
           style={{ ...styles.button, ...styles.addButton, ...(addHover ? styles.addButtonHover : {}) }}

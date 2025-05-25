@@ -23,6 +23,8 @@ const styles = {
     gap: "0.5rem"
   },
   label: {
+    // margin:"0px 0px",
+    // padding:"0px 0px",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -40,7 +42,7 @@ const styles = {
   },
   select: {
     flex: 1,
-    marginTop: "0.3rem",
+    marginTop: "1rem",
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",

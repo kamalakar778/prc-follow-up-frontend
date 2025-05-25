@@ -11,42 +11,57 @@ const SignatureLine = ({ onChange }) => {
   };
 
   const initialLines = [
-    "Facet, RFA, & ESI/Caudal Injection Notes:",
-    "MBB INITIAL:",
-    "RFA INITIAL:",
-    "RFA REPEAT:",
+    "Facet, RFA, & ESI/Caudal Injection:  Activity/exercise modifications discussed & implemented (eg McKenzie & stretching exercises).",
+    "MBB INITIAL:  The patient reports axial pain greater than or equal to x3 months AND NO untreated radicular pain AND Unsuccessful P.T./home exercise program x6 weeks AND decreased ADLs AND Medications tried.",
+    "RFA INITIAL:  The patient has received greater than or equal to 80% temporary pain relief from left, right and confirmatory bilateral MBB.",
+    "RFA REPEAT:The patient reports ",
     "RFA will be ordered:",
-    "RFA with spinal fusion:",
-    "ESI/Caudal Indication:",
-    "ESI/Caudal Indication:",
-    "ESI/Caudal Indication:",
-    "ESI/Caudal Indication:",
-    "ESI/Caudal REPEAT SUCCESS:  ",
-    "ESI/Caudal REPEAT FAILURE:  "
+    "RFA in patient with spinal fusion, will be done:",
+    "ESI/Caudal Indication: The patient reports history of greater than or equal to 4 weeks of radicular pain",
+    "ESI/Caudal Indication: Imaging shows:",
+    "ESI/Caudal Indication: Overall quality of life and function (ADLs) is significantly impacted due to radicular/FBSS pain complaints.",
+    "ESI/Caudal Indication: The patient reports greater than or equal to 4 weeks of P.T./home exercise done",
+    "ESI/Caudal REPEAT SUCCESS: ",
+    "ESI/Caudal REPEAT FAILURE: Will now use a"
   ];
 
   const optionMap = {
-    0: [""],
-    1: ["Left", "Right", "Confirmatory Bilateral MBB"],
-    2: ["≥ 50% relief", "≥ 50% ADL improvement"],
-    3: ["Bilateral", "Unilateral", "Left only", "Right only"],
-    4: ["Different levels", "Posterior approach"],
-    5: ["Intermittently", "Continuously", "FBSS", "FNSS"],
-    6: ["HNP", "Bulging", "Protrusion"],
-    7: ["ADLs impacted", "Severe radicular pain"],
-    8: ["Completed PT", "Unsuccessful PT due to pain"],
-    9: ["50% relief", "Improved ADLs"],
-    10: ["Different spinal level", "Different approach"],
-    11: ["Recurrent symptoms", "Consider surgery"]
+    0: [],
+    1: [],
+    2: [],
+    3: [
+      "greater than or equal to 50% pain relief from last RFA",
+      "to date",
+      "for 6 months",
+      "greater than or equal to 50% improvement in ability to perform ADLs and/or overall function."
+    ],
+    4: ["Bilateral", "Unilaterally"],
+    5: [
+      "At levels different from the fusion",
+      "Posteriorly as fusion was done anteriorly"
+    ],
+    6: ["intermittently", "continuously", "FBSS", "FNSS"],
+    7: ["HNP", "Bulging", "Protrusion"],
+    8: ["function (ADLs) "],
+    9: ["and unsuccessful P.T./home exercise program x4 weeks due to pain."],
+    10: ["50% relief", "Improved ADLs"],
+    11: ["Different spinal level", "Different approach"]
   };
+
+  const followUpOptions = [
+    "Two weeks",
+    "Three weeks",
+    "Four weeks",
+    "Six weeks",
+    "Eight weeks",
+    "Twelve weeks",
+    "Several weeks after procedure",
+    "Yet to be determined",
+    "Discharge"
+  ];
 
   const initialFollowUp = "Four weeks";
-
-  const getTodayISO = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0]; // returns YYYY-MM-DD
-  };
-
+  const getTodayISO = () => new Date().toISOString().split("T")[0];
   const formatDateToMMDDYYYY = (dateStr) => {
     const date = new Date(dateStr);
     const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -55,143 +70,105 @@ const SignatureLine = ({ onChange }) => {
     return `${mm}/${dd}/${yyyy}`;
   };
 
-  const getTodayFormatted = (dateStr) => {
-    const date = new Date(dateStr);
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    const yyyy = date.getFullYear();
-    return `${mm}/${dd}/${yyyy}`;
-  };
-
-  const [lines, setLines] = useState(initialLines);
+  const [includedLines, setIncludedLines] = useState(initialLines.map(() => false));
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
-  const [followUpAppointment, setFollowUpAppointment] =
-    useState(initialFollowUp);
+  const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
   const [selectedButton, setSelectedButton] = useState("");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
-  const lineDropdownOptions = lines.reduce((acc, _, idx) => {
-    acc[idx] = optionMap[idx] || ["Custom option A", "Custom option B"];
-    return acc;
-  }, {});
-
   const formatProcessedLines = useCallback(() => {
-    return lines
+    const hasAnyInput =
+      includedLines.some((inc) => inc) ||
+      Object.values(selectedOptions).some((opts) => opts.length > 0);
+
+    if (!hasAnyInput) return "";
+
+    const lines = initialLines
       .map((line, idx) => {
-        const opts = selectedOptions[idx];
-        if (!opts || opts.length === 0) return null;
-        return `${line} ${opts.join(", ")}`;
+        const opts = selectedOptions[idx] || [];
+        const isSelected = opts.length > 0;
+        const isIncluded = idx === 0 || includedLines[idx] || isSelected;
+        if (!isIncluded) return null;
+        const appended = isSelected ? ` ${opts.join(", ")}` : "";
+        return `${line}${appended}`;
       })
-      .filter(Boolean)
-      .join("\n");
-  }, [lines, selectedOptions]);
+      .filter(Boolean);
+
+    return lines.join("\n");
+  }, [selectedOptions, includedLines]);
 
   const formatOtherPlans = () => {
     const filteredLines = otherPlans.filter(
       (line, idx, arr) => idx < arr.length - 1 || line.trim() !== ""
     );
-
-    const lines = filteredLines.map(
-      (line, idx) => `${idx + 1}. ${line.trim() || "_________"}`
-    );
-
     return {
-      lines
+      lines: filteredLines.map(
+        (line, idx) => `${idx + 1}. ${line.trim() || "_________"}`
+      )
     };
   };
 
   useEffect(() => {
-    if (onChange) {
-      onChange({
-        otherPlans: formatOtherPlans(),
-        formattedLines: formatProcessedLines(),
-        followUpAppointment,
-        signatureLine: buttonTexts[selectedButton] || "_________________",
-        dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
-      });
-    }
+    onChange?.({
+      otherPlans: formatOtherPlans(),
+      formattedLines: formatProcessedLines(),
+      followUpAppointment,
+      signatureLine: buttonTexts[selectedButton] || "_________________",
+      dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
+    });
   }, [
     selectedOptions,
-    lines,
+    includedLines,
+    otherPlans,
     followUpAppointment,
     selectedButton,
-    dateTranscribed,
-    otherPlans,
-    onChange,
-    formatOtherPlans,
-    formatProcessedLines,
-    buttonTexts
+    dateTranscribed
   ]);
 
-  const handleSelectChange = (e, lineIndex) => {
-    const value = e.target.value;
-    if (!value) return;
+  const handleOptionToggle = (lineIndex, option) => {
     setSelectedOptions((prev) => {
-      const existing = prev[lineIndex] || [];
-      if (existing.includes(value)) return prev;
-      return { ...prev, [lineIndex]: [...existing, value] };
+      const current = prev[lineIndex] || [];
+      const exists = current.includes(option);
+      const updated = exists
+        ? current.filter((o) => o !== option)
+        : [...current, option];
+      return { ...prev, [lineIndex]: updated };
     });
-  };
-
-  const handleRemoveLine = (e, indexToRemove) => {
-    e.preventDefault();
-    setLines((prev) => prev.filter((_, i) => i !== indexToRemove));
-    setSelectedOptions((prev) => {
-      const copy = { ...prev };
-      delete copy[indexToRemove];
-      return copy;
-    });
-  };
-
-  const handleReset = (e) => {
-    e.preventDefault();
-    setOtherPlans([""]);
-    setSelectedOptions({});
-    setLines(initialLines);
-    setSelectedButton("");
-    setDateTranscribed(getTodayFormatted());
-    setFollowUpAppointment(initialFollowUp);
-  };
-
-  const handleChangeOtherPlan = (e, idx) => {
-    const val = e.target.value;
-    setOtherPlans((prev) => {
-      const copy = [...prev];
-      copy[idx] = val;
-      if (idx === copy.length - 1 && val.trim() !== "") copy.push("");
-      return copy;
-    });
-  };
-
-  const handleRemoveOtherPlan = (e, idx) => {
-    e.preventDefault();
-    setOtherPlans((prev) => {
-      const copy = prev.filter((_, i) => i !== idx);
-      return copy.length === 0 ? [""] : copy;
-    });
-  };
-
-  const handleButtonClick = (e, name) => {
-    e.preventDefault();
-    setSelectedButton(name);
   };
 
   const styles = {
-    containerStyle: {
-      fontFamily: "Arial, sans-serif",
-      maxWidth: "1000px",
-      margin: "0 auto"
+    button: {
+      padding: "6px 12px",
+      borderRadius: "4px",
+      marginRight: "8px",
+      border: "none",
+      cursor: "pointer"
     },
-
-    section: {
-      border: "1px solid #ccc",
-      padding: "16px",
+    addButton: (active) => ({
+      backgroundColor: active ? "#90ee90" : "#ccc",
+      color: "#000",
+      fontWeight: "bold",
+      marginRight: "8px"
+    }),
+    optionButton: (isSelected) => ({
+      cursor: "pointer",
+      padding: "6px 10px",
       borderRadius: "8px",
-      marginBottom: "16px",
-      backgroundColor: "#f9f9f9"
-    },
-    label: { fontWeight: "bold", marginRight: "8px" },
+      border: "1px solid",
+      borderColor: isSelected ? "green" : "#999",
+      backgroundColor: isSelected ? "#e0f7e9" : "#f0f0f0",
+      color: isSelected ? "green" : "#333",
+      marginRight: 6,
+      marginBottom: 4,
+      display: "inline-block",
+      fontWeight: isSelected ? "bold" : "normal"
+    }),
+    physicianButton: (active) => ({
+      backgroundColor: active ? "#ffa500" : "#ccc",
+      color: "#000",
+      fontWeight: "bold"
+    }),
     input: {
       padding: "6px",
       marginRight: "8px",
@@ -206,47 +183,46 @@ const SignatureLine = ({ onChange }) => {
       borderRadius: "4px",
       border: "1px solid #ccc"
     },
-    select: {
-      padding: "6px",
-      marginRight: "8px",
-      borderRadius: "4px",
-      border: "1px solid #ccc"
-    },
-    button: {
-      padding: "6px 12px",
-      borderRadius: "4px",
-      marginRight: "8px",
-      border: "none",
-      cursor: "pointer"
-    },
-    removeButton: {
-      backgroundColor: "#e74c3c",
-      color: "white"
-    },
-    physicianButton: (active) => ({
-      backgroundColor: active ? "#ffa500" : "#ccc",
-      color: "#000",
-      fontWeight: "bold"
-    })
+    section: {
+      border: "1px solid #ccc",
+      padding: "16px",
+      borderRadius: "8px",
+      marginBottom: "16px",
+      backgroundColor: "#f9f9f9"
+    }
   };
 
   return (
-    <div style={styles.containerStyle}>
+    <div style={{ fontFamily: "Arial", maxWidth: 1000, margin: "0 auto" }}>
       <div style={styles.section}>
         <h3>Other Plans:</h3>
         {otherPlans.map((plan, idx) => (
           <div key={idx} style={{ marginBottom: "8px" }}>
-            <label style={styles.label}>{idx + 1}.</label>
+            <label>{idx + 1}.</label>
             <input
               type="text"
               style={styles.input}
               value={plan}
-              onChange={(e) => handleChangeOtherPlan(e, idx)}
+              onChange={(e) => {
+                const copy = [...otherPlans];
+                copy[idx] = e.target.value;
+                if (idx === copy.length - 1 && e.target.value.trim() !== "")
+                  copy.push("");
+                setOtherPlans(copy);
+              }}
             />
             {otherPlans.length > 1 && (
               <button
-                style={{ ...styles.button, ...styles.removeButton }}
-                onClick={(e) => handleRemoveOtherPlan(e, idx)}
+                style={{
+                  ...styles.button,
+                  backgroundColor: "#e74c3c",
+                  color: "white"
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const copy = otherPlans.filter((_, i) => i !== idx);
+                  setOtherPlans(copy.length === 0 ? [""] : copy);
+                }}
               >
                 Remove
               </button>
@@ -257,64 +233,78 @@ const SignatureLine = ({ onChange }) => {
 
       <div style={styles.section}>
         <h3>Facet, RFA, & ESI/Caudal Injection Notes:</h3>
-        {lines.map((line, index) => (
-          <div key={index} style={{ marginBottom: "8px" }}>
-            <span>{line} </span>
-            <em style={{ color: "orange", fontWeight: "bold" }}>
-              {(selectedOptions[index] || []).join(", ") || "(none)"}
-            </em>{" "}
-            {lineDropdownOptions[index] && (
-              <select
-                style={styles.select}
-                value=""
-                onChange={(e) => handleSelectChange(e, index)}
-              >
-                <option value="">-- Add option --</option>
-                {lineDropdownOptions[index].map((option, i) => (
-                  <option key={i} value={option}>
-                    {option}
-                  </option>
+        {initialLines.map((line, idx) => {
+          const options = optionMap[idx] || [];
+          const selected = selectedOptions[idx] || [];
+          const isIncluded =
+            idx === 0 || includedLines[idx] || selected.length > 0;
+
+          return (
+            <div key={idx} style={{ marginBottom: "12px" }}>
+              {[1, 2].includes(idx) && (
+                <button
+                  style={styles.addButton(isIncluded)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const updated = [...includedLines];
+                    updated[idx] = !updated[idx];
+                    setIncludedLines(updated);
+                  }}
+                >
+                  {isIncluded ? "Remove" : "Add"}
+                </button>
+              )}
+              <span>{line}</span>
+              <div style={{ marginTop: 4 }}>
+                {options.map((opt, i) => (
+                  <span
+                    key={i}
+                    style={styles.optionButton(selected.includes(opt))}
+                    onClick={() => handleOptionToggle(idx, opt)}
+                  >
+                    {opt}
+                  </span>
                 ))}
-              </select>
-            )}
-            <button
-              style={{ ...styles.button, ...styles.removeButton }}
-              onClick={(e) => handleRemoveLine(e, index)}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button style={styles.button} onClick={handleReset}>
+              </div>
+            </div>
+          );
+        })}
+        <button
+          style={{ ...styles.button, backgroundColor: "#ddd", color: "#000" }}
+          onClick={(e) => {
+            e.preventDefault();
+            setOtherPlans([""]);
+            setSelectedOptions({});
+            setIncludedLines(initialLines.map(() => false));
+            setFollowUpAppointment(initialFollowUp);
+            setSelectedButton("");
+            setDateTranscribed(getTodayISO());
+          }}
+        >
           Reset
         </button>
       </div>
 
       <div style={styles.section}>
         <p>
-          <strong>Follow-up Appointment in:</strong>{" "}
-          <select
-            style={styles.select}
-            value={followUpAppointment}
-            onChange={(e) => setFollowUpAppointment(e.target.value)}
-          >
-            {[
-              "Four weeks",
-              "Two weeks",
-              "Three weeks",
-              "Six weeks",
-              "Eight weeks",
-              "Twelve weeks",
-              "Several weeks after procedure",
-              "Yet to be determined",
-              "Discharge"
-            ].map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
+          <strong>Follow-up Appointment in: </strong>
         </p>
+        <div>
+          {followUpOptions.map((opt) => {
+            const isSelected = followUpAppointment === opt;
+            return (
+              <button
+                key={opt}
+                style={styles.optionButton(isSelected)}
+                onClick={() =>
+                  setFollowUpAppointment((prev) => (prev === opt ? "" : opt))
+                }
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div style={styles.section}>
@@ -326,7 +316,10 @@ const SignatureLine = ({ onChange }) => {
               ...styles.button,
               ...styles.physicianButton(selectedButton === name)
             }}
-            onClick={(e) => handleButtonClick(e, name)}
+            onClick={(e) => {
+              e.preventDefault();
+              setSelectedButton(name);
+            }}
           >
             {name}
           </button>
@@ -334,7 +327,7 @@ const SignatureLine = ({ onChange }) => {
       </div>
 
       <div style={styles.section}>
-        <label style={styles.label}>Date Transcribed:</label>
+        <label>Date Transcribed:</label>
         <input
           type="date"
           style={styles.inputDate}

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 const styles = {
   section: {
     marginBottom: "4px ",
-    padding: "10px 12px",
+    padding: "8px 10px",
     backgroundColor: "#f9f9f9",
     borderRadius: "8px"
   },
@@ -14,25 +14,33 @@ const styles = {
     color: "#444"
   },
   row: {
-    height:"40px",  //added extra
+    height: "40px",
     display: "flex",
     alignItems: "center",
+    marginRight: 84,
     flexWrap: "wrap",
-    gap: "12px",
+    gap: "6px",
     fontSize: "14px",
-    padding: "-10px",
     backgroundColor: "#ffffff",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    borderBottom: "1px solid #ddd", // Add this line
-    // marginBottom: "-20px" // Optional: slight spacing
+    borderBottom: "1px solid #ddd"
   },
   input: {
-    flex: "5 5 50px",
     padding: "6px",
+    maxWidth: "100px",
     fontSize: "14px",
     borderRadius: "10px",
     border: "1px solid #ccc"
+  },
+  otherIssuesInput: {
+    padding: "6px",
+    width: "60%",
+    // maxWidth: "300px",
+    fontSize: "14px",
+    borderRadius: "10px",
+    border: "1px solid #ccc",
+    backgroundColor: "#fff"
   },
   button: {
     padding: "6px 12px",
@@ -63,35 +71,15 @@ const styles = {
   },
   predefinedTextList: {
     listStyleType: "none",
-    // paddingLeft: "20px",
     marginBottom: "2px",
-    padding: "10px",
-
+    padding: "10px"
   },
   predefinedTextItem: {
     fontSize: "14px",
     lineHeight: "1.6"
   },
-  manualSelectButton: {
-    padding: "6px 12px",
-    fontSize: "13px",
-    cursor: "pointer",
-    borderRadius: "4px",
-    border: "1px solid",
-    transition: "background-color 0.3s, color 0.3s"
-  },
-  selectLineButtonActive: {
-    backgroundColor: "#ddffdd",
-    borderColor: "#008000",
-    color: "#006400"
-  },
-  removeLineButtonActive: {
-    backgroundColor: "#ffdddd",
-    borderColor: "#cc0000",
-    color: "#cc0000"
-  },
   optionButton: (isSelected) => ({
-    marginRight: 4,
+    marginLeft: 10,
     marginBottom: 6,
     cursor: "pointer",
     padding: "6px 12px",
@@ -107,7 +95,7 @@ const styles = {
 };
 
 const sections = {
-  "Other Issues": [`'Other :  ___________ `, `ROM is grossly decreased on`],
+  "Other Issues": [`'Other: `, `ROM is grossly decreased on`],
   Cervical: [
     `Cervical spine tenderness of paraspinal muscles `,
     `Traps/levator scapula tenderness `,
@@ -123,7 +111,7 @@ const sections = {
   Lumbar: [
     `Lumbar spine tenderness of paraspinal and or quadratus muscles `,
     `Gluteal tenderness `,
-    `Lumbar facet loading signs  at`,
+    `Lumbar facet loading signs at `,
     `Quadrant test `,
     `Slump/SLR `,
     `Patrick `,
@@ -145,7 +133,7 @@ const sections = {
     `(hip) Squat test `,
     `Trochanteric bursa tenderness `,
     `ROM is grossly decreased `,
-    `Patrick `,
+    `Patrick test`,
     `FADIR (flexion, adduction and medial hip rotation) `
   ],
   "Peri Patella": [
@@ -193,16 +181,6 @@ const EstablishedComplaints = ({ onChange }) => {
     setUserInputs((prev) => ({ ...prev, [lineIndex]: value }));
   };
 
-  const toggleLineSelection = (lineIndex) => {
-    setManualSelectedLines((prev) => {
-      const updated = new Set(prev);
-      updated.has(lineIndex)
-        ? updated.delete(lineIndex)
-        : updated.add(lineIndex);
-      return updated;
-    });
-  };
-
   useEffect(() => {
     const groupedLines = {};
     let globalIdx = 0;
@@ -216,9 +194,9 @@ const EstablishedComplaints = ({ onChange }) => {
         const isManuallySelected = manualSelectedLines.has(globalIdx);
 
         if (location || level || userInput || isManuallySelected) {
-          const finalLine = `${line}${location ? " " + location : ""}${
-            level ? " " + level : ""
-          }${userInput ? " " + userInput : ""}`.trim();
+          const finalLine = `${line}${location ? "" + location : ""}${
+            level ? "" + level : ""
+          }${userInput ? "" + userInput : ""}`.trim();
           groupedLines[sectionName].push(finalLine);
         }
         globalIdx++;
@@ -288,6 +266,7 @@ const EstablishedComplaints = ({ onChange }) => {
               const isCervical = sectionName === "Cervical";
               const isThoracic = sectionName === "Thoracic";
               const isLumbar = sectionName === "Lumbar";
+              const isOtherIssues = sectionName === "Other Issues";
 
               const levelOptions = isCervical
                 ? CervicalLevels
@@ -299,19 +278,6 @@ const EstablishedComplaints = ({ onChange }) => {
 
               return (
                 <div key={globalIndex} style={styles.row}>
-                  {/* <button
-                    onClick={() => toggleLineSelection(globalIndex)}
-                    style={{
-                      ...styles.manualSelectButton,
-                      ...(manualSelectedLines.has(globalIndex)
-                        ? styles.removeLineButtonActive
-                        : styles.selectLineButtonActive)
-                    }}
-                  >
-                    {manualSelectedLines.has(globalIndex)
-                      ? "Remove Line"
-                      : "Select Line"}
-                  </button> */}
                   <span style={{ flex: "1 1 300px" }}>{line}</span>
 
                   {levelOptions.length > 0 && (
@@ -326,23 +292,33 @@ const EstablishedComplaints = ({ onChange }) => {
                     />
                   )}
 
+                  {!isOtherIssues && (
+                    <OptionSelector
+                      options={LocationOptions}
+                      selectedValue={
+                        selectedOptions[`${globalIndex}-location`] || ""
+                      }
+                      onSelect={(val) =>
+                        handleOptionChange(`${globalIndex}-location`, val)
+                      }
+                    />
+                  )}
+
                   <input
                     type="text"
                     value={userInputs[globalIndex] || ""}
                     onChange={(e) =>
                       handleInputChange(globalIndex, e.target.value)
                     }
-                    placeholder="Additional info"
-                    style={styles.input}
-                  />
-
-                  <OptionSelector
-                    options={LocationOptions}
-                    selectedValue={
-                      selectedOptions[`${globalIndex}-location`] || ""
+                    placeholder={
+                      isOtherIssues
+                        ? "Describe the other issue..."
+                        : "Additional info"
                     }
-                    onSelect={(val) =>
-                      handleOptionChange(`${globalIndex}-location`, val)
+                    style={
+                      isOtherIssues
+                        ? styles.otherIssuesInput
+                        : styles.input
                     }
                   />
                 </div>

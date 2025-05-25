@@ -81,11 +81,12 @@ const defaultMedication = {
 };
 
 const MedicationManagement = ({ setMedicationListData = () => {} }) => {
-  const [selectedReason, setSelectedReason] = useState(medicationReasons[0].id);
+  const [selectedReason, setSelectedReason] = useState(null);
   const [medications, setMedications] = useState([defaultMedication]);
 
   const handleReasonChange = (e) => {
-    setSelectedReason(parseInt(e.target.value));
+    const value = e.target.value;
+    setSelectedReason(value ? parseInt(value) : null);
   };
 
   const handleMedicationChange = (index, field, value) => {
@@ -123,11 +124,13 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
         return `${idx + 2}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
       });
 
-    const formattedText = [
-      "MEDICATION MANAGEMENT:",
-      `1. ${reasonText}`,
-      ...medicationLines
-    ].join("\n");
+    const hasInput = reasonText || medicationLines.length > 0;
+
+    const formattedText = hasInput
+      ? ["MEDICATION MANAGEMENT:", `1. ${reasonText}`, ...medicationLines].join(
+          "\n"
+        )
+      : "";
 
     setMedicationListData(formattedText);
   }, [selectedReason, medications, setMedicationListData]);
@@ -137,10 +140,11 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
       <div>
         <label style={styles.label}>Select Reason:</label>
         <select
-          value={selectedReason}
+          value={selectedReason || ""}
           onChange={handleReasonChange}
           style={styles.select}
         >
+          <option value="">-- Select a reason --</option>
           {medicationReasons.map((reason) => (
             <option key={reason.id} value={reason.id}>
               {reason.text}

@@ -126,9 +126,9 @@ const PhysicalExamination = ({ onChange }) => {
   const [motorFunction, setMotorFunction] = useState({ status: "No", description: "" });
 
   useEffect(() => {
-    const vitalsFormatted = `BP: ${vitals.bp || "--"}. Ht: ${vitals.heightFeet || "--"} feet ${
-      vitals.heightInches || "--"
-    } inches. Wt: ${vitals.weight || "--"} lbs. BMI: ${vitals.bmi || "--"}`;
+    const vitalsFormatted = `BP: ${vitals.bp || "__"}. Ht: ${vitals.heightFeet || "__"} feet ${
+      vitals.heightInches || "__"
+    } inches. Wt: ${vitals.weight || "__"} lbs. BMI: ${vitals.bmi || "__"}`;
 
     const motorFunctionText = `${motorFunction.status} and observed change in motor and/or sensory function since last visit. ${motorFunction.description}`;
 
@@ -167,7 +167,7 @@ const PhysicalExamination = ({ onChange }) => {
       <div style={styles.group}>
         <label style={styles.labelText}>Vitals:</label>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          {/* BP: */}
+          BP:
           <input
             type="text"
             value={vitals.bp}
@@ -241,7 +241,7 @@ const PhysicalExamination = ({ onChange }) => {
       />
       <ButtonOptions
         label="Assistive device (Gait):"
-        options={["wheelchair-bound", "wheelchair"]}
+        options={["and with No assistive device","and with wheelchair-bound", "and with wheelchair"]}
         value={gait}
         onChange={setGait}
         multi={true}
@@ -249,7 +249,7 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Station (stance) is:"
-        options={["steady", "unsteady"]}
+        options={["within normal limits and steady", "unsteady", "swaying"]}
         value={stationStance}
         onChange={setStationStance}
       />
@@ -279,7 +279,7 @@ const PhysicalExamination = ({ onChange }) => {
       />
 
       <ButtonOptions
-        label="Romberg test is:"
+        label="Coordination & Balance shows Romberg Test is:"
         options={["Negative", "Positive"]}
         value={coordinationBalance}
         onChange={setCoordinationBalance}
@@ -287,7 +287,7 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Motor Function Observed:"
-        options={["No", "Positive"]}
+        options={["No stated", "Positive stated"]}
         value={motorFunction.status}
         onChange={(status) => setMotorFunction({ ...motorFunction, status })}
       />

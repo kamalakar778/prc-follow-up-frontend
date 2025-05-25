@@ -52,17 +52,17 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     const unit = formData.kasper_frequency_unit || "";
     const sessions = formData.kasper_sessions || "";
     const status = formData.kasper_status || "";
-    const manualComment = formData.kasper_manual_comment || "";
+    const manualComment = formData.pt_manual_comment || "";
 
     const hasAnyValue = base || frequency || unit || sessions || status;
 
     const autoComment = hasAnyValue
-      ? `${base} ${frequency} ${unit}. Number of sessions done: ${sessions} (${status})`
+      ? `${base} ${frequency} ${unit}. Number of sessions done: ${sessions} ${status}`
       : "";
 
     setFormData((prev) => ({
       ...prev,
-      kasper_comment: `${autoComment}${
+      pt_comment: `${autoComment}${
         manualComment ? (autoComment ? ".  " : "") + manualComment : ""
       }`
     }));
@@ -72,7 +72,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     formData.kasper_frequency_unit,
     formData.kasper_sessions,
     formData.kasper_status,
-    formData.kasper_manual_comment
+    formData.pt_manual_comment
   ]);
 
   const styles = {
@@ -98,8 +98,6 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       fontSize: 13
     },
     td: {
-      // width:"10px",
-      // height:"80px",
       borderBottom: "1px solid #ddd",
       padding: "0px 8px",
       verticalAlign: "top",
@@ -120,9 +118,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       border: "0.7px solid #ccc",
       cursor: "pointer",
       userSelect: "none",
-      // backgroundColor: "#fff7f2",
-    backgroundColor: "#f5f5f5",
-
+      backgroundColor: "#f5f5f5",
       color: "black",
       transition: "background-color 0.2s, border-color 0.2s",
       boxSizing: "border-box"
@@ -177,22 +173,6 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       display: "flex",
       flexDirection: "column",
       gap: 6
-    },
-    commentSection: {
-      marginTop: 12
-    },
-    commentLabel: {
-      display: "block",
-      fontWeight: "600",
-      marginBottom: 6,
-      fontSize: 14
-    },
-    commentInput: {
-      width: "100%",
-      padding: "6px 8px",
-      border: "1px solid #ccc",
-      borderRadius: 4,
-      fontSize: 13
     }
   };
 
@@ -212,7 +192,6 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
           {questions.map(({ label, key }, index) => (
             <tr key={index}>
               <td style={styles.td}>{label}</td>
-
               {["Yes", "No", "NA"].map((option) => {
                 const isSelected =
                   formData[`${key}_${option.toLowerCase()}`] === option;
@@ -231,7 +210,6 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                   </td>
                 );
               })}
-
               <td style={{ ...styles.td, textAlign: "left" }}>
                 {key === "weightloss" ? (
                   <div style={styles.commentGroup}>
@@ -317,15 +295,15 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                       }
                     />
                   </div>
-                ) : key === "kasper" ? (
+                ) : key === "pt" ? (
                   <div style={styles.commentGroup}>
                     <input
                       type="text"
-                      name="kasper_comment"
+                      name="pt_comment"
                       style={styles.inputText}
                       readOnly
                       placeholder="Auto-generated comment"
-                      value={formData.kasper_comment || ""}
+                      value={formData.pt_comment || ""}
                     />
                     <div style={styles.subFieldRow}>
                       <select
@@ -397,16 +375,16 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         }
                       >
                         <option value="">Status</option>
+                        <option value="Ongoing">Ongoing</option>
                         <option value="Completed">Completed</option>
-                        <option value="Incomplete">Incomplete</option>
                       </select>
                     </div>
                     <textarea
                       rows={2}
-                      name="kasper_manual_comment"
+                      name="pt_manual_comment"
                       style={styles.textarea}
                       placeholder="Additional comments (optional)"
-                      value={formData.kasper_manual_comment || ""}
+                      value={formData.pt_manual_comment || ""}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
@@ -420,11 +398,12 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                     type="text"
                     style={styles.inputText}
                     placeholder="Comments"
+                    name={`${key}_comment`}
                     value={formData[`${key}_comment`] || ""}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
-                        [`${key}_comment`]: e.target.value
+                        [e.target.name]: e.target.value
                       }))
                     }
                   />
@@ -434,6 +413,26 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
           ))}
         </tbody>
       </table>
+
+      {/* 🔽 Added complianceComments input field */}
+      <div style={{ marginTop: 16 }}>
+        <label htmlFor="complianceComments" style={{ fontWeight: 600 }}>
+          Comments (compliance, MRI, X-Ray, etc):
+        </label>
+        <textarea
+          rows={3}
+          name="complianceComments"
+          style={styles.textarea}
+          placeholder="Enter overall compliance comments here..."
+          value={formData.complianceComments || ""}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              [e.target.name]: e.target.value
+            }))
+          }
+        />
+      </div>
     </div>
   );
 };
