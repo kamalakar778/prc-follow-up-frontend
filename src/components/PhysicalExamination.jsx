@@ -11,7 +11,7 @@ const styles = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
   },
   group: {
-    marginBottom: 12
+    marginBottom: 6
   },
   labelText: {
     fontWeight: 600,
@@ -21,7 +21,8 @@ const styles = {
     display: "block"
   },
   input: {
-    width: 60,
+    width: 40,
+    // marginTop:"15px",
     padding: "6px 8px",
     borderRadius: 4,
     border: "1px solid #ccc",
@@ -31,15 +32,17 @@ const styles = {
   inputSmall: {
     width: 40,
     padding: "6px 8px",
-    borderRadius: 4,
+    borderRadius: 10,
     border: "1px solid #ccc",
     fontSize: 14,
     marginRight: 8
   },
   inputMedium: {
-    width: 120,
-    padding: "6px 8px",
-    borderRadius: 4,
+    width: "40%",
+    display:"flex",
+    flexDirection:"row",
+    padding: "8px 8px",
+    borderRadius: 6,
     border: "1px solid #ccc",
     fontSize: 14,
     marginRight: 8
@@ -48,8 +51,8 @@ const styles = {
     marginRight: 6,
     marginBottom: 6,
     cursor: "pointer",
-    padding: "6px 12px",
-    borderRadius: "10px",
+    padding: "4px 6px",
+    borderRadius: "6px",
     border: "1px solid",
     borderColor: isSelected ? "green" : "gray",
     backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
@@ -72,12 +75,22 @@ const ButtonOptions = ({ label, options, value, onChange, multi = false }) => {
     }
   };
 
-  const isSelected = (option) => (multi ? value.includes(option) : value === option);
+  const isSelected = (option) =>
+    multi ? value.includes(option) : value === option;
 
   return (
-    <div style={{ ...styles.group, display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+    <div
+      style={{
+        ...styles.group,
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap"
+      }}
+    >
       {label && (
-        <label style={{ ...styles.labelText, marginRight: 12, minWidth: 200 }}>{label}</label>
+        <label style={{ ...styles.labelText, marginRight: 12, minWidth: 200 }}>
+          {label}
+        </label>
       )}
       <div>
         {options.map((option) => (
@@ -114,27 +127,41 @@ const PhysicalExamination = ({ onChange }) => {
     bmi: ""
   });
 
-  const [generalAppearance, setGeneralAppearance] = useState([]);
+  const [generalAppearance, setGeneralAppearance] = useState([
+    "Well groomed and content"
+  ]);
   const [orientation, setOrientation] = useState("Correct");
-  const [moodAffect, setMoodAffect] = useState([]);
-  const [gait, setGait] = useState([]);
-  const [stationStance, setStationStance] = useState("steady");
+  const [moodAffect, setMoodAffect] = useState(["Appropriate"]);
+  const [gait, setGait] = useState([
+    "Within normal limits",
+    "and with No assistive device"
+  ]);
+  const [stationStance, setStationStance] = useState(
+    "within normal limits and steady"
+  );
   const [cardiovascular, setCardiovascular] = useState("Not present");
   const [pittingEdema, setPittingEdema] = useState("");
   const [lymphadenopathy, setLymphadenopathy] = useState("Not present");
   const [coordinationBalance, setCoordinationBalance] = useState("Negative");
-  const [motorFunction, setMotorFunction] = useState({ status: "No", description: "" });
+  const [motorFunction, setMotorFunction] = useState({
+    status: "No stated",
+    description: ""
+  });
 
   useEffect(() => {
-    const vitalsFormatted = `BP: ${vitals.bp || "__"}. Ht: ${vitals.heightFeet || "__"} feet ${
-      vitals.heightInches || "__"
-    } inches. Wt: ${vitals.weight || "__"} lbs. BMI: ${vitals.bmi || "__"}`;
+    const vitalsFormatted = `BP: ${vitals.bp || "__"}. Ht: ${
+      vitals.heightFeet || "__"
+    } feet ${vitals.heightInches || "__"} inches. Wt: ${
+      vitals.weight || "__"
+    } lbs. BMI: ${vitals.bmi || "__"}`;
 
     const motorFunctionText = `${motorFunction.status} and observed change in motor and/or sensory function since last visit. ${motorFunction.description}`;
 
     onChangeRef.current({
       vitals: vitalsFormatted,
-      generalAppearance: generalAppearance.length ? generalAppearance.join(", ") : "None",
+      generalAppearance: generalAppearance.length
+        ? generalAppearance.join(", ")
+        : "None",
       orientation,
       moodAffect: moodAffect.length ? moodAffect.join(", ") : "None",
       gait: gait.length ? gait.join(", ") : "None",
@@ -166,7 +193,14 @@ const PhysicalExamination = ({ onChange }) => {
       {/* Vitals */}
       <div style={styles.group}>
         <label style={styles.labelText}>Vitals:</label>
-        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 8
+          }}
+        >
           BP:
           <input
             type="text"
@@ -175,20 +209,25 @@ const PhysicalExamination = ({ onChange }) => {
             placeholder="BP"
             style={styles.input}
           />
-          Ht:
+          feet:
           <input
             type="number"
             value={vitals.heightFeet}
-            onChange={(e) => setVitals({ ...vitals, heightFeet: e.target.value })}
+            onChange={(e) =>
+              setVitals({ ...vitals, heightFeet: e.target.value })
+            }
             placeholder="ft"
-            style={styles.inputSmall}
+            style={styles.input}
           />
+          inches:
           <input
             type="number"
             value={vitals.heightInches}
-            onChange={(e) => setVitals({ ...vitals, heightInches: e.target.value })}
+            onChange={(e) =>
+              setVitals({ ...vitals, heightInches: e.target.value })
+            }
             placeholder="in"
-            style={styles.inputSmall}
+            style={styles.input}
           />
           Wt:
           <input
@@ -211,7 +250,13 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="General appearance is:"
-        options={["Well groomed and content", "Disheveled", "Fatigued", "Anxious", "Agitated"]}
+        options={[
+          "Well groomed and content",
+          "Disheveled",
+          "Fatigued",
+          "Anxious",
+          "Agitated"
+        ]}
         value={generalAppearance}
         onChange={setGeneralAppearance}
         multi={true}
@@ -234,14 +279,24 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Gait is:"
-        options={["Within normal limits", "Antalgic", "Ataxic", "Spastic", "________"]}
+        options={[
+          "Within normal limits",
+          "Antalgic",
+          "Ataxic",
+          "Spastic",
+          "________"
+        ]}
         value={gait}
         onChange={setGait}
         multi={true}
       />
       <ButtonOptions
         label="Assistive device (Gait):"
-        options={["and with No assistive device","and with wheelchair-bound", "and with wheelchair"]}
+        options={[
+          "and with No assistive device",
+          "and with wheelchair-bound",
+          "and with wheelchair"
+        ]}
         value={gait}
         onChange={setGait}
         multi={true}
@@ -293,16 +348,21 @@ const PhysicalExamination = ({ onChange }) => {
       />
 
       <div style={styles.group}>
-        <label style={styles.labelText}>Motor Function Description:</label>
-        <input
-          type="text"
-          value={motorFunction.description}
-          onChange={(e) =>
-            setMotorFunction({ ...motorFunction, description: e.target.value })
-          }
-          placeholder="e.g., weakness in right leg"
-          style={{ ...styles.inputMedium, width: 300 }}
-        />
+        <label style={styles.labelText}>
+          Motor Function Description:
+          <input
+            type="text"
+            value={motorFunction.description}
+            onChange={(e) =>
+              setMotorFunction({
+                ...motorFunction,
+                description: e.target.value
+              })
+            }
+            placeholder="e.g., weakness in right leg"
+            style={{ ...styles.inputMedium, width: "40%" }}
+          />
+        </label>
       </div>
     </div>
   );
