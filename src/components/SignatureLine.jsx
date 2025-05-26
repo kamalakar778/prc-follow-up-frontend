@@ -70,10 +70,13 @@ const SignatureLine = ({ onChange }) => {
     return `${mm}/${dd}/${yyyy}`;
   };
 
-  const [includedLines, setIncludedLines] = useState(initialLines.map(() => false));
+  const [includedLines, setIncludedLines] = useState(
+    initialLines.map(() => false)
+  );
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
-  const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
+  const [followUpAppointment, setFollowUpAppointment] =
+    useState(initialFollowUp);
   const [selectedButton, setSelectedButton] = useState("");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
@@ -102,7 +105,7 @@ const SignatureLine = ({ onChange }) => {
     const filteredLines = otherPlans.filter(
       (line, idx, arr) => idx < arr.length - 1 || line.trim() !== ""
     );
-    
+
     return {
       lines: filteredLines.map(
         (line, idx) => `\t${idx + 1}. ${line.trim() || "_________"}`
