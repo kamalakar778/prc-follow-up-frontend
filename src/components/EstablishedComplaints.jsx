@@ -117,42 +117,42 @@ const sections = {
     `Pain (worst) with rotation.`
   ],
   Lumbar: [
-    `Lumbar spine tenderness of paraspinal and or quadratus muscles `,
-    `Gluteal tenderness `,
-    `Lumbar facet loading signs at `,
-    `Quadrant test `,
-    `Slump/SLR `,
+    `Lumbar spine tenderness of paraspinal and or quadratus muscles`,
+    `Gluteal tenderness`,
+    `Lumbar facet loading signs at`,
+    `Quadrant test`,
+    `Slump/SLR`,
     `Patrick test `,
-    `SIJ tenderness `,
-    `Thigh-Thrust `,
-    `Gaenslen `
+    `SIJ tenderness`,
+    `Thigh-Thrust`,
+    `Gaenslen test`
   ],
   "Aplyes-Scratch": [
-    "  Apley scratch ",
-    "Crepitus ",
+    "  Apley scratch test",
+    "Crepitus test",
     "Crossover test ",
     "ROM is grossly decreased .",
     "Subacromial tenderness ",
-    "Neer Impingement ",
-    "Drop Arm Test ",
-    "Empty Can Test "
+    "Neer Impingement",
+    "Drop Arm Test",
+    "Empty Can Test"
   ],
 
   "Hip-Squat": [
-    "(hip) Squat test ",
-    "Trochanteric bursa tenderness ",
-    "ROM is grossly decreased ",
+    "(hip) Squat test",
+    "Trochanteric bursa tenderness",
+    "ROM is grossly decreased",
     "Patrick.",
-    "FADIR (flexion, adduction and medial hip rotation) "
+    "FADIR (flexion, adduction and medial hip rotation)"
   ],
 
   "Peri-Patella": [
-    "Peri-Patella tenderness ",
-    "Joint line tenderness ",
-    "ROM is grossly decreased. ",
-    "Drawer Test. ",
-    "Valgus/Varus stress test ",
-    "McMurray "
+    "Peri-Patella tenderness",
+    "Joint line tenderness",
+    "ROM is grossly decreased.",
+    "Drawer Test.",
+    "Valgus/Varus stress test",
+    "McMurray"
   ]
 };
 
@@ -199,7 +199,7 @@ const EstablishedComplaints = ({ onChange }) => {
         const isManuallySelected = manualSelectedLines.has(globalIdx);
 
         if (location || level || userInput || isManuallySelected) {
-          const finalLine = `${line}${userInput}${location}${level}`.trim();
+          const finalLine = `${line} ${userInput} ${location} ${level}`.trim();
           groupedLines[sectionName].push(finalLine);
         }
         globalIdx++;
