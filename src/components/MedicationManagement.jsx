@@ -120,9 +120,9 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
         const relief = med.relief
           ? `(${med.relief}% pain relief obtained)`
           : "";
-        const days = med.days ? `(#${med.days})` : "";
-        const extra = [relief, days].filter(Boolean).join(" ");
-        return `${idx + 2}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
+        const days = med.days ? `#${med.days}` : "";
+        const extra = [days, relief].filter(Boolean).join(" ");
+        return `${idx + 1}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
       });
 
     const hasInput = reasonText || medicationLines.length > 0;

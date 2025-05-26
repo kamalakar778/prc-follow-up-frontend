@@ -121,7 +121,7 @@ const EarlierFollowups = ({ onDataChange }) => {
         const lines = [];
 
         if (s.date.trim()) lines.push(`Date: ${s.date}`);
-        if (s.preExisting.trim() && s.preExisting.trim() !== "Pre-existing") lines.push(`Pre-existing: ${s.preExisting}`);
+        if (s.preExisting.trim() || s.preExisting.trim() !== "Pre-existing:") lines.push(`${s.preExisting}`);
         if (s.cc.trim()) lines.push(`CC: ${s.cc}`);
 
         if (
