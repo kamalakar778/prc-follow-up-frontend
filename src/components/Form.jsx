@@ -93,7 +93,7 @@ const Form = () => {
     formattedLines: "",
     followUpAppointment: "",
     signature: {
-      otherPlans: "",
+      otherPlans: [],
       formattedLines: "",
       followUpAppointment: "",
       signatureLine: "",

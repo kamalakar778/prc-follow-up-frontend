@@ -99,6 +99,7 @@ const FollowupPlan = ({ setFormData }) => {
   const [ptEval, setPtEval] = useState("");
   const [pillCount, setPillCount] = useState(false);
   const [imageType, setImageType] = useState("");
+  const [imagingContrast, setImagingContrast] = useState(""); // ✅ New state
   const [imaging, setImaging] = useState("");
   const [xrayOf, setXrayOf] = useState("");
   const [behavioralFocus, setBehavioralFocus] = useState("");
@@ -108,11 +109,11 @@ const FollowupPlan = ({ setFormData }) => {
     if (willOrderUDT) {
       return (
         "Will order a Urine Drug Test (UDT) Using an Instrumented Chemistry Analyzer to screen for drug classes of prescribed medications and drug classes for commonly abused substances used locally in the KY/Louisville area\n" +
-        "\t1.1.	If UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n" +
-        "\t2.2.	If UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine.\n" +
-        "Justification for UDT:  It is medically necessary to monitor adherence to the Prescription Medication Agreement and to identify possible misuse, diversion and/or abuse of both prescribed and unprescribed medications.  Compliance tools used to monitor patients’ include: UDT, The Prescription Drug Monitoring Program database (e.g. KASPER), Risk Stratification Tools (e.g. ORT), and current High-Risk substances in the KY/Louisville area (see below). Based on these compliance tools, especially current High-Risk substance abuse community trend locally. UDT will usually be ordered quarterly (or more frequently as applicable) for patients on opioids.\n"+
-        "\t1.	Kentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n"+
-        "\t2.	Substance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:\n"
+        "\t1.If UDT ordered, will review screen results and confirm all prescribed meds (e.g. confirm a positive screen UDT and/or confirm an unexpected negative screen UDT).\n" +
+        "\t2.If UDT ordered, Confirm all non-prescribed drugs that were positive on the screen UDT and will always test for:  Fentanyl, Methamphetamine and Cocaine.\n" +
+        "Justification for UDT:  It is medically necessary to monitor adherence to the Prescription Medication Agreement and to identify possible misuse, diversion and/or abuse of both prescribed and unprescribed medications.  Compliance tools used to monitor patients’ include: UDT, The Prescription Drug Monitoring Program database (e.g. KASPER), Risk Stratification Tools (e.g. ORT), and current High-Risk substances in the KY/Louisville area (see below). Based on these compliance tools, especially current High-Risk substance abuse community trend locally. UDT will usually be ordered quarterly (or more frequently as applicable) for patients on opioids.\n" +
+        "\t1.Kentucky Chamber Workforce Ctr, 2019, “Opioid in Kentucky Abuse”, Kentucky Chamber of Commerce, June 2019, pp. 2-18.\n" +
+        "\t2.Substance Abuse and Mental Health Services Administration, 2020,“Behavioral Health Barometer: Kentucky, Volume 6:  Indicators as measured through the 2019 National Survey on Drug Use and Health and the National Survey of Substance Abuse Treatment Services”, HHS Publication No. SMA–20–Baro–19–KY, pp. 21-26:\n"
       );
     }
     if (willNotOrderUDT) return "Will not order a Urine Drug Test (UDT)";
@@ -123,29 +124,29 @@ const FollowupPlan = ({ setFormData }) => {
     const udtStatusFormatted = getUDTStatus();
 
     const formattedUnexpectedUTox = unexpectedUTox
-      ? `Unexpected U-Tox Result: ${unexpectedUTox}`
+      ? `\nUnexpected U-Tox Result: ${unexpectedUTox}`
       : "";
 
     const formattedPillCount = pillCount
-      ? "Will order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate."
+      ? "\nWill order a random pill count and U-Tox Screen with possible laboratory confirmation, if appropriate."
       : "";
 
     const formattedPtEval = ptEval
-      ? `Will order Physical Therapy Eval And Tx (ROM, Strengthening, Stretching) for: ${ptEval}`
+      ? `\nWill order Physical Therapy Eval And Tx (ROM, Strengthening, Stretching) for: ${ptEval}`
       : "";
 
     const formattedImaging =
       imageType && imaging
-        ? `Will order ${imageType} of: ${imaging} (with/without contrast)`
+        ? `\nWill order ${imageType} of: (${imagingContrast}) ${imaging}`
         : "";
 
-    const formattedXrayOf = xrayOf ? `Will order X-Ray of: ${xrayOf}` : "";
+    const formattedXrayOf = xrayOf ? `\nWill order X-Ray of: ${xrayOf}` : "";
 
     const formattedBehavioralFocus = behavioralFocus
-      ? `Will order Behavioral Health Consult with emphasis on: ${behavioralFocus}`
+      ? `\nWill order Behavioral Health Consult with emphasis on: ${behavioralFocus}`
       : "";
 
-    const formattedReferral = referral ? `Will Refer to: ${referral}` : "";
+    const formattedReferral = referral ? `\nWill Refer to: ${referral}` : "";
 
     if (typeof setFormData === "function") {
       setFormData((prev) => ({
@@ -173,6 +174,7 @@ const FollowupPlan = ({ setFormData }) => {
     ptEval,
     pillCount,
     imageType,
+    imagingContrast,
     imaging,
     xrayOf,
     behavioralFocus,
@@ -319,6 +321,17 @@ const FollowupPlan = ({ setFormData }) => {
             <option value="MRI Scan">MRI Scan</option>
             <option value="CT Scan">CT Scan</option>
           </select>
+
+          <select
+            value={imagingContrast}
+            onChange={(e) => setImagingContrast(e.target.value)}
+            style={styles.select}
+          >
+            <option value="">Select Contrast</option>
+            <option value="with contrast">with contrast</option>
+            <option value="without contrast">without contrast</option>
+          </select>
+
           <span style={styles.labelText}>of:</span>
           <input
             type="text"

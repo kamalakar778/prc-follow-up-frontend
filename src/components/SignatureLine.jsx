@@ -35,7 +35,7 @@ const SignatureLine = ({ onChange }) => {
       "for 6 months",
       "greater than or equal to 50% improvement in ability to perform ADLs and/or overall function."
     ],
-    4: ["Bilateral", "Unilaterally"],
+    4: ["Bilaterally", "Unilaterally"],
     5: [
       "At levels different from the fusion",
       "Posteriorly as fusion was done anteriorly"
@@ -102,9 +102,10 @@ const SignatureLine = ({ onChange }) => {
     const filteredLines = otherPlans.filter(
       (line, idx, arr) => idx < arr.length - 1 || line.trim() !== ""
     );
+    
     return {
       lines: filteredLines.map(
-        (line, idx) => `${idx + 1}. ${line.trim() || "_________"}`
+        (line, idx) => `Other Plans:\n \t${idx + 1}. ${line.trim() || "_________"}`
       )
     };
   };

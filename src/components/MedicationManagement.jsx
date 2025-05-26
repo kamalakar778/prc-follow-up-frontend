@@ -77,7 +77,8 @@ const defaultMedication = {
   name: "",
   relief: "",
   days: "",
-  status: "Continue"
+  status: "Continue",
+  frequency:""
 };
 
 const MedicationManagement = ({ setMedicationListData = () => {} }) => {
@@ -164,6 +165,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
               }
               style={{ ...styles.select, minWidth: 120 }}
             >
+              <option value="">-- Select --</option>
               <option value="Continue">Continue</option>
               <option value="Start">Start</option>
               <option value="Change">Change</option>
@@ -181,17 +183,6 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
               }
               style={{ ...styles.input, ...styles.inputLarge }}
             />
-
-            <input
-              type="number"
-              placeholder="% Relief"
-              value={med.relief}
-              onChange={(e) =>
-                handleMedicationChange(index, "relief", e.target.value)
-              }
-              style={{ ...styles.input, ...styles.inputSmall }}
-            />
-
             <input
               type="number"
               placeholder="# Days"
@@ -201,7 +192,15 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
               }
               style={{ ...styles.input, ...styles.inputSmall }}
             />
-
+            <input
+              type="number"
+              placeholder="% Relief"
+              value={med.relief}
+              onChange={(e) =>
+                handleMedicationChange(index, "relief", e.target.value)
+              }
+              style={{ ...styles.input, ...styles.inputSmall }}
+            />
             {medications.length > 1 && index !== medications.length - 1 && (
               <button
                 type="button"

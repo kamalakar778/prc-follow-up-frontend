@@ -103,7 +103,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
       "Chest Pain – Musculoskeletal – R07.1",
       "Chest Pain – Unspecified – R07.9",
       "Chronic Pain – G89.29",
-      "Coccydynia – M53.3",
+      "Coccydynia – M53.3.",
       "Depression – F32.9",
       "Diabetes 1 – with issues (eg neuropathy)– E10.9",
       "Diabetes 2 – with issues (eg neuropathy)– E11.8",

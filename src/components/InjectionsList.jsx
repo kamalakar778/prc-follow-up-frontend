@@ -17,7 +17,7 @@ const baseInjections = [
   { label: "thoracic medial branch blocks at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
   { label: "radiofrequency ablation at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
   { label: "midline epidural steroid injection at", levels: [], direction: false },
-  { label: "midline caudal block at", levels: [], direction: false },
+  { label: "midline caudal block ", levels: [], direction: false },
   { label: "TFESI at", levels: [], direction: true, directionAfter: true },
   { label: "SIJ Injection at ", levels: [], direction: true, directionAfter: true },
   { label: "hip injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
@@ -54,7 +54,36 @@ const injectionSchema = Yup.object().shape({
   included: Yup.boolean()
 });
 
-const fullInjectionSchema = Yup.array().of(injectionSchema);
+const fullInjectionSchema = Yup.array()
+  .of(injectionSchema)
+  .test(
+    "direction-required-if-included-or-later",
+    function (injections) {
+      if (!injections) return true;
+
+      const failingIndexes = injections
+        .map((inj, idx) => {
+          const needsDirection =
+            inj.direction &&
+            (inj.included || inj.timing === "Later");
+
+          return needsDirection && !inj.directionSelected?.trim()
+            ? idx + 1
+            : null;
+        })
+        .filter(Boolean);
+
+      if (failingIndexes.length > 0) {
+        return this.createError({
+          message: `Direction is required for injection(s) at position(s): ${failingIndexes.join(
+            ", "
+          )}`,
+        });
+      }
+
+      return true;
+    }
+  );
 
 const styles = {
   container: { padding: 8, maxWidth: 900, margin: "auto", marginBottom: "0px 30px", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" },
@@ -160,7 +189,7 @@ const InjectionsList = ({ onInjectionChange }) => {
       ];
       const line = parts.filter(Boolean).join(" ").trim();
       const notesPart = inj.notes ? ` ${inj.notes}` : "";
-      return `${idx + 1}. ${line}${notesPart}`;
+      return `INJECTIONS:\n${idx + 1}. ${line}${notesPart}`;
     });
 
     if (onInjectionChange) {
