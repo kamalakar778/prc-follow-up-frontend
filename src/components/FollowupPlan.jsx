@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const severityOptions = ["None", "Mild", "Moderate", "Significant"];
+const imageTypes = ["MRI Scan", "CT Scan"];
+const contrastOptions = ["with contrast", "without contrast"];
 
 const styles = {
   container: {
@@ -51,14 +53,6 @@ const styles = {
     border: "1px solid #ccc",
     fontSize: 14
   },
-  select: {
-    padding: "6px 10px",
-    borderRadius: 4,
-    border: "1px solid #ccc",
-    fontSize: 14,
-    minWidth: 160,
-    cursor: "pointer"
-  },
   checkboxLabel: {
     display: "flex",
     alignItems: "center",
@@ -99,7 +93,7 @@ const FollowupPlan = ({ setFormData }) => {
   const [ptEval, setPtEval] = useState("");
   const [pillCount, setPillCount] = useState(false);
   const [imageType, setImageType] = useState("");
-  const [imagingContrast, setImagingContrast] = useState(""); // ✅ New state
+  const [imagingContrast, setImagingContrast] = useState("");
   const [imaging, setImaging] = useState("");
   const [xrayOf, setXrayOf] = useState("");
   const [behavioralFocus, setBehavioralFocus] = useState("");
@@ -311,27 +305,45 @@ const FollowupPlan = ({ setFormData }) => {
         </div>
 
         <div style={styles.inlineGroup}>
-          <span style={styles.labelText}>Imaging:</span>
-          <select
-            value={imageType}
-            onChange={(e) => setImageType(e.target.value)}
-            style={styles.select}
-          >
-            <option value="">Select Type</option>
-            <option value="MRI Scan">MRI Scan</option>
-            <option value="CT Scan">CT Scan</option>
-          </select>
-
-          <select
-            value={imagingContrast}
-            onChange={(e) => setImagingContrast(e.target.value)}
-            style={styles.select}
-          >
-            <option value="">Select Contrast</option>
-            <option value="with contrast">with contrast</option>
-            <option value="without contrast">without contrast</option>
-          </select>
-
+          <span style={styles.labelText}>Imaging Type:</span>
+          {imageTypes.map((type) => (
+            <span
+              key={type}
+              style={styles.optionButton(imageType === type)}
+              onClick={() =>
+                setImageType(imageType === type ? "" : type)
+              }
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setImageType(imageType === type ? "" : type);
+                }
+              }}
+            >
+              {type}
+            </span>
+          ))}
+          {contrastOptions.map((option) => (
+            <span
+              key={option}
+              style={styles.optionButton(imagingContrast === option)}
+              onClick={() =>
+                setImagingContrast(imagingContrast === option ? "" : option)
+              }
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setImagingContrast(imagingContrast === option ? "" : option);
+                }
+              }}
+            >
+              {option}
+            </span>
+          ))}
+        </div>
+        <div style={styles.inlineGroup}>
           <span style={styles.labelText}>of:</span>
           <input
             type="text"
