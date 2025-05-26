@@ -131,7 +131,7 @@ const FollowupPlan = ({ setFormData }) => {
 
     const formattedImaging =
       imageType && imaging
-        ? `\nWill order ${imageType} of: (${imagingContrast}) ${imaging}`
+        ? `\nWill order ${imageType} ${imagingContrast} of: ${imaging}`
         : "";
 
     const formattedXrayOf = xrayOf ? `\nWill order X-Ray of: ${xrayOf}` : "";
