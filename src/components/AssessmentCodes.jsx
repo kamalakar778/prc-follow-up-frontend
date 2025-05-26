@@ -166,39 +166,8 @@ const AssessmentCodes = ({ selected, setSelected }) => {
   }, [customCodes]);
 
   return (
-    <div style={{ display: "flex", gap: "20px", fontFamily: "Calibri", fontSize: "13px" }}>
-      {codes.map((group, i) => (
-        <div key={i} style={{ flex: 1 }}>
-          {Object.entries(group).map(([category, items]) => (
-            <div key={category} style={{ marginBottom: "1rem" }}>
-              <strong>{category}</strong>
-              <ul style={{ listStyleType: "none", padding: 0 }}>
-                {items.map((item, idx) => {
-                  const selectedItem = selected.find((entry) => entry.label === item);
-                  return (
-                    <li
-                      key={idx}
-                      onClick={() => toggleItem(item)}
-                      style={{
-                        cursor: "pointer",
-                        color: selectedItem ? "red" : "black",
-                        fontWeight: selectedItem ? "bold" : "normal",
-                        border: "1px solid #ccc",
-                        padding: "4px",
-                        margin: "2px 0"
-                      }}
-                      title={selectedItem ? `#${selectedItem.index} — Click to remove` : "Click to add"}
-                    >
-                      {selectedItem ? `#${selectedItem.index}. ` : ""}{item}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ))}
-      <div style={{ flex: 1 }}>
+    <>
+    <div style={{ flex: 1 }}>
         <strong>Custom Codes</strong>
         <div style={{ marginBottom: "1rem" }}>
           <input
@@ -209,14 +178,17 @@ const AssessmentCodes = ({ selected, setSelected }) => {
             onKeyDown={(e) => e.key === "Enter" && addCustomCode()}
             placeholder="Enter custom code"
             style={{
-              width: "100%",
+              width: "40%",
               padding: "6px",
               marginBottom: "4px",
               fontFamily: "Calibri",
               fontSize: "13px"
             }}
           />
-          <button style={{ fontFamily: "Calibri", fontSize: "13px" }} onClick={addCustomCode}>
+          <button
+            style={{ fontFamily: "Calibri", fontSize: "13px" }}
+            onClick={addCustomCode}
+          >
             Add
           </button>
         </div>
@@ -224,7 +196,14 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           {customCodes.map((code, idx) => {
             const selectedItem = selected.find((item) => item.label === code);
             return (
-              <li key={idx} style={{ marginBottom: "4px", border: "1px solid #ccc", padding: "4px" }}>
+              <li
+                key={idx}
+                style={{
+                  marginBottom: "4px",
+                  border: "1px solid #ccc",
+                  padding: "4px"
+                }}
+              >
                 <span
                   onClick={() => toggleItem(code)}
                   style={{
@@ -234,7 +213,8 @@ const AssessmentCodes = ({ selected, setSelected }) => {
                     marginRight: "8px"
                   }}
                 >
-                  {selectedItem ? `#${selectedItem.index}. ` : ""}{code}
+                  {selectedItem ? `#${selectedItem.index}. ` : ""}
+                  {code}
                 </span>
                 <button
                   onClick={() => removeCustomCode(code)}
@@ -247,7 +227,55 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           })}
         </ul>
       </div>
-    </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          fontFamily: "Calibri",
+          fontSize: "13px"
+        }}
+      >
+        {codes.map((group, i) => (
+          <div key={i} style={{ flex: 1 }}>
+            {Object.entries(group).map(([category, items]) => (
+              <div key={category} style={{ marginBottom: "1rem" }}>
+                <strong>{category}</strong>
+                <ul style={{ listStyleType: "none", padding: 0 }}>
+                  {items.map((item, idx) => {
+                    const selectedItem = selected.find(
+                      (entry) => entry.label === item
+                    );
+                    return (
+                      <li
+                        key={idx}
+                        onClick={() => toggleItem(item)}
+                        style={{
+                          cursor: "pointer",
+                          color: selectedItem ? "red" : "black",
+                          fontWeight: selectedItem ? "bold" : "normal",
+                          border: "1px solid #ccc",
+                          padding: "4px",
+                          margin: "2px 0"
+                        }}
+                        title={
+                          selectedItem
+                            ? `#${selectedItem.index} — Click to remove`
+                            : "Click to add"
+                        }
+                      >
+                        {selectedItem ? `#${selectedItem.index}. ` : ""}
+                        {item}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      
+    </>
   );
 };
 
