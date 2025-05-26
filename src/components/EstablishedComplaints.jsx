@@ -14,33 +14,26 @@ const styles = {
     color: "#444"
   },
   row: {
-    height: "40px",
     display: "flex",
-    alignItems: "center",
-    marginRight: 84,
     flexWrap: "wrap",
-    gap: "6px",
-    fontSize: "14px",
-    backgroundColor: "#ffffff",
+    alignItems: "center",
+    // marginBottom: "8px",
+    padding: "6px 10px",
     borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    borderBottom: "1px solid #ddd"
+    backgroundColor: "#ffffff",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+    borderBottom: "1px solid #ddd",
+    fontSize: "14px"
   },
   input: {
-    padding: "6px",
-    maxWidth: "160px",
-    fontSize: "14px",
-    borderRadius: "10px",
-    border: "1px solid #ccc"
-  },
-  otherIssuesInput: {
-    padding: "6px",
-    width: "60%",
-    // maxWidth: "300px",
+
+    padding: "8px",
+    minWidth:"90%",
+    maxWidth: "100%",
     fontSize: "14px",
     borderRadius: "10px",
     border: "1px solid #ccc",
-    backgroundColor: "#fff"
+    marginLeft: "8px"
   },
   button: {
     padding: "6px 12px",
@@ -79,19 +72,25 @@ const styles = {
     lineHeight: "1.6"
   },
   optionButton: (isSelected) => ({
-    marginLeft: 10,
-    marginBottom: 6,
+    marginLeft: -2,
+    marginBottom: 4,
     cursor: "pointer",
-    padding: "6px 12px",
+    padding: "4px 10px",
     borderRadius: "10px",
     border: "1px solid",
     borderColor: isSelected ? "green" : "gray",
     backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
     color: isSelected ? "green" : "gray",
-    display: "inline-block",
     fontWeight: isSelected ? "bold" : "normal",
     transition: "all 0.3s ease"
-  })
+  }),
+  inlineOptions: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: "6px",
+    marginLeft: "8px"
+  }
 };
 
 const sections = {
@@ -152,7 +151,7 @@ const ThoracicLevels = ["at T1-T4", "at T2-T5"];
 const LumbarLevels = ["at L2-L5", "at L3-L5"];
 
 const OptionSelector = ({ options, selectedValue, onSelect }) => (
-  <div>
+  <div style={styles.inlineOptions}>
     {options.map((option) => (
       <span
         key={option}
@@ -177,10 +176,6 @@ const EstablishedComplaints = ({ onChange }) => {
     setSelectedOptions((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleInputChange = (lineIndex, value) => {
-    setUserInputs((prev) => ({ ...prev, [lineIndex]: value }));
-  };
-
   useEffect(() => {
     const groupedLines = {};
     let globalIdx = 0;
@@ -194,9 +189,7 @@ const EstablishedComplaints = ({ onChange }) => {
         const isManuallySelected = manualSelectedLines.has(globalIdx);
 
         if (location || level || userInput || isManuallySelected) {
-          const finalLine = `${line}${location ? "" + location : ""}${
-            level ? "" + level : ""
-          }${userInput ? "" + userInput : ""}`.trim();
+          const finalLine = `${line}${userInput}${location}${level}`.trim();
           groupedLines[sectionName].push(finalLine);
         }
         globalIdx++;
@@ -257,70 +250,73 @@ const EstablishedComplaints = ({ onChange }) => {
         Object.entries(sections).map(([sectionName, lines], sectionIdx) => (
           <div key={sectionIdx} style={styles.section}>
             <div style={styles.sectionTitle}>{sectionName}</div>
-            {lines.map((line, lineOffset) => {
+            {lines.map((line, lineIdx) => {
               const globalIndex = Object.values(sections)
                 .flat()
                 .slice(0, Object.values(sections).flat().indexOf(line) + 1)
                 .lastIndexOf(line);
 
-              const isCervical = sectionName === "Cervical";
-              const isThoracic = sectionName === "Thoracic";
-              const isLumbar = sectionName === "Lumbar";
-              const isOtherIssues = sectionName === "Other Issues";
+              let levelOptions = [];
+              if (sectionName === "Cervical" && lineIdx === 2) {
+                levelOptions = CervicalLevels;
+              } else if (sectionName === "Thoracic" && lineIdx === 2) {
+                levelOptions = ThoracicLevels;
+              } else if (sectionName === "Lumbar" && lineIdx === 2) {
+                levelOptions = LumbarLevels;
+              }
 
-              const levelOptions = isCervical
-                ? CervicalLevels
-                : isThoracic
-                ? ThoracicLevels
-                : isLumbar
-                ? LumbarLevels
-                : [];
+              const isOtherIssues = sectionName === "Other Issues";
 
               return (
                 <div key={globalIndex} style={styles.row}>
-                  <span style={{ flex: "1 1 300px" }}>{line}</span>
-
-                  {levelOptions.length > 0 && (
-                    <OptionSelector
-                      options={levelOptions}
-                      selectedValue={
-                        selectedOptions[`${globalIndex}-level`] || ""
+                  <span>{line}</span>
+                  {isOtherIssues && lineIdx === 0 && (
+                    <input
+                      type="text"
+                      placeholder="Enter detail"
+                      value={userInputs[globalIndex] || ""}
+                      onChange={(e) =>
+                        setUserInputs((prev) => ({
+                          ...prev,
+                          [globalIndex]: e.target.value
+                        }))
                       }
-                      onSelect={(val) =>
-                        handleOptionChange(`${globalIndex}-level`, val)
-                      }
+                      style={styles.input}
                     />
                   )}
-
-                  {!isOtherIssues && (
+                  {isOtherIssues && lineIdx === 1 && (
                     <OptionSelector
                       options={LocationOptions}
-                      selectedValue={
-                        selectedOptions[`${globalIndex}-location`] || ""
-                      }
+                      selectedValue={selectedOptions[`${globalIndex}-location`] || ""}
                       onSelect={(val) =>
                         handleOptionChange(`${globalIndex}-location`, val)
                       }
                     />
                   )}
-
-                  <input
-                    type="text"
-                    value={userInputs[globalIndex] || ""}
-                    onChange={(e) =>
-                      handleInputChange(globalIndex, e.target.value)
-                    }
-                    placeholder={
-                      isOtherIssues
-                        ? "Describe the other issue..."
-                        : "Additional info"
-                    }
-                    style={
-                      isOtherIssues
-                        ? styles.otherIssuesInput
-                        : styles.input
-                    }
-                  />
+                  {!isOtherIssues && (
+                    <>
+                      {levelOptions.length > 0 && (
+                        <OptionSelector
+                          options={levelOptions}
+                          selectedValue={
+                            selectedOptions[`${globalIndex}-level`] || ""
+                          }
+                          onSelect={(val) =>
+                            handleOptionChange(`${globalIndex}-level`, val)
+                          }
+                        />
+                      )}
+                      <OptionSelector
+                        options={LocationOptions}
+                        selectedValue={
+                          selectedOptions[`${globalIndex}-location`] || ""
+                        }
+                        onSelect={(val) =>
+                          handleOptionChange(`${globalIndex}-location`, val)
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               );
             })}
