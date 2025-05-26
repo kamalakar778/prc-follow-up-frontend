@@ -17,7 +17,6 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
-    // marginBottom: "8px",
     padding: "6px 10px",
     borderRadius: "8px",
     backgroundColor: "#ffffff",
@@ -26,9 +25,17 @@ const styles = {
     fontSize: "14px"
   },
   input: {
-
     padding: "8px",
-    minWidth:"90%",
+    minWidth: "90%",
+    maxWidth: "100%",
+    fontSize: "14px",
+    borderRadius: "10px",
+    border: "1px solid #ccc",
+    marginLeft: "8px"
+  },
+  inputComplaints: {
+    padding: "8px",
+    minWidth: "20%",
     maxWidth: "100%",
     fontSize: "14px",
     borderRadius: "10px",
@@ -54,7 +61,7 @@ const styles = {
     marginTop: "2px"
   },
   customTextArea: {
-    width: "100%",
+    width: "20%",
     padding: "12px",
     fontSize: "14px",
     borderRadius: "8px",
@@ -94,7 +101,7 @@ const styles = {
 };
 
 const sections = {
-  "Other Issues": [`'Other: `, `ROM is grossly decreased on`],
+  "Other Issues": [`Other: `, `ROM is grossly decreased on`],
   Cervical: [
     `Cervical spine tenderness of paraspinal muscles `,
     `Traps/levator scapula tenderness `,
@@ -117,31 +124,6 @@ const sections = {
     `SIJ tenderness `,
     `Thigh-Thrust `,
     `Gaenslen `
-  ],
-  "Apley's ROM": [
-    `Apley scratch `,
-    `Crepitus `,
-    `Crossover test `,
-    `ROM is grossly decreased. `,
-    `Subacromial tenderness `,
-    `Neer Impingement `,
-    `Drop Arm Test `,
-    `Empty Can Test `
-  ],
-  "Hip/Squat": [
-    `(hip) Squat test `,
-    `Trochanteric bursa tenderness `,
-    `ROM is grossly decreased `,
-    `Patrick test`,
-    `FADIR (flexion, adduction and medial hip rotation) `
-  ],
-  "Peri Patella": [
-    `Peri-Patella tenderness `,
-    `Joint line tenderness `,
-    `ROM is grossly decreased,`,
-    `Drawer Test `,
-    `Valgus/Varus stress test `,
-    `McMurray test `
   ]
 };
 
@@ -181,7 +163,6 @@ const EstablishedComplaints = ({ onChange }) => {
     let globalIdx = 0;
     for (const [sectionName, lines] of Object.entries(sections)) {
       groupedLines[sectionName] = [];
-
       lines.forEach((line) => {
         const location = selectedOptions[`${globalIdx}-location`] || "";
         const level = selectedOptions[`${globalIdx}-level`] || "";
@@ -251,70 +232,122 @@ const EstablishedComplaints = ({ onChange }) => {
           <div key={sectionIdx} style={styles.section}>
             <div style={styles.sectionTitle}>{sectionName}</div>
             {lines.map((line, lineIdx) => {
-              const globalIndex = Object.values(sections)
+              const flatIndex = Object.values(sections)
                 .flat()
                 .slice(0, Object.values(sections).flat().indexOf(line) + 1)
                 .lastIndexOf(line);
 
+              const isManuallySelected = manualSelectedLines.has(flatIndex);
+
+              const toggleSelection = () => {
+                setManualSelectedLines((prev) => {
+                  const updated = new Set(prev);
+                  if (updated.has(flatIndex)) {
+                    updated.delete(flatIndex);
+                  } else {
+                    updated.add(flatIndex);
+                  }
+                  return updated;
+                });
+              };
+
+              const needsExtraInput =
+                (sectionName === "Cervical" && lineIdx === 2) ||
+                (sectionName === "Thoracic" && lineIdx === 2) ||
+                (sectionName === "Lumbar" && lineIdx === 2);
+
               let levelOptions = [];
-              if (sectionName === "Cervical" && lineIdx === 2) {
+              if (sectionName === "Cervical" && lineIdx === 2)
                 levelOptions = CervicalLevels;
-              } else if (sectionName === "Thoracic" && lineIdx === 2) {
+              if (sectionName === "Thoracic" && lineIdx === 2)
                 levelOptions = ThoracicLevels;
-              } else if (sectionName === "Lumbar" && lineIdx === 2) {
+              if (sectionName === "Lumbar" && lineIdx === 2)
                 levelOptions = LumbarLevels;
-              }
 
               const isOtherIssues = sectionName === "Other Issues";
 
               return (
-                <div key={globalIndex} style={styles.row}>
+                <div key={flatIndex} style={styles.row}>
+                  <button
+                    onClick={toggleSelection}
+                    style={{
+                      marginRight: "8px",
+                      backgroundColor: isManuallySelected ? "green" : "gray",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {isManuallySelected ? "Remove" : "Add"}
+                  </button>
+
                   <span>{line}</span>
+
                   {isOtherIssues && lineIdx === 0 && (
                     <input
                       type="text"
                       placeholder="Enter detail"
-                      value={userInputs[globalIndex] || ""}
+                      value={userInputs[flatIndex] || ""}
                       onChange={(e) =>
                         setUserInputs((prev) => ({
                           ...prev,
-                          [globalIndex]: e.target.value
+                          [flatIndex]: e.target.value
                         }))
                       }
                       style={styles.input}
                     />
                   )}
+
                   {isOtherIssues && lineIdx === 1 && (
                     <OptionSelector
                       options={LocationOptions}
-                      selectedValue={selectedOptions[`${globalIndex}-location`] || ""}
+                      selectedValue={
+                        selectedOptions[`${flatIndex}-location`] || ""
+                      }
                       onSelect={(val) =>
-                        handleOptionChange(`${globalIndex}-location`, val)
+                        handleOptionChange(`${flatIndex}-location`, val)
                       }
                     />
                   )}
+
                   {!isOtherIssues && (
                     <>
                       {levelOptions.length > 0 && (
                         <OptionSelector
                           options={levelOptions}
                           selectedValue={
-                            selectedOptions[`${globalIndex}-level`] || ""
+                            selectedOptions[`${flatIndex}-level`] || ""
                           }
                           onSelect={(val) =>
-                            handleOptionChange(`${globalIndex}-level`, val)
+                            handleOptionChange(`${flatIndex}-level`, val)
                           }
                         />
                       )}
                       <OptionSelector
                         options={LocationOptions}
                         selectedValue={
-                          selectedOptions[`${globalIndex}-location`] || ""
+                          selectedOptions[`${flatIndex}-location`] || ""
                         }
                         onSelect={(val) =>
-                          handleOptionChange(`${globalIndex}-location`, val)
+                          handleOptionChange(`${flatIndex}-location`, val)
                         }
                       />
+                      {needsExtraInput && (
+                        <input
+                          type="text"
+                          placeholder="Enter additional info"
+                          value={userInputs[flatIndex] || ""}
+                          onChange={(e) =>
+                            setUserInputs((prev) => ({
+                              ...prev,
+                              [flatIndex]: e.target.value
+                            }))
+                          }
+                          style={styles.inputComplaints}
+                        />
+                      )}
                     </>
                   )}
                 </div>
