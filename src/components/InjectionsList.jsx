@@ -195,7 +195,7 @@ const InjectionsList = ({ onInjectionChange }) => {
     if (onInjectionChange) {
       onInjectionChange({
         injections: lines.join("\n"),
-        INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : "_________"
+        INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : ""
       });
     }
   }, [injections, onInjectionChange]);

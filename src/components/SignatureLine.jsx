@@ -108,17 +108,24 @@ const SignatureLine = ({ onChange }) => {
 
     return {
       lines: filteredLines.map(
-        (line, idx) => `\t${idx + 1}. ${line.trim() || "_________"}`
+        (line, idx) => `\t${idx + 1}. ${line.trim() || ""}`
       )
     };
   };
 
   useEffect(() => {
+    // otherPlans: formatOtherPlans() ?`Other Plans:\n${formatOtherPlans().lines.join("\n")}`:"",
+    const formattedOtherPlans = formatOtherPlans();
+    const otherPlansOutput =
+      formattedOtherPlans.lines.length > 0
+        ? `Other Plans:\n${formattedOtherPlans.lines.join("\n")}`
+        : "";
+
     onChange?.({
-      otherPlans: `Other Plans:\n${formatOtherPlans().lines.join("\n")}`,
-      formattedLines: formatProcessedLines(),
+      otherPlans: otherPlansOutput,
+      formattedLines: `\n${formatProcessedLines()}`,
       followUpAppointment,
-      signatureLine: buttonTexts[selectedButton] || "_________________",
+      signatureLine: buttonTexts[selectedButton] || "",
       dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
     });
   }, [

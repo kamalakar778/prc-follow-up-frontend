@@ -134,29 +134,30 @@ const AssessmentCodes = ({ selected, setSelected }) => {
 
   const codes = [code1, code2, code3];
 
-  const toggleItem = (item) => {
-    const newSelected = new Set(selected);
-    if (newSelected.has(item)) {
-      newSelected.delete(item);
+  const isSelected = (label) => {
+    return selected.some((item) => item.label === label);
+  };
+
+  const toggleItem = (label) => {
+    if (isSelected(label)) {
+      setSelected(selected.filter((item) => item.label !== label));
     } else {
-      newSelected.add(item);
+      setSelected([...selected, { label, index: selected.length + 1 }]);
     }
-    setSelected(newSelected);
   };
 
   const addCustomCode = () => {
-    if (inputValue.trim() !== "") {
-      setCustomCodes([...customCodes, inputValue.trim()]);
-      toggleItem(inputValue.trim());
+    const trimmed = inputValue.trim();
+    if (trimmed !== "") {
+      setCustomCodes([...customCodes, trimmed]);
+      toggleItem(trimmed);
       setInputValue("");
     }
   };
 
   const removeCustomCode = (code) => {
     setCustomCodes(customCodes.filter((c) => c !== code));
-    const newSelected = new Set(selected);
-    newSelected.delete(code);
-    setSelected(newSelected);
+    setSelected(selected.filter((item) => item.label !== code));
   };
 
   useEffect(() => {
@@ -172,23 +173,26 @@ const AssessmentCodes = ({ selected, setSelected }) => {
             <div key={category} style={{ marginBottom: "1rem" }}>
               <strong>{category}</strong>
               <ul style={{ listStyleType: "none", padding: 0 }}>
-                {items.map((item, idx) => (
-                  <li
-                    key={idx}
-                    onClick={() => toggleItem(item)}
-                    style={{
-                      cursor: "pointer",
-                      color: selected.has(item) ? "red" : "black",
-                      fontWeight: selected.has(item) ? "bold" : "normal",
-                      border: "1px solid #ccc",
-                      padding: "4px",
-                      margin: "2px 0"
-                    }}
-                    title={selected.has(item) ? "Click to remove" : "Click to add"}
-                  >
-                    {item}
-                  </li>
-                ))}
+                {items.map((item, idx) => {
+                  const selectedItem = selected.find((entry) => entry.label === item);
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => toggleItem(item)}
+                      style={{
+                        cursor: "pointer",
+                        color: selectedItem ? "red" : "black",
+                        fontWeight: selectedItem ? "bold" : "normal",
+                        border: "1px solid #ccc",
+                        padding: "4px",
+                        margin: "2px 0"
+                      }}
+                      title={selectedItem ? `#${selectedItem.index} — Click to remove` : "Click to add"}
+                    >
+                      {selectedItem ? `#${selectedItem.index}. ` : ""}{item}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -217,27 +221,30 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           </button>
         </div>
         <ul style={{ listStyleType: "none", padding: 0 }}>
-          {customCodes.map((code, idx) => (
-            <li key={idx} style={{ marginBottom: "4px", border: "1px solid #ccc", padding: "4px" }}>
-              <span
-                onClick={() => toggleItem(code)}
-                style={{
-                  cursor: "pointer",
-                  color: selected.has(code) ? "red" : "black",
-                  fontWeight: selected.has(code) ? "bold" : "normal",
-                  marginRight: "8px"
-                }}
-              >
-                {code}
-              </span>
-              <button
-                onClick={() => removeCustomCode(code)}
-                style={{ fontFamily: "Calibri", fontSize: "13px" }}
-              >
-                Remove
-              </button>
-            </li>
-          ))}
+          {customCodes.map((code, idx) => {
+            const selectedItem = selected.find((item) => item.label === code);
+            return (
+              <li key={idx} style={{ marginBottom: "4px", border: "1px solid #ccc", padding: "4px" }}>
+                <span
+                  onClick={() => toggleItem(code)}
+                  style={{
+                    cursor: "pointer",
+                    color: selectedItem ? "red" : "black",
+                    fontWeight: selectedItem ? "bold" : "normal",
+                    marginRight: "8px"
+                  }}
+                >
+                  {selectedItem ? `#${selectedItem.index}. ` : ""}{code}
+                </span>
+                <button
+                  onClick={() => removeCustomCode(code)}
+                  style={{ fontFamily: "Calibri", fontSize: "13px" }}
+                >
+                  Remove
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

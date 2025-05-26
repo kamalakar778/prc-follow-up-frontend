@@ -20,6 +20,8 @@ const Form = () => {
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
   const [signatureData, setSignatureData] = useState("");
+  const [selectedCodes, setSelectedCodes] = useState([]); // Must be an array
+
   const [formData, setFormData] = useState({
     patientName: "________________",
     dob: "________________",
@@ -280,6 +282,11 @@ const Form = () => {
     }));
   };
 
+  const formattedAssessmentCodes = selectedCodes
+    .sort((a, b) => a.index - b.index) // Ensure correct order
+    .map((item) => `\t${item.index}. ${item.label}`)
+    .join("\n");
+
   const handleSubmit = async () => {
     // if (!fileName.trim() || !formData.patientName?.trim()) {
     //   alert("File name and patient name are required.");
@@ -299,7 +306,7 @@ const Form = () => {
     const finalCMA = formData.CMAInput?.trim() || formData.CMA || "";
 
     const complaintsSummary = getComplaintsSummary();
-    const assessmentCodesFinalList = Array.from(selected || []).join("\n");
+    // const assessmentCodesFinalList = Array.from(selected || []).join("\n");
 
     const cleanString = (v) => (typeof v === "string" ? v.trim() : v || "");
 
@@ -379,7 +386,8 @@ const Form = () => {
 
       establishedComplaints: formData.establishedComplaints,
 
-      assessment_codes: assessmentCodesFinalList,
+      assessment_codes: formattedAssessmentCodes,
+      // assessment_codes: assessmentCodesFinalList,
 
       // followUpPlan: cleanString(formData.followUpPlan),
       nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
@@ -397,15 +405,15 @@ const Form = () => {
 
       medication_management: formData.medication_management,
 
-      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY || "",
+      INJECTION_SUMMARY: `\n\n${formData?.INJECTION_SUMMARY}` || "",
       // medicationOutput: Array.isArray(formData.medicationOutput)
       //   ? formData.medicationOutput.join("\n")
       //   : cleanString(formData.medicationOutput),
       signature: {
         ...signatureData,
-        otherPlans: signatureData.otherPlans,
+        otherPlans: `\n\n${signatureData.otherPlans}`,
         // otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
-        formattedLines: signatureData?.formattedLines || "",
+        formattedLines: `\n${signatureData?.formattedLines}` || "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
         dateTranscribed: formData?.dateTranscribed || ""
@@ -525,7 +533,11 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Assessment Codes</h2>
-        <AssessmentCodes selected={selected} setSelected={setSelected} />
+        {/* <AssessmentCodes selected={selected} setSelected={setSelected} /> */}
+        <AssessmentCodes
+          selected={selectedCodes}
+          setSelected={setSelectedCodes}
+        />
       </div>
 
       <div className="form-section">
