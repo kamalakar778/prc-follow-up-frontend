@@ -2,18 +2,24 @@ import React, { useState, useEffect } from "react";
 
 const createEmptySection = () => ({
   date: "",
-  preExisting: "Pre-existing",
+  preExisting: "",
   cc: "",
-  palpationMuscle: "_______",
-  palpationJoint: "_______",
-  rom: "_______",
+  palpationMuscle: "",
+  palpationJoint: "",
+  rom: "",
   comments: "",
-  sensoryFrequency: "continuously",
+  sensoryFrequency: "",
   sensoryLevels: [],
   sensoryNote: ""
 });
 
-const sensoryLevelOptions = ["right","left","L3, L4, L5, S1, S2", "C6, C7, C8", "T1, T2"];
+const sensoryLevelOptions = [
+  "right",
+  "left",
+  "L3, L4, L5, S1, S2",
+  "C6, C7, C8",
+  "T1, T2"
+];
 
 const styles = {
   container: {
@@ -59,15 +65,7 @@ const styles = {
     border: "1px solid #d1d5db",
     borderRadius: "6px",
     padding: "8px",
-    width: "95%",
-    fontSize: "14px",
-    marginBottom: "-0.08rem"
-  },
-  select: {
-    border: "1px solid #d1d5db",
-    borderRadius: "6px",
-    padding: "8px",
-    width: "100%",
+    width: "75%",
     fontSize: "14px",
     marginBottom: "-0.08rem"
   },
@@ -77,16 +75,30 @@ const styles = {
     marginBottom: "6px"
   },
   sensoryTag: (selected) => ({
-    marginRight: "8px",
-    marginBottom: "2px",
+    marginRight: "4px",
+    marginBottom: "6px",
     cursor: "pointer",
-    padding: "6px 12px",
-    borderRadius: "9999px",
+    padding: "6px 10px",
+    borderRadius: "10px",
     border: `1px solid ${selected ? "#10b981" : "#9ca3af"}`,
     backgroundColor: selected ? "#d1fae5" : "#f3f4f6",
     color: selected ? "#065f46" : "#6b7280",
     display: "inline-block",
     fontSize: "14px"
+  }),
+  optionButton: (isSelected) => ({
+    marginRight: 4,
+    marginBottom: 4,
+    cursor: "pointer",
+    padding: "6px 12px",
+    borderRadius: "10px",
+    border: "1px solid",
+    borderColor: isSelected ? "#10b981" : "#d1d5db",
+    backgroundColor: isSelected ? "#d1fae5" : "#f3f4f6",
+    color: isSelected ? "#065f46" : "#6b7280",
+    display: "inline-block",
+    fontWeight: isSelected ? "600" : "normal",
+    transition: "all 0.3s ease"
   }),
   addButton: {
     backgroundColor: "#2563eb",
@@ -121,19 +133,18 @@ const EarlierFollowups = ({ onDataChange }) => {
         const lines = [];
 
         if (s.date.trim()) lines.push(`Date: ${s.date}`);
-        if (s.preExisting.trim() || s.preExisting.trim() !== "Pre-existing:") lines.push(`${s.preExisting}`);
+        if (s.preExisting.trim()) lines.push(`${s.preExisting}`);
         if (s.cc.trim()) lines.push(`CC: ${s.cc}`);
 
-        if (
-          s.palpationMuscle.trim() !== "_______" ||
-          s.palpationJoint.trim() !== "_______"
-        ) {
+        if (s.palpationMuscle.trim() !== "" || s.palpationJoint.trim() !== "") {
           lines.push(`\nPalpation revealed:`);
-          if (s.palpationMuscle.trim() !== "_______") lines.push(`${s.palpationMuscle} muscle tenderness`);
-          if (s.palpationJoint.trim() !== "_______") lines.push(`${s.palpationJoint} joint tenderness`);
+          if (s.palpationMuscle.trim() !== "")
+            lines.push(`${s.palpationMuscle} muscle tenderness`);
+          if (s.palpationJoint.trim() !== "")
+            lines.push(`${s.palpationJoint} joint tenderness`);
         }
 
-        if (s.rom.trim() !== "_______") {
+        if (s.rom.trim() !== "") {
           lines.push(`\nR.O.M. revealed:`);
           lines.push(`${s.rom} decrease in gross movement`);
         }
@@ -142,11 +153,14 @@ const EarlierFollowups = ({ onDataChange }) => {
           lines.push(`\nComments: ${s.comments}`);
         }
 
-        if (
-          s.sensoryLevels.length > 0 ||
-          s.sensoryNote.trim()
-        ) {
-          lines.push(`\nSensory changes: (paresthesia and numbness) occur ${s.sensoryFrequency} at the levels of ${s.sensoryLevels.join(", ") || "____"} ${s.sensoryNote}`);
+        if (s.sensoryLevels.length > 0 || s.sensoryNote.trim()) {
+          lines.push(
+            `\nSensory changes: (paresthesia and numbness) occur ${
+              s.sensoryFrequency
+            } at the levels of ${s.sensoryLevels.join(", ") || "____"} ${
+              s.sensoryNote
+            }`
+          );
         }
 
         return lines.length ? lines.join("\n") : "";
@@ -161,6 +175,12 @@ const EarlierFollowups = ({ onDataChange }) => {
     const updated = [...sections];
     updated[index][field] = value;
     setSections(updated);
+  };
+
+  const toggleFieldValue = (index, field, value, defaultValue = "") => {
+    const current = sections[index][field];
+    const newValue = current === value ? defaultValue : value;
+    handleChange(index, field, newValue);
   };
 
   const toggleLevel = (index, level) => {
@@ -233,94 +253,92 @@ const EarlierFollowups = ({ onDataChange }) => {
                 </button>
               )}
             </div>
-
-            <input
-              type="text"
-              value={section.date}
-              onChange={(e) => handleChange(index, "date", e.target.value)}
-              style={styles.input}
-            />
-
-            <select
-              value={section.preExisting}
-              onChange={(e) =>
-                handleChange(index, "preExisting", e.target.value)
-              }
-              style={styles.select}
-            >
-              <option value="Pre-existing">Pre-existing</option>
-              <option value="New">New</option>
-              <option value="_______">_______</option>
-            </select>
-
+            <div style={{display:"flex", direction:"row"}}>
+              <label style={styles.label}>
+                Date:
+                <input
+                  type="text"
+                  value={section.date}
+                  onChange={(e) => handleChange(index, "date", e.target.value)}
+                  style={styles.input}
+                />
+              </label>
+            </div>
+            <div>
+              <label style={styles.label}>Condition Type:</label>
+              {["Pre-existing", "New"].map((opt) => (
+                <span
+                  key={opt}
+                  style={styles.optionButton(section.preExisting === opt)}
+                  onClick={() =>
+                    toggleFieldValue(index, "preExisting", opt, "")
+                  }
+                >
+                  {opt}
+                </span>
+              ))}
+            </div>
             <input
               placeholder="Chief Complaint (CC)"
               value={section.cc}
               onChange={(e) => handleChange(index, "cc", e.target.value)}
               style={styles.input}
             />
-
             <div>
-              <label style={styles.label}>Palpation revealed:</label>
-              <select
-                value={section.palpationMuscle}
-                onChange={(e) =>
-                  handleChange(index, "palpationMuscle", e.target.value)
-                }
-                style={styles.select}
-              >
-                <option value="_______">_______</option>
-                <option value="Positive">Positive muscle tenderness</option>
-                <option value="Negative">Negative muscle tenderness</option>
-              </select>
-
-              <select
-                value={section.palpationJoint}
-                onChange={(e) =>
-                  handleChange(index, "palpationJoint", e.target.value)
-                }
-                style={styles.select}
-              >
-                <option value="_______">_______</option>
-                <option value="Positive">Positive joint tenderness</option>
-                <option value="Negative">Negative joint tenderness</option>
-              </select>
+              <label style={styles.label}>Palpation revealed:</label><br/>
+              {["Positive", "Negative"].map((opt) => (
+                <span
+                  key={`muscle-${opt}`}
+                  style={styles.optionButton(section.palpationMuscle === opt)}
+                  onClick={() =>
+                    toggleFieldValue(index, "palpationMuscle", opt)
+                  }
+                >
+                  Muscle: {opt}
+                </span>
+              ))}
+              <br />
+              {["Positive", "Negative"].map((opt) => (
+                <span
+                  key={`joint-${opt}`}
+                  style={styles.optionButton(section.palpationJoint === opt)}
+                  onClick={() => toggleFieldValue(index, "palpationJoint", opt)}
+                >
+                  Joint: {opt}
+                </span>
+              ))}
             </div>
-
             <div>
               <label style={styles.label}>R.O.M. revealed:</label>
-              <select
-                value={section.rom}
-                onChange={(e) => handleChange(index, "rom", e.target.value)}
-                style={styles.select}
-              >
-                <option value="_______">_______</option>
-                <option value="Positive">Positive decrease in gross movement</option>
-                <option value="Negative">Negative decrease in gross movement</option>
-              </select>
+              {["Positive", "Negative"].map((opt) => (
+                <span
+                  key={`rom-${opt}`}
+                  style={styles.optionButton(section.rom === opt)}
+                  onClick={() => toggleFieldValue(index, "rom", opt)}
+                >
+                  {opt}
+                </span>
+              ))}
             </div>
-
             <input
               placeholder="Comments"
               value={section.comments}
               onChange={(e) => handleChange(index, "comments", e.target.value)}
               style={styles.input}
             />
-
             <div>
-              <label style={styles.label}>
-                Sensory changes (paresthesia and numbness):
-              </label>
-              <select
-                value={section.sensoryFrequency}
-                onChange={(e) =>
-                  handleChange(index, "sensoryFrequency", e.target.value)
-                }
-                style={styles.select}
-              >
-                <option value="continuously">Continuously</option>
-                <option value="intermittently">Intermittently</option>
-              </select>
+              <label style={styles.label}>Sensory changes:</label>
+              {["continuously", "intermittently"].map((opt) => (
+                <span
+                  key={`freq-${opt}`}
+                  style={styles.optionButton(section.sensoryFrequency === opt)}
+                  onClick={() =>
+                    toggleFieldValue(index, "sensoryFrequency", opt)
+                  }
+                >
+                  {opt}
+                </span>
+              ))}
 
               <div style={{ marginTop: "6px" }}>
                 {sensoryLevelOptions.map((level) => {

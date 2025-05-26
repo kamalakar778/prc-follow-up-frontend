@@ -4,6 +4,12 @@ import PropTypes from "prop-types";
 const severityOptions = ["None", "Mild", "Moderate", "Significant"];
 const imageTypes = ["MRI Scan", "CT Scan"];
 const contrastOptions = ["with contrast", "without contrast"];
+const actionOptions = [
+  "The patient counseled/warned on need to engage treatment plan",
+  "final warning given before NNCP",
+  "NNCP",
+  "Discharge"
+];
 
 const styles = {
   container: {
@@ -206,15 +212,30 @@ const FollowupPlan = ({ setFormData }) => {
           </label>
         </div>
 
-        <div style={styles.inlineGroup}>
-          <span style={styles.labelText}>Action taken:</span>
-          <input
-            type="text"
-            value={actionTaken}
-            onChange={(e) => setActionTaken(e.target.value)}
-            style={styles.inputMedium}
-            placeholder="e.g. Verbal warning"
-          />
+        {/* Updated: Action taken as clickable buttons */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={styles.labelText}>Action taken:</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {actionOptions.map((option) => {
+              const isSelected = actionTaken === option;
+              return (
+                <span
+                  key={option}
+                  style={styles.optionButton(isSelected)}
+                  onClick={() => setActionTaken(isSelected ? "" : option)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setActionTaken(isSelected ? "" : option);
+                    }
+                  }}
+                >
+                  {option}
+                </span>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{ marginBottom: 12 }}>
@@ -310,9 +331,7 @@ const FollowupPlan = ({ setFormData }) => {
             <span
               key={type}
               style={styles.optionButton(imageType === type)}
-              onClick={() =>
-                setImageType(imageType === type ? "" : type)
-              }
+              onClick={() => setImageType(imageType === type ? "" : type)}
               role="button"
               tabIndex={0}
               onKeyPress={(e) => {
@@ -343,6 +362,7 @@ const FollowupPlan = ({ setFormData }) => {
             </span>
           ))}
         </div>
+
         <div style={styles.inlineGroup}>
           <span style={styles.labelText}>of:</span>
           <input
