@@ -128,31 +128,31 @@ const sections = {
     `Gaenslen `
   ],
   "Aplyes-Scratch": [
-    "  Apley scratch Choose an item.",
-    "Crepitus Choose an item.",
-    "Crossover test Choose an item.",
-    "ROM is grossly decreased Choose an item.",
-    "Subacromial tenderness Choose an item.",
-    "Neer Impingement Choose an item.",
-    "Drop Arm Test Choose an item.",
-    "Empty Can Test Choose an item."
+    "  Apley scratch ",
+    "Crepitus ",
+    "Crossover test ",
+    "ROM is grossly decreased ",
+    "Subacromial tenderness ",
+    "Neer Impingement ",
+    "Drop Arm Test ",
+    "Empty Can Test "
   ],
 
   "Hip-Squat": [
     "(hip) Squat test ",
-    "Trochanteric bursa tenderness Choose an item.",
-    "ROM is grossly decreased Choose an item.",
-    "Patrick Choose an item.",
-    "FADIR (flexion, adduction and medial hip rotation) Choose an item."
+    "Trochanteric bursa tenderness ",
+    "ROM is grossly decreased ",
+    "Patrick.",
+    "FADIR (flexion, adduction and medial hip rotation) "
   ],
 
   "Peri-Patella": [
-    "Peri-Patella tenderness Choose an item.",
-    "Joint line tenderness Choose an item.",
-    "ROM is grossly decreased Choose an item.",
-    "Drawer Test Choose an item.",
-    "Valgus/Varus stress test Choose an item.",
-    "McMurray test Choose an item."
+    "Peri-Patella tenderness ",
+    "Joint line tenderness ",
+    "ROM is grossly decreased ",
+    "Drawer Test. ",
+    "Valgus/Varus stress test ",
+    "McMurray "
   ]
 };
 

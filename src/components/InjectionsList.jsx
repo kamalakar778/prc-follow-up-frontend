@@ -43,7 +43,7 @@ const getInitialInjections = () =>
 
 const injectionSchema = Yup.object().shape({
   label: Yup.string().required("Label is required"),
-  timing: Yup.string().oneOf(["Now", "Later"]).required(),
+  timing: Yup.string().oneOf(["Now schedule", "Later shedule"]).required(),
   directionSelected: Yup.string().when("direction", {
     is: true,
     then: Yup.string().required("Direction is required"),
@@ -115,9 +115,9 @@ const InjectionsList = ({ onInjectionChange }) => {
       updated.forEach((inj, i) => {
         if (i === index) {
           inj.timing = value;
-          if (value === "Now") inj.included = true;
-        } else if (value === "Now") {
-          inj.timing = "Later";
+          if (value === "Now schedule") inj.included = true;
+        } else if (value === "Now schedule") {
+          inj.timing = "Later schedule";
         }
       });
     } else {
@@ -171,8 +171,8 @@ const InjectionsList = ({ onInjectionChange }) => {
   const resetAll = () => setInjections(getInitialInjections());
 
   useEffect(() => {
-    const now = injections.filter((inj) => inj.timing === "Now");
-    const later = injections.filter((inj) => inj.timing !== "Now");
+    const now = injections.filter((inj) => inj.timing === "Now schedule");
+    const later = injections.filter((inj) => inj.timing !== "Now schedule");
     const reordered = [...now, ...later];
     const sameOrder = reordered.length === injections.length && reordered.every((inj, idx) => inj === injections[idx]);
     if (!sameOrder) setInjections(reordered);
@@ -182,7 +182,7 @@ const InjectionsList = ({ onInjectionChange }) => {
     const included = injections.filter((inj) => inj.included);
     const lines = included.map((inj, idx) => {
       const parts = [
-        inj.timing === "Now" ? "Now schedule" : "Later schedule",
+        inj.timing === "Now schedule" ? "Now schedule" : "Later schedule",
         inj.label,
         inj.selectedLevel || inj.levels?.join(", ") || "",
         inj.directionSelected || ""
@@ -208,7 +208,7 @@ const InjectionsList = ({ onInjectionChange }) => {
           {inj.direction && !inj.directionAfter && inj.directionSelected && `${inj.directionSelected}`}
           {" "}{inj.label} {inj.selectedLevel}
           {inj.direction && inj.directionAfter && inj.directionSelected && `${inj.directionSelected}`}
-          {inj.notes && ` - Notes: ${inj.notes}`}
+          {inj.notes && ` ${inj.notes}`}
           <button onClick={() => removeFromPreview(injections.indexOf(inj))} style={styles.removeButton}>Remove</button>
         </div>
       ))}
@@ -233,12 +233,12 @@ const InjectionsList = ({ onInjectionChange }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor: inj.timing === "Now" ? "#2563eb" : "#6b7280",
+              backgroundColor: inj.timing === "Now schedule" ? "#2563eb" : "#6b7280",
               color: "white",
               fontSize: 12,
               padding: "6px 6px"
             }}
-            onClick={() => handleChange(index, "timing", inj.timing === "Now" ? "Later" : "Now")}
+            onClick={() => handleChange(index, "timing", inj.timing === "Now schedule" ? "Later schedule" : "Now schedule")}
           >
             {inj.timing}
           </button>
