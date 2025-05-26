@@ -434,7 +434,8 @@ const Form = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", extractedFilename.replace(/\s+/g, "_"));
+      link.setAttribute("download", extractedFilename);
+      // link.setAttribute("download", extractedFilename.replace(/\s+/g, "_"));
       document.body.appendChild(link);
       link.click();
       link.remove();
