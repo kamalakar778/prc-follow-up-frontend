@@ -17,16 +17,19 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
-    padding: "6px 10px",
+    padding: "4px 10px",
     borderRadius: "8px",
     backgroundColor: "#ffffff",
     boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
     borderBottom: "1px solid #ddd",
-    fontSize: "14px"
+    fontSize: "14px",
+    // border:"-10px",
+    border: "2px solid #ccc",
+
   },
   input: {
     padding: "8px",
-    minWidth: "90%",
+    minWidth: "80%",
     maxWidth: "100%",
     fontSize: "14px",
     borderRadius: "10px",
@@ -271,12 +274,13 @@ const EstablishedComplaints = ({ onChange }) => {
                   <button
                     onClick={toggleSelection}
                     style={{
+                      fontSize:"14px",
                       marginRight: "8px",
-                      backgroundColor: isManuallySelected ? "green" : "gray",
+                      backgroundColor: isManuallySelected ? "red" : "#16A34A",
                       color: "white",
                       border: "none",
                       borderRadius: "4px",
-                      padding: "4px 8px",
+                      padding: "2px 4px",
                       cursor: "pointer"
                     }}
                   >
