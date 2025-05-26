@@ -105,14 +105,14 @@ const SignatureLine = ({ onChange }) => {
     
     return {
       lines: filteredLines.map(
-        (line, idx) => `Other Plans:\n \t${idx + 1}. ${line.trim() || "_________"}`
+        (line, idx) => `\t${idx + 1}. ${line.trim() || "_________"}`
       )
     };
   };
 
   useEffect(() => {
     onChange?.({
-      otherPlans: formatOtherPlans(),
+      otherPlans: `Other Plans:\n${formatOtherPlans().lines.join("\n")}`,
       formattedLines: formatProcessedLines(),
       followUpAppointment,
       signatureLine: buttonTexts[selectedButton] || "_________________",

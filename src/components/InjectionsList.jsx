@@ -189,13 +189,13 @@ const InjectionsList = ({ onInjectionChange }) => {
       ];
       const line = parts.filter(Boolean).join(" ").trim();
       const notesPart = inj.notes ? ` ${inj.notes}` : "";
-      return `INJECTIONS:\n${idx + 1}. ${line}${notesPart}`;
+      return `\t${idx + 1}. ${line}${notesPart}`;
     });
 
     if (onInjectionChange) {
       onInjectionChange({
         injections: lines.join("\n"),
-        INJECTION_SUMMARY: lines.length ? `\n  ${lines.join("\n  ")}` : "_________"
+        INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : "_________"
       });
     }
   }, [injections, onInjectionChange]);

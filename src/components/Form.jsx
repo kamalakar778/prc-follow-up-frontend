@@ -93,7 +93,7 @@ const Form = () => {
     formattedLines: "",
     followUpAppointment: "",
     signature: {
-      otherPlans: [],
+      otherPlans: "",
       formattedLines: "",
       followUpAppointment: "",
       signatureLine: "",
@@ -403,7 +403,8 @@ const Form = () => {
       //   : cleanString(formData.medicationOutput),
       signature: {
         ...signatureData,
-        otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
+        otherPlans: signatureData.otherPlans,
+        // otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
         formattedLines: signatureData?.formattedLines || "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
