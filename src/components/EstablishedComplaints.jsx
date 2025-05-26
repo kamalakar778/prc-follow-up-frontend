@@ -131,7 +131,7 @@ const sections = {
     "  Apley scratch ",
     "Crepitus ",
     "Crossover test ",
-    "ROM is grossly decreased ",
+    "ROM is grossly decreased .",
     "Subacromial tenderness ",
     "Neer Impingement ",
     "Drop Arm Test ",
@@ -149,7 +149,7 @@ const sections = {
   "Peri-Patella": [
     "Peri-Patella tenderness ",
     "Joint line tenderness ",
-    "ROM is grossly decreased ",
+    "ROM is grossly decreased. ",
     "Drawer Test. ",
     "Valgus/Varus stress test ",
     "McMurray "

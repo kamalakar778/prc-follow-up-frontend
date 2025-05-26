@@ -376,6 +376,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                       >
                         <option value="">Status</option>
                         <option value="Ongoing">Ongoing</option>
+                        <option value="None">None</option>
                         <option value="Completed">Completed</option>
                       </select>
                     </div>

@@ -20,11 +20,11 @@ const baseInjections = [
   { label: "midline caudal block ", levels: [], direction: false },
   { label: "TFESI at", levels: [], direction: true, directionAfter: true },
   { label: "SIJ Injection at ", levels: [], direction: true, directionAfter: true },
-  { label: "hip injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "hip injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
   { label: "trochanteric bursa hip injection at", levels: [], direction: true, directionAfter: true },
-  { label: "knee injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "knee injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
   { label: "subacromial shoulder injection at", levels: [], direction: true, directionAfter: true },
-  { label: "shoulder injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
+  { label: "shoulder injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
   { label: "SCS trial lumbar at", levels: [], direction: false },
   { label: "SCS implantation lumbar at", levels: [], direction: false },
   { label: "trigger point injection at", levels: [], direction: false },
@@ -34,7 +34,7 @@ const baseInjections = [
 const getInitialInjections = () =>
   baseInjections.map((item) => ({
     ...item,
-    timing: "Later",
+    timing: "Later schedule ",
     directionSelected: "",
     selectedLevel: item.levels[0] || "",
     notes: "",
@@ -183,9 +183,9 @@ const InjectionsList = ({ onInjectionChange }) => {
     const lines = included.map((inj, idx) => {
       const parts = [
         inj.timing === "Now schedule" ? "Now schedule" : "Later schedule",
+        inj.directionSelected || "",
         inj.label,
         inj.selectedLevel || inj.levels?.join(", ") || "",
-        inj.directionSelected || ""
       ];
       const line = parts.filter(Boolean).join(" ").trim();
       const notesPart = inj.notes ? ` ${inj.notes}` : "";

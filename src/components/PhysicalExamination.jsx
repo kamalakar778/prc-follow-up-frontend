@@ -294,6 +294,7 @@ const PhysicalExamination = ({ onChange }) => {
         label="Assistive device (Gait):"
         options={[
           "and with No assistive device",
+          "and with cane",
           "and with wheelchair-bound",
           "and with wheelchair"
         ]}
