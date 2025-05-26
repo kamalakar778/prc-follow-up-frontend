@@ -28,7 +28,7 @@ const styles = {
   },
   input: {
     padding: "6px",
-    maxWidth: "100px",
+    maxWidth: "160px",
     fontSize: "14px",
     borderRadius: "10px",
     border: "1px solid #ccc"

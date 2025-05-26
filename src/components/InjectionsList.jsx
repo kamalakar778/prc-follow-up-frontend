@@ -158,7 +158,7 @@ const InjectionsList = ({ onInjectionChange }) => {
         inj.directionSelected || ""
       ];
       const line = parts.filter(Boolean).join(" ").trim();
-      const notesPart = inj.notes ? ` - Notes: ${inj.notes}` : "";
+      const notesPart = inj.notes ? ` ${inj.notes}` : "";
       return `${idx + 1}. ${line}${notesPart}`;
     });
 
