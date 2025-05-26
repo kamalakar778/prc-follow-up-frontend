@@ -24,8 +24,7 @@ const styles = {
     borderBottom: "1px solid #ddd",
     fontSize: "14px",
     // border:"-10px",
-    border: "2px solid #ccc",
-
+    border: "2px solid #ccc"
   },
   input: {
     padding: "8px",
@@ -123,10 +122,37 @@ const sections = {
     `Lumbar facet loading signs at `,
     `Quadrant test `,
     `Slump/SLR `,
-    `Patrick `,
+    `Patrick test `,
     `SIJ tenderness `,
     `Thigh-Thrust `,
     `Gaenslen `
+  ],
+  "Aplyes-Scratch": [
+    "  Apley scratch Choose an item.",
+    "Crepitus Choose an item.",
+    "Crossover test Choose an item.",
+    "ROM is grossly decreased Choose an item.",
+    "Subacromial tenderness Choose an item.",
+    "Neer Impingement Choose an item.",
+    "Drop Arm Test Choose an item.",
+    "Empty Can Test Choose an item."
+  ],
+
+  "Hip-Squat": [
+    "(hip) Squat test ",
+    "Trochanteric bursa tenderness Choose an item.",
+    "ROM is grossly decreased Choose an item.",
+    "Patrick Choose an item.",
+    "FADIR (flexion, adduction and medial hip rotation) Choose an item."
+  ],
+
+  "Peri-Patella": [
+    "Peri-Patella tenderness Choose an item.",
+    "Joint line tenderness Choose an item.",
+    "ROM is grossly decreased Choose an item.",
+    "Drawer Test Choose an item.",
+    "Valgus/Varus stress test Choose an item.",
+    "McMurray test Choose an item."
   ]
 };
 
@@ -274,7 +300,7 @@ const EstablishedComplaints = ({ onChange }) => {
                   <button
                     onClick={toggleSelection}
                     style={{
-                      fontSize:"14px",
+                      fontSize: "14px",
                       marginRight: "8px",
                       backgroundColor: isManuallySelected ? "red" : "#16A34A",
                       color: "white",
