@@ -405,15 +405,21 @@ const Form = () => {
 
       medication_management: formData.medication_management,
 
-      INJECTION_SUMMARY: `\n\n${formData?.INJECTION_SUMMARY}` || "",
+      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY
+        ? `\n\n${formData?.INJECTION_SUMMARY}`
+        : "",
       // medicationOutput: Array.isArray(formData.medicationOutput)
       //   ? formData.medicationOutput.join("\n")
       //   : cleanString(formData.medicationOutput),
       signature: {
         ...signatureData,
-        otherPlans: `\n\n${signatureData.otherPlans}`,
+        otherPlans: signatureData.otherPlans
+          ? `\n\n${signatureData.otherPlans}`
+          : "",
         // otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
-        formattedLines: `\n${signatureData?.formattedLines}` || "",
+        formattedLines: signatureData?.formattedLines
+          ? `\n${signatureData?.formattedLines}`
+          : "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
         dateTranscribed: formData?.dateTranscribed || ""
