@@ -147,9 +147,9 @@ const sections = {
 };
 
 const LocationOptions = ["bilaterally", "on left", "on right"];
-const CervicalLevels = ["C2-C5", "C5-T1"];
-const ThoracicLevels = ["T1-T4", "T2-T5"];
-const LumbarLevels = ["L2-L5", "L3-L5"];
+const CervicalLevels = ["at C2-C5", "at C5-T1"];
+const ThoracicLevels = ["at T1-T4", "at T2-T5"];
+const LumbarLevels = ["at L2-L5", "at L3-L5"];
 
 const OptionSelector = ({ options, selectedValue, onSelect }) => (
   <div>

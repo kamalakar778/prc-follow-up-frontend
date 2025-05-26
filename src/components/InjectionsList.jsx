@@ -11,7 +11,7 @@ const directionOptions = [
 
 const baseInjections = [
   { direction: true, label: "lumbar medial branch blocks at", levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"] },
-  { direction: true, label: "radiofrequency ablation at", levels: ["L3/4 , L4/5 , L5/S1", "Level 2", "Level 3"] },
+  { direction: true, label: "radiofrequency ablation at", levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"] },
   { direction: true, label: "cervical medial branch blocks at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
   { direction: true, label: "radiofrequency ablation at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
   { label: "thoracic medial branch blocks at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
