@@ -19,6 +19,7 @@ const baseInjections = [
   { label: "midline epidural steroid injection at", levels: [], direction: false },
   { label: "midline caudal block at", levels: [], direction: false },
   { label: "TFESI at", levels: [], direction: true, directionAfter: true },
+  { label: "SIJ Injection at ", levels: [], direction: true, directionAfter: true },
   { label: "hip injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
   { label: "trochanteric bursa hip injection at", levels: [], direction: true, directionAfter: true },
   { label: "knee injection (intra-articular) at", levels: [], direction: true, directionAfter: true },
@@ -27,7 +28,7 @@ const baseInjections = [
   { label: "SCS trial lumbar at", levels: [], direction: false },
   { label: "SCS implantation lumbar at", levels: [], direction: false },
   { label: "trigger point injection at", levels: [], direction: false },
-  { label: "", levels: ["schedule at"], direction: false }
+  { label: "", levels: [], direction: false }
 ];
 
 const getInitialInjections = () =>
