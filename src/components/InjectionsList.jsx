@@ -96,7 +96,7 @@ const styles = {
   container: { padding: 8, maxWidth: 900, margin: "auto", marginBottom: "0px 30px", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" },
   header: { fontSize: 20, fontWeight: 700, textDecoration: "underline", marginBottom: 8 },
   injectionRow: { display: "flex", flexWrap: "nowrap", alignItems: "center", gap: 2, margin: "0px -60px", borderBottom: "1px solid #ddd", paddingBottom: 2, whiteSpace: "nowrap", overflowX: "auto" },
-  injectionRowEditable: { display: "flex", flexWrap: "nowrap", alignItems: "center", gap: 1, margin: "-5px -60px", borderBottom: "1px solid #ddd", paddingBottom: 2, whiteSpace: "nowrap", overflowX: "auto" },
+  injectionRowEditable: { display: "flex", padding:"0px 0px", flexWrap: "nowrap", alignItems: "center", gap: 1, margin: "-5px -60px", borderBottom: "1px solid #ddd", paddingBottom: 2, whiteSpace: "nowrap", overflowX: "auto" },
   index: { fontWeight: 600, minWidth: 20 },
   select: { border: "1px solid #ccc", borderRadius: 4, padding: "6px 4px", margin: "10px 0px", fontSize: 13, minWidth: 100, maxWidth: 60 },
   textInput: { border: "1px solid #ccc", borderRadius: 4, padding: "5px 4px", fontSize: 13, minWidth: 150 },
@@ -225,7 +225,8 @@ const InjectionsList = ({ onInjectionChange }) => {
   return (
     <div style={styles.container}>
       {injections.filter((inj) => inj.included).map((inj, idx) => (
-        <div key={idx} style={{ ...styles.injectionRow, background: "#f9fafb" }}>
+        <div key={idx} style={{ ...styles.injectionRow, background: "#f9fafb", padding:"2px 8px" }}>
+            {`${idx + 1}. `}&nbsp;
           <strong>{inj.timing}</strong>
           {inj.direction && !inj.directionAfter && inj.directionSelected && `${inj.directionSelected}`}
           {" "}{inj.label} {inj.selectedLevel}

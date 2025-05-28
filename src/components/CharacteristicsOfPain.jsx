@@ -83,7 +83,7 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
     best: "",
     withMeds: "",
     withoutMeds: "",
-    workingStatus: formData.workingStatus || "_________",
+    workingStatus: formData.workingStatus || "",
     comments: ""
   });
 
@@ -199,13 +199,21 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
               return (
                 <span
                   key={option}
-                  onClick={() => setState((prev) => ({ ...prev, workingStatus: option }))}
+                  onClick={() =>
+                    setState((prev) => ({
+                      ...prev,
+                      workingStatus: isSelected ? "" : option
+                    }))
+                  }
                   style={styles.optionButton(isSelected)}
                   role="button"
                   tabIndex={0}
                   onKeyPress={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      setState((prev) => ({ ...prev, workingStatus: option }));
+                      setState((prev) => ({
+                        ...prev,
+                        workingStatus: isSelected ? "" : option
+                      }));
                     }
                   }}
                 >
