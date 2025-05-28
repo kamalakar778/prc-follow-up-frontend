@@ -13,6 +13,9 @@ import MedicationManagement from "./MedicationManagement";
 import SignatureLine from "./SignatureLine";
 import InjectionsList from "./InjectionsList";
 import EarlierFollowups from "./EarlierFollowups";
+// import CustomAutoComplete from "./components/CustomAutoComplete";
+import CustomAutoComplete from "./CustomAutoComplete2";
+
 import "./Form.css";
 
 const Form = () => {
@@ -21,6 +24,10 @@ const Form = () => {
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
   const [signatureData, setSignatureData] = useState("");
   const [selectedCodes, setSelectedCodes] = useState([]); // Must be an array
+  const [autoCompleteData, setAutoCompleteData] = useState({
+    item1: "",
+    item2: ""
+  });
 
   const [formData, setFormData] = useState({
     patientName: "________________",
@@ -422,7 +429,10 @@ const Form = () => {
           : "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
-        dateTranscribed: formData?.dateTranscribed || ""
+        dateTranscribed: formData?.dateTranscribed || "",
+
+        autocompleteItem1: autoCompleteData.item1,
+        autocompleteItem2: autoCompleteData.item2
       }
     };
 

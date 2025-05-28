@@ -70,11 +70,14 @@ const SignatureLine = ({ onChange }) => {
     return `${mm}/${dd}/${yyyy}`;
   };
 
-  const [includedLines, setIncludedLines] = useState(initialLines.map(() => false));
+  const [includedLines, setIncludedLines] = useState(
+    initialLines.map(() => false)
+  );
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
-  const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
-  const [selectedButton, setSelectedButton] = useState("Dr. Klickovich");
+  const [followUpAppointment, setFollowUpAppointment] =
+    useState(initialFollowUp);
+  const [selectedButton, setSelectedButton] = useState("");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
   const formatProcessedLines = useCallback(() => {
@@ -111,6 +114,7 @@ const SignatureLine = ({ onChange }) => {
   };
 
   useEffect(() => {
+    // otherPlans: formatOtherPlans() ?`Other Plans:\n${formatOtherPlans().lines.join("\n")}`:"",
     const formattedOtherPlans = formatOtherPlans();
     const otherPlansOutput =
       formattedOtherPlans.lines.length > 0
@@ -171,27 +175,11 @@ const SignatureLine = ({ onChange }) => {
       display: "inline-block",
       fontWeight: isSelected ? "bold" : "normal"
     }),
-    physicianButton: (name, selected) => {
-      if (!selected)
-        return {
-          backgroundColor: "#ccc",
-          color: "#000",
-          fontWeight: "bold"
-        };
-      const colorMap = {
-        "Dr. Klickovich": "#ffa500", // orange
-        APRN: "#FF4C4C", // watermelon red
-        "Dr. Olivia Kelley": "#4CAF50", // green
-        "Signature Line Missing": "#ffd700" // caution yellow
-      };
-      return {
-        backgroundColor: colorMap[name] || "#ccc",
-        // color: "#000",
-        color: "white",
-        fontWeight: "bold",
-        padding:"10px 15px"
-      };
-    },
+    physicianButton: (active) => ({
+      backgroundColor: active ? "#ffa500" : "#ccc",
+      color: "#000",
+      fontWeight: "bold"
+    }),
     input: {
       padding: "6px",
       marginRight: "8px",
@@ -300,7 +288,7 @@ const SignatureLine = ({ onChange }) => {
             setSelectedOptions({});
             setIncludedLines(initialLines.map(() => false));
             setFollowUpAppointment(initialFollowUp);
-            setSelectedButton("Dr. Klickovich");
+            setSelectedButton("");
             setDateTranscribed(getTodayISO());
           }}
         >
@@ -337,7 +325,7 @@ const SignatureLine = ({ onChange }) => {
             key={name}
             style={{
               ...styles.button,
-              ...styles.physicianButton(name, selectedButton === name)
+              ...styles.physicianButton(selectedButton === name)
             }}
             onClick={(e) => {
               e.preventDefault();

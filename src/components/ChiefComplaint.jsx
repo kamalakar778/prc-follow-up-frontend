@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import CustomAutoComplete from "./CustomAutoComplete2";
 
 const watermelonRed = "#FF4C4C";
 
@@ -100,11 +101,11 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
         <strong>{inputs.input1 || "__________"}</strong>
         {inputs.input2?.trim() && (
           <>
-            , in addition to their other{" "}
-            <strong>{inputs.input2}</strong> pain complaints
+            , in addition to their other <strong>{inputs.input2}</strong> pain
+            complaints
           </>
-        )}
-        {" "}and presents today to the clinic today for a routine f/u of their usual
+        )}{" "}
+        and presents today to the clinic today for a routine f/u of their usual
         pain complaints and/or medication refill
       </>
     );
@@ -228,7 +229,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
   return (
     <div style={styles.container}>
       <div style={styles.outputBox}>{renderFinalText()}</div>
-
       <div style={styles.section}>
         The patient's worst pain complaint today is located in their
         <input
@@ -250,7 +250,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
         />
         complaints.
       </div>
-
       <div style={styles.section}>
         Flare up in
         <input
@@ -268,7 +267,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.flareUp ? "Add" : "Remove"}
         </button>
       </div>
-
       <div style={styles.section}>
         W/U of a new pain complaint, specifically:
         <input
@@ -286,7 +284,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.newComplaint ? "Add" : "Remove"}
         </button>
       </div>
-
       <div style={styles.section}>
         Re-evaluation S/P
         <input
@@ -322,7 +319,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.reEvaluation ? "Add" : "Remove"}
         </button>
       </div>
-
       <div style={styles.section}>
         And S/P
         <input
@@ -358,7 +354,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.spLine ? "Add" : "Remove"}
         </button>
       </div>
-
       <div style={styles.section}>
         Currently with
         <input
@@ -377,7 +372,6 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.currentDecrease ? "Add" : "Remove"}
         </button>
       </div>
-
       <div style={styles.checkboxContainer}>
         <input
           type="checkbox"
