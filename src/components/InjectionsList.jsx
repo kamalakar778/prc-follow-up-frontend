@@ -9,14 +9,16 @@ const directionOptions = [
   "left to right",
 ];
 
-const baseInjections = [
+const injectionSet1 = [
   { direction: true, label: "lumbar medial branch blocks at", levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"] },
   { direction: true, label: "radiofrequency ablation at", levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"] },
   { direction: true, label: "cervical medial branch blocks at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
   { direction: true, label: "radiofrequency ablation at", levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"] },
   { label: "thoracic medial branch blocks at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
   { label: "radiofrequency ablation at", levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12"], direction: true },
-  { label: "midline epidural steroid injection at", levels: [], direction: false },
+]
+const injectionSet2 = [
+    { label: "midline epidural steroid injection at", levels: [], direction: false },
   { label: "midline caudal block ", levels: [], direction: false },
   { label: "TFESI at", levels: [], direction: true, directionAfter: true },
   { label: "SIJ Injection at ", levels: [], direction: true, directionAfter: true },
@@ -28,8 +30,13 @@ const baseInjections = [
   { label: "SCS trial lumbar at", levels: [], direction: false },
   { label: "SCS implantation lumbar at", levels: [], direction: false },
   { label: "trigger point injection at", levels: [], direction: false },
+]
+const baseInjections = [
+  ...injectionSet1,
+  ...injectionSet2,
   { label: "", levels: [], direction: false }
 ];
+
 
 const getInitialInjections = () =>
   baseInjections.map((item) => ({
@@ -98,7 +105,7 @@ const styles = {
   removeButton: { color: "#dc2626", cursor: "pointer", background: "none", border: "none", fontSize: 13, fontWeight: 600, padding: "1px 4px" },
   buttonGroup: { marginTop: 12, display: "flex", gap: 8 },
   button: { padding: "4px 8px", borderRadius: 6, border: "none", fontWeight: 600, cursor: "pointer", fontSize: 14 },
-  addButton: { backgroundColor: "#2563eb", color: "white", gap: 4 },
+  addButton: { backgroundColor: "#2563eb", color: "white", gap: 4,  },
   addButtonHover: { backgroundColor: "#1d4ed8" },
   resetButton: { backgroundColor: "#6b7280", color: "white" },
   resetButtonHover: { backgroundColor: "#4b5563" }
@@ -148,11 +155,11 @@ const InjectionsList = ({ onInjectionChange }) => {
     setInjections([
       ...injections,
       {
-        label: "schedule",
-        levels: ["schedule"],
+        label: "",
+        levels: [""],
         direction: false,
         directionAfter: false,
-        timing: "Later",
+        timing: "Later schedule",
         directionSelected: "",
         selectedLevel: "",
         notes: "",
@@ -179,26 +186,41 @@ const InjectionsList = ({ onInjectionChange }) => {
   }, [injections]);
 
   useEffect(() => {
-    const included = injections.filter((inj) => inj.included);
-    const lines = included.map((inj, idx) => {
-      const parts = [
-        inj.timing === "Now schedule" ? "Now schedule" : "Later schedule",
-        inj.directionSelected || "",
-        inj.label,
-        inj.selectedLevel || inj.levels?.join(", ") || "",
-      ];
-      const line = parts.filter(Boolean).join(" ").trim();
-      const notesPart = inj.notes ? ` ${inj.notes}` : "";
-      return `\t${idx + 1}. ${line}${notesPart}`;
-    });
+  const included = injections.filter((inj) => inj.included);
+  const set1Labels = injectionSet1.map(i => i.label);
 
-    if (onInjectionChange) {
-      onInjectionChange({
-        injections: lines.join("\n"),
-        INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : ""
-      });
-    }
-  }, [injections, onInjectionChange]);
+  const lines = included.map((inj, idx) => {
+    const isSet1 = set1Labels.includes(inj.label);
+
+    const parts = isSet1
+      ? [
+          inj.timing === "Now schedule" ? "Now schedule" : "Later schedule",
+          inj.directionAfter ? null : inj.directionSelected || "",
+          inj.label,
+          inj.directionAfter ? inj.directionSelected || "" : null,
+          inj.selectedLevel || inj.levels?.join(", ") || "",
+        ]
+      : [
+          inj.timing === "Now schedule" ? "Now schedule" : "Later schedule",
+          inj.label,
+          inj.directionAfter ? null : inj.directionSelected || "",
+          inj.selectedLevel || inj.levels?.join(", ") || "",
+          inj.directionAfter ? inj.directionSelected || "" : null,
+        ];
+
+    const line = parts.filter(Boolean).join(" ").trim();
+    const notesPart = inj.notes ? ` ${inj.notes}` : "";
+    return `\t${idx + 1}. ${line}${notesPart}`;
+  });
+
+  if (onInjectionChange) {
+    onInjectionChange({
+      injections: lines.join("\n"),
+      INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : ""
+    });
+  }
+}, [injections, onInjectionChange]);
+
 
   return (
     <div style={styles.container}>
