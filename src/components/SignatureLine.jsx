@@ -149,6 +149,7 @@ const SignatureLine = ({ onChange }) => {
       padding: "6px 12px",
       borderRadius: "4px",
       marginRight: "8px",
+      // marginRight:"20px",
       border: "none",
       cursor: "pointer"
     },
@@ -179,7 +180,7 @@ const SignatureLine = ({ onChange }) => {
           fontWeight: "bold"
         };
       const colorMap = {
-        "Dr. Klickovich": "#ffa500", // orange
+        "Dr. Klickovich": "#2563eb", // orange
         APRN: "#FF4C4C", // watermelon red
         "Dr. Olivia Kelley": "#4CAF50", // green
         "Signature Line Missing": "#ffd700" // caution yellow
@@ -256,11 +257,12 @@ const SignatureLine = ({ onChange }) => {
 
       <div style={styles.section}>
         <h3>Facet, RFA, & ESI/Caudal Injection Notes:</h3>
+
         {initialLines.map((line, idx) => {
           const options = optionMap[idx] || [];
           const selected = selectedOptions[idx] || [];
           const isIncluded =
-            idx === 0 || includedLines[idx] || selected.length > 0;
+          idx === 0 || includedLines[idx] || selected.length > 0;
 
           return (
             <div key={idx} style={{ marginBottom: "12px" }}>
@@ -331,22 +333,24 @@ const SignatureLine = ({ onChange }) => {
       </div>
 
       <div style={styles.section}>
-        <h3>Physician Signatures</h3>
+        <h3>Physician Signatures: &nbsp;&nbsp;
+
         {Object.keys(buttonTexts).map((name) => (
           <button
-            key={name}
-            style={{
-              ...styles.button,
-              ...styles.physicianButton(name, selectedButton === name)
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectedButton(name);
-            }}
+          key={name}
+          style={{
+            ...styles.button,
+            ...styles.physicianButton(name, selectedButton === name)
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            setSelectedButton(name);
+          }}
           >
             {name}
           </button>
         ))}
+        </h3>
       </div>
 
       <div style={styles.section}>
