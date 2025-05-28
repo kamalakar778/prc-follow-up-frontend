@@ -171,6 +171,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
               <option value="Change">Change</option>
               <option value="Later">Later</option>
               <option value="Start next visit">Start next visit</option>
+              <option value="D/C">D/C</option>
               <option value="hold">hold</option>
             </select>
 

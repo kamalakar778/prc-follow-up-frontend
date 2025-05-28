@@ -108,6 +108,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
       "Diabetes 1 – with issues (eg neuropathy)– E10.9",
       "Diabetes 2 – with issues (eg neuropathy)– E11.8",
       "Fibromyalgia – M79.7",
+      "Gout (any location) - M10.9",
       "Myalgia (Myofascial) Pain – M79.18",
       "Obesity – E66.9",
       "Obesity, Morbid – E66.01",

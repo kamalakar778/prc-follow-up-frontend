@@ -1,44 +1,61 @@
 import React from "react";
 
+const responsiveStyles = `
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .responsive-label {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .responsive-input,
+  .responsive-select {
+    width: 100% !important;
+  }
+  .button-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+`;
+
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
     maxWidth: 950,
-    margin: "30px 50px",
+    margin: "30px auto",
     padding: "1rem",
     backgroundColor: "#fff",
     borderRadius: "8px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)"
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
   },
   section: {
     padding: "1.5rem",
     border: "1px solid rgb(217, 157, 157)",
     borderRadius: "8px",
     backgroundColor: "#f9f9f9",
-    marginTop: "1.5rem"
+    marginTop: "1.5rem",
   },
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "0.5rem"
+    gap: "1rem",
   },
   label: {
-    // margin:"0px 0px",
-    // padding:"0px 0px",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     fontSize: "15px",
     color: "#333",
-    gap: "0.5rem"
+    gap: "0.5rem",
   },
   input: {
     flex: 1,
-    // marginTop:"-0.2rem",
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
-    fontSize: "15px"
+    fontSize: "15px",
   },
   select: {
     flex: 1,
@@ -47,13 +64,13 @@ const styles = {
     borderRadius: "6px",
     border: "1px solid #ccc",
     fontSize: "15px",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   buttonRow: {
     display: "flex",
     justifyContent: "flex-end",
     gap: "1rem",
-    marginTop: "1rem"
+    marginTop: "1rem",
   },
   button: {
     padding: "0.6rem 1.2rem",
@@ -64,7 +81,7 @@ const styles = {
     cursor: "pointer",
     backgroundColor: "#3498db",
     color: "#fff",
-    transition: "background-color 0.2s ease"
+    transition: "background-color 0.2s ease",
   },
   optionButton: (isSelected) => ({
     marginRight: 6,
@@ -78,8 +95,8 @@ const styles = {
     fontWeight: isSelected ? "bold" : "normal",
     cursor: "pointer",
     transition: "all 0.2s ease",
-    display: "inline-block"
-  })
+    display: "inline-block",
+  }),
 };
 
 const insuranceOptions = [
@@ -122,9 +139,7 @@ const Demography = ({
     const selectName = name.replace("Input", "");
     onChange(e);
 
-    // Special case for CMA: If user types, set select value to "Other"
     const isCMA = name === "CMAInput";
-
     setFormData((prev) => ({
       ...prev,
       [selectName]: value.trim() ? "Other" : "",
@@ -143,10 +158,11 @@ const Demography = ({
   const renderInsuranceSelect = (label, name) => {
     const inputName = `${name}Input`;
     return (
-      <div style={styles.label} key={name}>
+      <div className="responsive-label" style={styles.label} key={name}>
         <span>{label}:</span>
         <select
           name={name}
+          className="responsive-select"
           style={styles.select}
           value={formData[name] || ""}
           onChange={handleSelectChange}
@@ -159,6 +175,7 @@ const Demography = ({
         <input
           name={inputName}
           placeholder={`Or type ${label}`}
+          className="responsive-input"
           style={styles.input}
           value={formData[inputName] || ""}
           onChange={handleInputChange}
@@ -168,10 +185,11 @@ const Demography = ({
   };
 
   const renderCMASelect = () => (
-    <div style={styles.label} key="CMA">
+    <div className="responsive-label" style={styles.label} key="CMA">
       <span>CMA :</span>
       <select
         name="CMA"
+        className="responsive-select"
         style={styles.select}
         value={formData.CMA || ""}
         onChange={handleSelectChange}
@@ -184,6 +202,7 @@ const Demography = ({
       <input
         name="CMAInput"
         placeholder="Or type CMA"
+        className="responsive-input"
         style={styles.input}
         value={formData.CMAInput || ""}
         onChange={handleInputChange}
@@ -192,7 +211,7 @@ const Demography = ({
   );
 
   const renderToggleButtons = (label, name, options) => (
-    <div style={styles.label} key={name}>
+    <div className="responsive-label" style={styles.label} key={name}>
       <span>{label}:</span>
       <div>
         {options.map((option) => {
@@ -220,19 +239,21 @@ const Demography = ({
 
   return (
     <form onSubmit={(e) => e.preventDefault()} style={styles.container}>
-      {/* Header Row */}
-      <div style={styles.grid}>
-        <div style={styles.label}>
+      <style>{responsiveStyles}</style>
+
+      <div className="responsive-grid" style={styles.grid}>
+        <div className="responsive-label" style={styles.label}>
           <span>File Name:</span>
           <input
             type="text"
+            className="responsive-input"
             style={styles.input}
             value={fileName}
             onChange={(e) => onFileNameChange(e.target.value)}
             placeholder="Follow Up File Name"
           />
         </div>
-        <div style={{ ...styles.buttonRow, alignItems: "flex-end" }}>
+        <div className="button-row" style={styles.buttonRow}>
           <button type="button" onClick={onSubmit} style={styles.button}>
             Generate Document
           </button>
@@ -246,9 +267,8 @@ const Demography = ({
         </div>
       </div>
 
-      {/* Demographic Section */}
       <div style={styles.section}>
-        <div style={styles.grid}>
+        <div className="responsive-grid" style={styles.grid}>
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Referring Physician", name: "referringPhysician", type: "input" },
@@ -260,18 +280,17 @@ const Demography = ({
             { label: "CMA", name: "CMA", type: "cma" },
             { label: "Insurance 2", name: "insurance2", type: "insurance" },
             { label: "Room #", name: "roomNumber", type: "input" }
-          ].map(({ label, name, type, disabled = false, placeholder, options }) => {
+          ].map(({ label, name, type, options }) => {
             if (type === "input") {
               return (
-                <div key={name} style={styles.label}>
+                <div key={name} className="responsive-label" style={styles.label}>
                   <span>{label}:</span>
                   <input
                     name={name}
+                    className="responsive-input"
                     style={styles.input}
                     value={formData[name] || ""}
                     onChange={onChange}
-                    disabled={disabled}
-                    placeholder={placeholder || ""}
                   />
                 </div>
               );

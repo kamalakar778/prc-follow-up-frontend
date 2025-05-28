@@ -11,7 +11,7 @@ const styles = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
   },
   group: {
-    marginBottom: 6
+    marginBottom: 6,
   },
   labelText: {
     fontWeight: 600,
@@ -39,8 +39,8 @@ const styles = {
   },
   inputMedium: {
     width: "40%",
-    display:"flex",
-    flexDirection:"row",
+    display: "flex",
+    flexDirection: "row",
     padding: "8px 8px",
     borderRadius: 6,
     border: "1px solid #ccc",
@@ -49,7 +49,7 @@ const styles = {
   },
   optionButton: (isSelected) => ({
     marginRight: 6,
-    marginBottom: 6,
+    marginBottom: 0,
     cursor: "pointer",
     padding: "4px 6px",
     borderRadius: "6px",
@@ -255,7 +255,8 @@ const PhysicalExamination = ({ onChange }) => {
           "Disheveled",
           "Fatigued",
           "Anxious",
-          "Agitated"
+          "Agitated",
+          "________"
         ]}
         value={generalAppearance}
         onChange={setGeneralAppearance}
@@ -264,14 +265,21 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Orientation to person, place, and time is:"
-        options={["Correct", "Incorrect"]}
+        options={["Correct", "Incorrect", "________"]}
         value={orientation}
         onChange={setOrientation}
       />
 
       <ButtonOptions
         label="Mood and Affect are:"
-        options={["Appropriate", "Depressed", "Anxious", "Flat", "Euphoric"]}
+        options={[
+          "Appropriate",
+          "Depressed",
+          "Anxious",
+          "Flat",
+          "Euphoric",
+          "________"
+        ]}
         value={moodAffect}
         onChange={setMoodAffect}
         multi={true}
@@ -296,7 +304,8 @@ const PhysicalExamination = ({ onChange }) => {
           "and with No assistive device",
           "and with cane",
           "and with wheelchair-bound",
-          "and with wheelchair"
+          "and with wheelchair",
+          "________"
         ]}
         value={gait}
         onChange={setGait}
@@ -305,14 +314,19 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Station (stance) is:"
-        options={["within normal limits and steady", "unsteady", "swaying"]}
+        options={[
+          "within normal limits and steady",
+          "unsteady",
+          "swaying",
+          "________"
+        ]}
         value={stationStance}
         onChange={setStationStance}
       />
 
       <ButtonOptions
         label="Cardiovascularly ankle swelling is:"
-        options={["Not present", "Present with pitting edema"]}
+        options={["Not present", "Present with pitting edema", "________"]}
         value={cardiovascular}
         onChange={setCardiovascular}
       />
@@ -329,21 +343,21 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Lymphadenopathy in cervical/inguinal nodes:"
-        options={["Not present", "Present"]}
+        options={["Not present", "Present", "________"]}
         value={lymphadenopathy}
         onChange={setLymphadenopathy}
       />
 
       <ButtonOptions
         label="Coordination & Balance shows Romberg Test is:"
-        options={["Negative", "Positive"]}
+        options={["Negative", "Positive", "________"]}
         value={coordinationBalance}
         onChange={setCoordinationBalance}
       />
 
       <ButtonOptions
         label="Motor Function Observed:"
-        options={["No stated", "Positive stated"]}
+        options={["No stated", "Positive stated", "________"]}
         value={motorFunction.status}
         onChange={(status) => setMotorFunction({ ...motorFunction, status })}
       />

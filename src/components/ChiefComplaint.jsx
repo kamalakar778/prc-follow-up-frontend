@@ -144,7 +144,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
         <>
           {" "}
           and S/P <strong>{inputs.input7 || "__________"}</strong> with{" "}
-          <strong>{inputs.input8 || "__________"}</strong> % decrease in pain
+          <strong>{inputs.input8 || "__________"}</strong> decrease in pain
           for a duration of <strong>{inputs.input9 || "__________"}</strong>
         </>
       );
@@ -202,7 +202,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
     }
 
     if (!removedLines.currentDecrease && hasValue("input10")) {
-      text += ` and currently with ${inputs.input10} % decrease in pain.`;
+      text += ` and currently with ${inputs.input10} decrease in pain.`;
     } else {
       text += ".";
     }
