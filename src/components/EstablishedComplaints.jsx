@@ -156,7 +156,11 @@ const sections = {
   ]
 };
 
-const LocationOptions = ["bilaterally", "on left", "on right"];
+const LocationOptions = [
+  "left", 
+  "right",
+  "bilaterally", 
+];
 const CervicalLevels = ["at C2-C5", "at C5-T1"];
 const ThoracicLevels = ["at T1-T4", "at T2-T5"];
 const LumbarLevels = ["at L2-L5", "at L3-L5"];

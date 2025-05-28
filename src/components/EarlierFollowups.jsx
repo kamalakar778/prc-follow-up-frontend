@@ -23,12 +23,12 @@ const sensoryLevelOptions = [
 
 const styles = {
   container: {
-    padding: "24px",
+    padding: "14px",
     border: "1px solid #e5e7eb",
     borderRadius: "12px",
     backgroundColor: "#ffffff",
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    marginBottom: "8px"
+    marginBottom: "0px"
   },
   headerRow: {
     display: "flex",
@@ -45,15 +45,16 @@ const styles = {
     color: "#111827"
   },
   section: {
-    minWidth: "350px",
-    maxWidth: "400px",
+
+    minWidth: "150px",
+    maxWidth: "280px",
     border: "1px solid #d1d5db",
-    padding: "16px",
+    padding: "18px 10px",
     borderRadius: "10px",
     backgroundColor: "#f9fafb",
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: "8px",
     flexShrink: 0
   },
   subHeader: {
@@ -67,16 +68,16 @@ const styles = {
     padding: "8px",
     width: "75%",
     fontSize: "14px",
-    marginBottom: "-0.08rem"
+    marginBottom: "0.5rem"
   },
   label: {
     fontWeight: 500,
     fontSize: "14px",
-    marginBottom: "6px"
+    marginBottom: "0px"
   },
   sensoryTag: (selected) => ({
-    marginRight: "4px",
-    marginBottom: "6px",
+    marginRight: "2px",
+    marginBottom: "0px",
     cursor: "pointer",
     padding: "6px 10px",
     borderRadius: "10px",
