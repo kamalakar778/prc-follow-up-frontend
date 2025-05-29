@@ -41,7 +41,7 @@ const SignatureLine = ({ onChange }) => {
       "Posteriorly as fusion was done anteriorly"
     ],
     6: ["intermittently", "continuously", "FBSS", "FNSS"],
-    7: ["HNP", "Bulging", "Protrusion", "Osteophytes","DDD", "Stenosis", "FBNSS","FBSS"],
+    7: ["HNP", "Bulging", "Protrusion", "Osteophytes", "DDD", "Stenosis", "FBNSS", "FBSS"],
     8: ["function (ADLs) "],
     9: ["and unsuccessful P.T./home exercise program x4 weeks due to pain."],
     10: ["50% relief", "Improved ADLs"],
@@ -74,6 +74,7 @@ const SignatureLine = ({ onChange }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
   const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
+  const [customFollowUp, setCustomFollowUp] = useState("");
   const [selectedButton, setSelectedButton] = useState("Dr. Klickovich");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
@@ -120,7 +121,7 @@ const SignatureLine = ({ onChange }) => {
     onChange?.({
       otherPlans: otherPlansOutput,
       formattedLines: `\n${formatProcessedLines()}`,
-      followUpAppointment,
+      followUpAppointment: followUpAppointment || customFollowUp,
       signatureLine: buttonTexts[selectedButton] || "",
       dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
     });
@@ -129,6 +130,7 @@ const SignatureLine = ({ onChange }) => {
     includedLines,
     otherPlans,
     followUpAppointment,
+    customFollowUp,
     selectedButton,
     dateTranscribed
   ]);
@@ -149,7 +151,6 @@ const SignatureLine = ({ onChange }) => {
       padding: "6px 12px",
       borderRadius: "4px",
       marginRight: "8px",
-      // marginRight:"20px",
       border: "none",
       cursor: "pointer"
     },
@@ -180,17 +181,16 @@ const SignatureLine = ({ onChange }) => {
           fontWeight: "bold"
         };
       const colorMap = {
-        "Dr. Klickovich": "#2563eb", // orange
-        APRN: "#FF4C4C", // watermelon red
-        "Dr. Olivia Kelley": "#4CAF50", // green
-        "Signature Line Missing": "#ffd700" // caution yellow
+        "Dr. Klickovich": "#2563eb",
+        APRN: "#FF4C4C",
+        "Dr. Olivia Kelley": "#4CAF50",
+        "Signature Line Missing": "#ffd700"
       };
       return {
         backgroundColor: colorMap[name] || "#ccc",
-        // color: "#000",
         color: "white",
         fontWeight: "bold",
-        padding:"10px 15px"
+        padding: "10px 15px"
       };
     },
     input: {
@@ -261,8 +261,7 @@ const SignatureLine = ({ onChange }) => {
         {initialLines.map((line, idx) => {
           const options = optionMap[idx] || [];
           const selected = selectedOptions[idx] || [];
-          const isIncluded =
-          idx === 0 || includedLines[idx] || selected.length > 0;
+          const isIncluded = idx === 0 || includedLines[idx] || selected.length > 0;
 
           return (
             <div key={idx} style={{ marginBottom: "12px" }}>
@@ -302,6 +301,7 @@ const SignatureLine = ({ onChange }) => {
             setSelectedOptions({});
             setIncludedLines(initialLines.map(() => false));
             setFollowUpAppointment(initialFollowUp);
+            setCustomFollowUp("");
             setSelectedButton("Dr. Klickovich");
             setDateTranscribed(getTodayISO());
           }}
@@ -321,35 +321,48 @@ const SignatureLine = ({ onChange }) => {
               <button
                 key={opt}
                 style={styles.optionButton(isSelected)}
-                onClick={() =>
-                  setFollowUpAppointment((prev) => (prev === opt ? "" : opt))
-                }
+                onClick={() => {
+                  const newValue = followUpAppointment === opt ? "" : opt;
+                  setFollowUpAppointment(newValue);
+                  setCustomFollowUp(""); // clear custom when option selected
+                }}
               >
                 {opt}
               </button>
             );
           })}
         </div>
+        <div style={{ marginTop: "8px" }}>
+          <input
+            type="text"
+            placeholder="Or enter custom follow-up..."
+            style={styles.input}
+            value={customFollowUp}
+            onChange={(e) => {
+              setCustomFollowUp(e.target.value);
+              setFollowUpAppointment(""); // clear option when custom input
+            }}
+          />
+        </div>
       </div>
 
       <div style={styles.section}>
-        <h3>Physician Signatures: &nbsp;&nbsp;
-
-        {Object.keys(buttonTexts).map((name) => (
-          <button
-          key={name}
-          style={{
-            ...styles.button,
-            ...styles.physicianButton(name, selectedButton === name)
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            setSelectedButton(name);
-          }}
-          >
-            {name}
-          </button>
-        ))}
+        <h3>Physician Signatures:&nbsp;&nbsp;
+          {Object.keys(buttonTexts).map((name) => (
+            <button
+              key={name}
+              style={{
+                ...styles.button,
+                ...styles.physicianButton(name, selectedButton === name)
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedButton(name);
+              }}
+            >
+              {name}
+            </button>
+          ))}
         </h3>
       </div>
 

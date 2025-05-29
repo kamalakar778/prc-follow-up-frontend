@@ -320,6 +320,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         <option value="">Select Source</option>
                         <option value="At Home">At Home</option>
                         <option value="HEP">HEP</option>
+                        <option value="On Base">On Base</option>
                         <option value="KASPER">KASPER</option>
                       </select>
                       <input

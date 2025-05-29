@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const responsiveStyles = `
 @media (max-width: 768px) {
@@ -28,19 +28,20 @@ const styles = {
     padding: "1rem",
     backgroundColor: "#fff",
     borderRadius: "8px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)"
   },
   section: {
     padding: "1.5rem",
     border: "1px solid rgb(217, 157, 157)",
     borderRadius: "8px",
     backgroundColor: "#f9f9f9",
-    marginTop: "1.5rem",
+    marginTop: "1.5rem"
   },
   grid: {
+    width: "100%",
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "1rem",
+    gap: "1rem"
   },
   label: {
     display: "flex",
@@ -48,14 +49,15 @@ const styles = {
     alignItems: "center",
     fontSize: "15px",
     color: "#333",
-    gap: "0.5rem",
+    gap: "0.5rem"
   },
   input: {
+    margin:"auto",
     flex: 1,
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
-    fontSize: "15px",
+    fontSize: "15px"
   },
   select: {
     flex: 1,
@@ -64,13 +66,13 @@ const styles = {
     borderRadius: "6px",
     border: "1px solid #ccc",
     fontSize: "15px",
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
   },
   buttonRow: {
     display: "flex",
     justifyContent: "flex-end",
     gap: "1rem",
-    marginTop: "1rem",
+    marginTop: "1rem"
   },
   button: {
     padding: "0.6rem 1.2rem",
@@ -81,7 +83,7 @@ const styles = {
     cursor: "pointer",
     backgroundColor: "#3498db",
     color: "#fff",
-    transition: "background-color 0.2s ease",
+    transition: "background-color 0.2s ease"
   },
   optionButton: (isSelected) => ({
     marginRight: 6,
@@ -95,25 +97,53 @@ const styles = {
     fontWeight: isSelected ? "bold" : "normal",
     cursor: "pointer",
     transition: "all 0.2s ease",
-    display: "inline-block",
-  }),
+    display: "inline-block"
+  })
 };
 
 const insuranceOptions = [
-  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial",
-  "Humana", "PP", "Medicare", "Medicare B", "Medicaid",
-  "TriCare", "Trieast", "WellCare", "Work. Comp", "UHC", "Other"
+  "Aetna",
+  "BCBS",
+  "Ambetter",
+  "Cigna",
+  "Commercial",
+  "Humana",
+  "PP",
+  "Medicare",
+  "Medicare B",
+  "Medicaid",
+  "TriCare",
+  "Trieast",
+  "WellCare",
+  "Work. Comp",
+  "UHC",
+  "Other"
 ];
 
 const locationOptions = ["Louisville", "E-town"];
 const providerOptions = [
-  "Cortney Lacefield, APRN", "Lauren Ellis, APRN",
-  "Taja Elder, APRN", "Robert Klickovich, M.D"
+  "Cortney Lacefield, APRN",
+  "Lauren Ellis, APRN",
+  "Taja Elder, APRN",
+  "Robert Klickovich, M.D"
 ];
 
 const cmaOptions = [
-  "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie",
-  "MS", "Nick", "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Other"
+  "Alyson",
+  "Brenda",
+  "Erika",
+  "Janelle",
+  "Laurie",
+  "Melanie",
+  "MS",
+  "Nick",
+  "PP",
+  "SC",
+  "Steph",
+  "Tony",
+  "Tina",
+  "DJ",
+  "Other"
 ];
 
 const Demography = ({
@@ -125,20 +155,20 @@ const Demography = ({
   onSubmit,
   setFormData
 }) => {
+  const [localPatientName, setLocalPatientName] = useState(
+    formData.patientName || ""
+  );
+
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
     onChange(e);
-    setFormData((prev) => ({
-      ...prev,
-      [`${name}Input`]: ""
-    }));
+    setFormData((prev) => ({ ...prev, [`${name}Input`]: "" }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const selectName = name.replace("Input", "");
     onChange(e);
-
     const isCMA = name === "CMAInput";
     setFormData((prev) => ({
       ...prev,
@@ -155,6 +185,24 @@ const Demography = ({
     }));
   };
 
+  const handlePatientNameChange = (e) => {
+    const rawValue = e.target.value;
+    const formattedValue = rawValue
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+    setLocalPatientName(formattedValue);
+    onChange({ target: { name: "patientName", value: formattedValue } });
+  };
+
+  const transformPatientName = () => {
+    const parts = localPatientName.split(",");
+    if (parts.length === 2) {
+      const transformed = `${parts[1].trim()} ${parts[0].trim()}`;
+      setLocalPatientName(transformed);
+      onChange({ target: { name: "patientName", value: transformed } });
+    }
+  };
+
   const renderInsuranceSelect = (label, name) => {
     const inputName = `${name}Input`;
     return (
@@ -169,7 +217,9 @@ const Demography = ({
         >
           <option value="">-- Select {label} --</option>
           {insuranceOptions.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
         </select>
         <input
@@ -196,7 +246,9 @@ const Demography = ({
       >
         <option value="">-- Select CMA --</option>
         {cmaOptions.map((cma) => (
-          <option key={cma} value={cma}>{cma}</option>
+          <option key={cma} value={cma}>
+            {cma}
+          </option>
         ))}
       </select>
       <input
@@ -241,29 +293,30 @@ const Demography = ({
     <form onSubmit={(e) => e.preventDefault()} style={styles.container}>
       <style>{responsiveStyles}</style>
 
-      <div className="responsive-grid" style={styles.grid}>
-        <div className="responsive-label" style={styles.label}>
-          <span>File Name:</span>
-          <input
-            type="text"
-            className="responsive-input"
-            style={styles.input}
-            value={fileName}
-            onChange={(e) => onFileNameChange(e.target.value)}
-            placeholder="Follow Up File Name"
-          />
-        </div>
-        <div className="button-row" style={styles.buttonRow}>
+      <div className="responsive-label" style={styles.label}>
+        <span>File Name:</span>
+        <br />
+        <input
+          type="text"
+          className="responsive-input"
+          style={styles.input}
+          value={fileName}
+          onChange={(e) => onFileNameChange(e.target.value)}
+          placeholder="Follow Up File Name"
+        />
           <button type="button" onClick={onSubmit} style={styles.button}>
             Generate Document
           </button>
-          <button
+      </div>
+      <div className="responsive-grid" style={styles.grid}>
+        <div className="button-row" style={styles.buttonRow}>
+          {/* <button
             type="button"
             onClick={onReset}
             style={{ ...styles.button, backgroundColor: "#95a5a6" }}
           >
             Reset
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -272,18 +325,69 @@ const Demography = ({
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
-            { label: "Referring Physician", name: "referringPhysician", type: "input" },
-            { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
-            { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
-            { label: "Location", name: "location", type: "toggle", options: locationOptions },
+            {
+              label: "Referring Physician",
+              name: "referringPhysician",
+              type: "input"
+            },
+            {
+              label: "Date of Evaluation",
+              name: "dateOfEvaluation",
+              type: "input"
+            },
+            {
+              label: "Provider",
+              name: "provider",
+              type: "toggle",
+              options: providerOptions
+            },
+            {
+              label: "Location",
+              name: "location",
+              type: "toggle",
+              options: locationOptions
+            },
             { label: "Insurance 1", name: "insurance1", type: "insurance" },
             { label: "Insurance 2", name: "insurance2", type: "insurance" },
             { label: "CMA", name: "CMA", type: "cma" },
             { label: "Room #", name: "roomNumber", type: "input" }
           ].map(({ label, name, type, options }) => {
             if (type === "input") {
+              if (name === "patientName") {
+                return (
+                  <div
+                    key={name}
+                    className="responsive-label"
+                    style={styles.label}
+                  >
+                    <span>{label}:</span>
+                    <input
+                      name={name}
+                      className="responsive-input"
+                      style={styles.input}
+                      value={localPatientName}
+                      onChange={handlePatientNameChange}
+                    />
+                    <button
+                      type="button"
+                      onClick={transformPatientName}
+                      style={{
+                        ...styles.button,
+                        marginLeft: "0.5rem",
+                        padding: "0.3rem 0.6rem"
+                      }}
+                    >
+                      Transform
+                    </button>
+                  </div>
+                );
+              }
               return (
-                <div key={name} className="responsive-label" style={styles.label}>
+                <div
+                  key={name}
+                  className="responsive-label"
+                  style={styles.label}
+                >
                   <span>{label}:</span>
                   <input
                     name={name}
@@ -296,7 +400,8 @@ const Demography = ({
               );
             }
             if (type === "insurance") return renderInsuranceSelect(label, name);
-            if (type === "toggle") return renderToggleButtons(label, name, options);
+            if (type === "toggle")
+              return renderToggleButtons(label, name, options);
             if (type === "cma") return renderCMASelect();
             return null;
           })}
