@@ -41,7 +41,7 @@ const SignatureLine = ({ onChange }) => {
       "Posteriorly as fusion was done anteriorly"
     ],
     6: ["intermittently", "continuously", "FBSS", "FNSS"],
-    7: ["HNP", "Bulging", "Protrusion"],
+    7: ["HNP", "Bulging", "Protrusion", "Osteophytes","DDD", "Stenosis", "FBNSS","FBSS"],
     8: ["function (ADLs) "],
     9: ["and unsuccessful P.T./home exercise program x4 weeks due to pain."],
     10: ["50% relief", "Improved ADLs"],

@@ -137,7 +137,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       fontSize: 15
     },
     select: {
-      padding: "4px 6px",
+      padding: "6px 6px",
       border: "1px solid #ccc",
       borderRadius: 4,
       minWidth: 90,
@@ -146,7 +146,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
     },
     miniInput: {
       width: 60,
-      padding: "4px 6px",
+      padding: "8px 8px",
       border: "1px solid #ccc",
       borderRadius: 4,
       marginBottom: 6,
@@ -238,7 +238,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         <option value="Decreased">Decreased</option>
                       </select>
                       <input
-                        type="number"
+                        type="text"
                         name="weightloss_lbs"
                         placeholder="lbs"
                         style={styles.miniInput}
@@ -252,7 +252,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                       />
                       <span>BMI:</span>
                       <input
-                        type="number"
+                        type="text"
                         name="weightloss_bmi"
                         placeholder="BMI"
                         style={styles.miniInput}
@@ -318,9 +318,9 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         }
                       >
                         <option value="">Select Source</option>
+                        <option value="At Home">At Home</option>
                         <option value="HEP">HEP</option>
                         <option value="KASPER">KASPER</option>
-                        <option value="At Home">At Home</option>
                       </select>
                       <input
                         type="text"

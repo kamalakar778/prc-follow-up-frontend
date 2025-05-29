@@ -7,6 +7,7 @@ const options = [
   "Touch-sensitive",
   "Numb",
   "Tingling",
+  "localized",
   "Dull",
   "Aching",
   "Throbbing",

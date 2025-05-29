@@ -271,14 +271,14 @@ const Demography = ({
         <div className="responsive-grid" style={styles.grid}>
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
-            { label: "Referring Physician", name: "referringPhysician", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
+            { label: "Referring Physician", name: "referringPhysician", type: "input" },
             { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
             { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
             { label: "Location", name: "location", type: "toggle", options: locationOptions },
             { label: "Insurance 1", name: "insurance1", type: "insurance" },
-            { label: "CMA", name: "CMA", type: "cma" },
             { label: "Insurance 2", name: "insurance2", type: "insurance" },
+            { label: "CMA", name: "CMA", type: "cma" },
             { label: "Room #", name: "roomNumber", type: "input" }
           ].map(({ label, name, type, options }) => {
             if (type === "input") {

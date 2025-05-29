@@ -88,6 +88,8 @@ const AssessmentCodes = ({ selected, setSelected }) => {
     "SACRUM/COCCYX": [
       "Sacroilitis (Right and/or left) – M46.1",
       "SIJ Arthropathy (Right and/or left) – M46.98",
+      "SIJ Pain (Right) – M53.3",
+      "SIJ Pain (left) – M53.3",
       "SIJ Pain (Right and/or left) – M53.3",
       "Coccydynia – M53.3"
     ]
