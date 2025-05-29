@@ -51,15 +51,26 @@ const styles = {
     color: "#333",
     gap: "0.5rem"
   },
-  input: {
-    margin:"auto",
+  fileNameinput: {
+    margin: "auto",
     flex: 1,
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
     fontSize: "15px"
   },
+  input: {
+    width:"160px",
+
+    flex: 1,
+    padding: "0.5rem",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "15px",
+    margin:"auto"
+  },
   select: {
+    width:"80px",
     flex: 1,
     marginTop: "1rem",
     padding: "0.5rem",
@@ -123,9 +134,9 @@ const insuranceOptions = [
 const locationOptions = ["Louisville", "E-town"];
 const providerOptions = [
   "Cortney Lacefield, APRN",
+  "Robert Klickovich, M.D",
   "Lauren Ellis, APRN",
   "Taja Elder, APRN",
-  "Robert Klickovich, M.D"
 ];
 
 const cmaOptions = [
@@ -299,14 +310,14 @@ const Demography = ({
         <input
           type="text"
           className="responsive-input"
-          style={styles.input}
+          style={styles.fileNameinput}
           value={fileName}
           onChange={(e) => onFileNameChange(e.target.value)}
           placeholder="Follow Up File Name"
         />
-          <button type="button" onClick={onSubmit} style={styles.button}>
-            Generate Document
-          </button>
+        <button type="button" onClick={onSubmit} style={styles.button}>
+          Generate Document
+        </button>
       </div>
       <div className="responsive-grid" style={styles.grid}>
         <div className="button-row" style={styles.buttonRow}>
@@ -324,15 +335,15 @@ const Demography = ({
         <div className="responsive-grid" style={styles.grid}>
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
+            {
+              label: "Date of Evaluation",
+              name: "dateOfEvaluation",
+              type: "input"
+            },
             { label: "Date of Birth", name: "dob", type: "input" },
             {
               label: "Referring Physician",
               name: "referringPhysician",
-              type: "input"
-            },
-            {
-              label: "Date of Evaluation",
-              name: "dateOfEvaluation",
               type: "input"
             },
             {
@@ -348,8 +359,8 @@ const Demography = ({
               options: locationOptions
             },
             { label: "Insurance 1", name: "insurance1", type: "insurance" },
-            { label: "Insurance 2", name: "insurance2", type: "insurance" },
             { label: "CMA", name: "CMA", type: "cma" },
+            { label: "Insurance 2", name: "insurance2", type: "insurance" },
             { label: "Room #", name: "roomNumber", type: "input" }
           ].map(({ label, name, type, options }) => {
             if (type === "input") {

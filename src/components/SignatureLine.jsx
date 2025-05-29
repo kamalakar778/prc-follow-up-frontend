@@ -19,9 +19,9 @@ const SignatureLine = ({ onChange }) => {
     "RFA in patient with spinal fusion, will be done:",
     "ESI/Caudal Indication: The patient reports history of greater than or equal to 4 weeks of radicular pain",
     "ESI/Caudal Indication: Imaging shows:",
-    "ESI/Caudal Indication: Overall quality of life and function (ADLs) is significantly impacted due to radicular/FBSS pain complaints.",
-    "ESI/Caudal Indication: The patient reports greater than or equal to 4 weeks of P.T./home exercise done",
-    "ESI/Caudal REPEAT SUCCESS: ",
+    "ESI/Caudal Indication:  is significantly impacted due to radicular/FBSS pain complaints.",
+    "ESI/Caudal Indication: The patient reports ",
+    "ESI/Caudal REPEAT SUCCESS: after last injection",
     "ESI/Caudal REPEAT FAILURE: Will now use a"
   ];
 
@@ -42,9 +42,9 @@ const SignatureLine = ({ onChange }) => {
     ],
     6: ["intermittently", "continuously", "FBSS", "FNSS"],
     7: ["HNP", "Bulging", "Protrusion", "Osteophytes", "DDD", "Stenosis", "FBNSS", "FBSS"],
-    8: ["function (ADLs) "],
-    9: ["and unsuccessful P.T./home exercise program x4 weeks due to pain."],
-    10: ["50% relief", "Improved ADLs"],
+    8: ["Overall quality of life","and function (ADLs)"],
+    9: ["greater than or equal to 4 weeks of P.T./home exercise done","and unsuccessful P.T./home exercise program x4 weeks due to pain."],
+    10: ["to date","50% relief", "Improved Function ADLs"],
     11: ["Different spinal level", "Different approach"]
   };
 

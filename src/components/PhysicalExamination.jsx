@@ -303,6 +303,7 @@ const PhysicalExamination = ({ onChange }) => {
         options={[
           "and with No assistive device",
           "and with cane",
+          "and with walker",
           "and with wheelchair-bound",
           "and with wheelchair",
           "________"
@@ -326,7 +327,7 @@ const PhysicalExamination = ({ onChange }) => {
 
       <ButtonOptions
         label="Cardiovascularly ankle swelling is:"
-        options={["Not present", "Present with pitting edema", "________"]}
+        options={["Not present", "Present with pitting edema of", "________"]}
         value={cardiovascular}
         onChange={setCardiovascular}
       />

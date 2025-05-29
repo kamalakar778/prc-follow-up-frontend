@@ -21,7 +21,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
       "DJD-Cervical– M50.30",
       "Herniated/Bulging disc – Cervical – M50.20",
       "Stenosis – Cervical – M48.02",
-      "Scoliosis & Kyphoscoliosis – M41.9",
+      "Scoliosis & Kyphoscoliosis– M41.9",
       "Post – Laminectomy – Cervical – M96.4",
       "Radiculopathy – Cervical – M54.12"
     ],
@@ -53,7 +53,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
       "DDD Thoracic – M51.34",
       "Herniated/Bulging disc – M51.24",
       "Stenosis – Thoracic – M48.04",
-      "Scoliosis & Kyphoscoliosis – M41.9",
+      "Scoliosis & Kyphoscoliosis – M41.9.",
       "Post – Laminectomy – Thoracic – M96.1",
       "Thoracic Radiculopathy – M54.14"
     ],

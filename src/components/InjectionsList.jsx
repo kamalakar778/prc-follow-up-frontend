@@ -13,29 +13,30 @@ const injectionSet1 = [
   {
     direction: true,
     label: " lumbar medial branch blocks at",
-    levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"]
+    levels: ["L3/4, L4/5, L5/S1", ""]
   },
   {
     direction: true,
     label: " radiofrequency ablation at",
-    levels: ["L3/4, L4/5, L5/S1", "Level 2", "Level 3"]
+    levels: ["L3/4, L4/5, L5/S1", ""]
   },
   {
     direction: true,
     label: " cervical medial branch blocks at",
-    levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"]
+    levels: ["C5/6, C6/7, C7/T1", ""]
   },
   {
     direction: true,
     label: " radiofrequency ablation at",
-    levels: ["C5/6, C6/7, C7/T1", "Level 2", "Level 3"]
+    levels: ["C5/6, C6/7, C7/T1", "",]
   },
   {
     label: " thoracic medial branch blocks at",
     levels: [
       "T2/3, T3/4, and T4/5",
       "T5/6, T6/7, and T7/8",
-      "T9/10, T10/11, and T11/12"
+      "T9/10, T10/11, and T11/12",
+      ""
     ],
     direction: true
   },
@@ -44,7 +45,8 @@ const injectionSet1 = [
     levels: [
       "T2/3, T3/4, and T4/5",
       "T5/6, T6/7, and T7/8",
-      "T9/10, T10/11, and T11/12"
+      "T9/10, T10/11, and T11/12",
+      ""
     ],
     direction: true
   }
@@ -244,7 +246,7 @@ const InjectionsList = ({ onInjectionChange }) => {
 
   const handleChange = (index, field, value) => {
     const updated = [...injections];
-    updated[index][field] = field === "notes" ? value.trim() : value || "";
+    updated[index][field] = field === "notes" ? value : value || "";
 
     if (field === "timing") {
       updated.forEach((inj, i) => {
@@ -341,7 +343,7 @@ const InjectionsList = ({ onInjectionChange }) => {
                         inj.directionAfter &&
                         inj.directionSelected &&
                         ` ${inj.directionSelected}`}
-                      {inj.notes && ` - ${inj.notes}`}&nbsp; &nbsp; 
+                      {inj.notes && ` ${inj.notes}`}&nbsp; &nbsp; 
                       <button
                         onClick={() => removeFromPreview(injections.indexOf(inj))}
                         style={styles.removeButton}
