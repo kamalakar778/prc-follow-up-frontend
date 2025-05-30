@@ -83,7 +83,12 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
     best: "",
     withMeds: "",
     withoutMeds: "",
-    workingStatus: formData.workingStatus || "",
+    selectedWorkingStatus: Array.isArray(formData.workingStatus)
+      ? formData.workingStatus
+      : formData.workingStatus
+      ? [formData.workingStatus]
+      : [],
+    customWorkingStatus: "",
     comments: ""
   });
 
@@ -95,9 +100,15 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
       best,
       withMeds,
       withoutMeds,
-      workingStatus,
+      selectedWorkingStatus,
+      customWorkingStatus,
       comments
     } = state;
+
+    const workingStatus = [
+      ...selectedWorkingStatus,
+      ...(customWorkingStatus ? [customWorkingStatus] : [])
+    ].join(", ");
 
     const temporally = `${baseline || "_"} baseline pain with ${exacerbation || "_"} painful exacerbations.`;
     const getVal = (v) => (v === "" ? "_" : v);
@@ -112,7 +123,7 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
         comments: comments ? `Comments: ${comments}` : ""
       }
     });
-  }, [state, onUpdate]);
+  }, [state, onUpdate, formData.pain]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,6 +131,20 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleStatusClick = (option) => {
+    setState((prev) => {
+      const alreadySelected = prev.selectedWorkingStatus.includes(option);
+      const updatedStatus = alreadySelected
+        ? prev.selectedWorkingStatus.filter((item) => item !== option)
+        : [...prev.selectedWorkingStatus, option];
+
+      return {
+        ...prev,
+        selectedWorkingStatus: updatedStatus
+      };
+    });
   };
 
   return (
@@ -195,25 +220,17 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
           <strong>Working status of:</strong>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
             {workingStatusOptions.map((option) => {
-              const isSelected = state.workingStatus === option;
+              const isSelected = state.selectedWorkingStatus.includes(option);
               return (
                 <span
                   key={option}
-                  onClick={() =>
-                    setState((prev) => ({
-                      ...prev,
-                      workingStatus: isSelected ? "" : option
-                    }))
-                  }
+                  onClick={() => handleStatusClick(option)}
                   style={styles.optionButton(isSelected)}
                   role="button"
                   tabIndex={0}
                   onKeyPress={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      setState((prev) => ({
-                        ...prev,
-                        workingStatus: isSelected ? "" : option
-                      }));
+                      handleStatusClick(option);
                     }
                   }}
                 >
@@ -222,6 +239,17 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
               );
             })}
           </div>
+          <label style={{ marginTop: "8px", width: "100%" }}>
+            <strong>Additional details: </strong>
+            <textarea
+              name="customWorkingStatus"
+              style={styles.fullWidthInput}
+              value={state.customWorkingStatus}
+              onChange={handleChange}
+              placeholder="Enter additional details..."
+              rows={2}
+            />
+          </label>
         </div>
       </div>
 

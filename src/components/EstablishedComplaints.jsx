@@ -142,7 +142,7 @@ const sections = {
     "(hip) Squat test",
     "Trochanteric bursa tenderness",
     "ROM is grossly decreased",
-    "Patrick.",
+    "Patrick's test.",
     "FADIR (flexion, adduction and medial hip rotation)"
   ],
 

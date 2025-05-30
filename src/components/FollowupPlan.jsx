@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const severityOptions = ["None", "Mild", "Moderate", "Significant"];
-const imageTypes = ["MRI Scan", "CT Scan"];
 const contrastOptions = ["with contrast", "without contrast"];
+const imageTypes = ["MRI Scan", "CT Scan"];
 const actionOptions = [
   "The patient counseled/warned on need to engage treatment plan",
   "final warning given before NNCP",
@@ -47,13 +47,6 @@ const styles = {
   },
   input: {
     flex: 1,
-    padding: "6px 10px",
-    borderRadius: 4,
-    border: "1px solid #ccc",
-    fontSize: 14
-  },
-  inputMedium: {
-    width: 200,
     padding: "6px 10px",
     borderRadius: 4,
     border: "1px solid #ccc",
@@ -212,7 +205,6 @@ const FollowupPlan = ({ setFormData }) => {
           </label>
         </div>
 
-        {/* Updated: Action taken as clickable buttons */}
         <div style={{ marginBottom: 12 }}>
           <label style={styles.labelText}>Action taken:</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -343,6 +335,10 @@ const FollowupPlan = ({ setFormData }) => {
               {type}
             </span>
           ))}
+        </div>
+
+        <div style={styles.inlineGroup}>
+          <span style={styles.labelText}>Imaging Contrast:</span>
           {contrastOptions.map((option) => (
             <span
               key={option}
