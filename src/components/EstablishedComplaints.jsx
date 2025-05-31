@@ -1,108 +1,100 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 const baseInput = {
-  padding: "8px",
+  padding: "4px 6px",
   fontSize: "14px",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
+  borderRadius: "4px",
+  border: "1px solid #d1d5db",
   marginLeft: "1px",
-  marginTop: "10px"
+  marginTop: "4px"
 };
 
 const styles = {
+
+  container: { maxWidth: 1000, margin: "auto", fontFamily:"Calibri", padding: 0 },
   section: {
-    marginBottom: 12,
-    fontSize: "14px",
-    padding: "2px 8px",
-    background: "#f9f9f9",
-    borderRadius: 6
+    marginBottom: 8,
+    fontSize: "18px",
+    padding: "4px 8px",
+    background: "#f3f4f6",
+    borderRadius: 4
   },
   title: {
     fontWeight: "bold",
-    fontSize: 15,
-    marginBottom: 6,
+    fontSize: 18,
+    marginBottom: 4,
     color: "#444"
   },
-  input: { ...baseInput, minWidth: "20px", maxWidth: "50%" },
-  inputSmall: { ...baseInput, minWidth: "40px", maxWidth: "100%" },
+  input: { ...baseInput, minWidth: "30px",padding:"5px 3px", maxWidth: "50%" },
+  inputSmall: { ...baseInput, minWidth: "80px", maxWidth: "50%" },
   button: {
-    padding: "8px 10px",
+    padding: "2px 5px",
     fontSize: 14,
     cursor: "pointer",
     background: "#007BFF",
     color: "#fff",
-    border: "1px solid #007BFF",
+    border: "none",
     borderRadius: 4,
-    marginTop: 4
+    marginTop: 2,
+    lineHeight: 1.2,
+    minWidth: 60
   },
   actions: {
     display: "flex",
-    gap: 8,
-    justifyContent: "space-between",
+    gap: 6,
+    justifyContent: "flex-start",
     flexWrap: "wrap",
-    marginTop: 2
+    marginTop: 4,
+    marginBottom: 8
   },
   textarea: {
     width: "100%",
-    padding: 8,
+    padding: 6,
     fontSize: 13,
-    borderRadius: 6,
-    border: "1px solid #ccc",
+    borderRadius: 4,
+    border: "1px solid #d1d5db",
     resize: "none",
     background: "#fff"
   },
-  list: { listStyle: "none", padding: 1 },
-  listItem: { fontSize: 13, cursor: "pointer" },
+  list: { listStyle: "none", padding: 0 },
+  listItem: { fontSize: 13, marginBottom: 2 },
   optionButton: (selected) => ({
     cursor: "pointer",
-    padding: "2px 6px",
-    borderRadius: 8,
+    padding: "6px 6px",
+    borderRadius: 6,
     border: "1px solid",
-    borderColor: selected ? "green" : "gray",
-    background: selected ? "#e0f7e9" : "#f5f5f5",
-    color: selected ? "green" : "gray",
+    borderColor: selected ? "green" : "#999",
+    background: selected ? "#e0f7e9" : "#f9f9f9",
+    color: selected ? "green" : "#555",
     fontWeight: selected ? "bold" : "normal",
-    transition: "all 0.3s ease",
-    userSelect: "none"
+    userSelect: "none",
+    fontSize: 13
   }),
   optionRow: {
     display: "flex",
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
     alignItems: "center",
-    gap: 4
-    // marginLeft: 8
+    gap: 4,
+    marginLeft: 6
   },
   clickableLine: (selected) => ({
-    // cursor: "pointer",
-    // padding: "0px 8px",
-    // borderRadius: 6,
-    // backgroundColor: selected ? "#f7b688" : "#fff",
-    // // backgroundColor: selected ? "#d1f7d1" : "#fff",
-    // boxShadow: selected ? "0 0 6pxrgb(175, 76, 76)" : "none",
-    // border: "1px solid #ccc",
-    // marginBottom: 0,
-    // userSelect: "none",
-    // display: "flex",
-    // alignItems: "center",
-    // gap: 8
     cursor: "pointer",
-    // padding: "2px 6px", // Reduced vertical padding
-    borderRadius: 6,
-    backgroundColor: selected ? "#f7b688" : "#fff",
-    boxShadow: selected ? "0 0 4px rgba(175, 76, 76, 0.5)" : "none", // Slightly lighter shadow
-    border: "1px solid #ccc",
-    marginBottom: 4, // Smaller margin for compact look
-    userSelect: "none",
+    borderRadius: 4,
+    backgroundColor: selected ? "#fde68a" : "#c2bebe",
+    border: "1px solid #d1d5db",
+    marginTop:"5px",
+    marginBottom:"-10px",
+    margin: "2px 0",
+    padding: "0px 6px",
     display: "flex",
     alignItems: "center",
-    gap: 4, // Tighter spacing between elements
-    fontSize: 15,
-    margin:"0px",
-    padding:"0px 6px"
+    gap: 6,
+    fontSize: 16
   }),
   lineText: {
     flexShrink: 0,
-    userSelect: "none"
+    userSelect: "none",
+    marginRight: 4
   }
 };
 
@@ -229,7 +221,6 @@ const EstablishedComplaints = ({ onChange }) => {
         const lvl = selectedOptions[`${idx}-level`] || "";
         const input = userInputs[idx] || "";
         const selected = selectedLines.has(idx);
-
         const includeLine = selected || locValue || lvl || input.trim() !== "";
 
         if (includeLine) {
@@ -260,8 +251,7 @@ const EstablishedComplaints = ({ onChange }) => {
   const toggleLine = (idx) => {
     setSelectedLines((prev) => {
       const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
       return next;
     });
   };
@@ -275,7 +265,7 @@ const EstablishedComplaints = ({ onChange }) => {
   };
 
   return (
-    <div style={{ fontFamily: "Arial", fontSize: 15 }}>
+    <div style={styles.container}>
       <p>The following findings of ESTABLISHED complaints were positive:</p>
 
       {!!finalExamLines.length && (
@@ -285,11 +275,7 @@ const EstablishedComplaints = ({ onChange }) => {
               line === "" ? (
                 <hr
                   key={`hr-${i}`}
-                  style={{
-                    border: "none",
-                    borderTop: "1px solid #ddd",
-                    margin: "8px 0"
-                  }}
+                  style={{ border: "none", borderTop: "1px solid #ddd", margin: "6px 0" }}
                 />
               ) : (
                 <li key={i} style={styles.listItem}>
@@ -315,153 +301,87 @@ const EstablishedComplaints = ({ onChange }) => {
         </button>
       </div>
 
-      {showPredefined ? (
+      {!showPredefined && (
+        <textarea
+          rows={3}
+          placeholder="Enter custom findings text here..."
+          value={customText}
+          onChange={(e) => setCustomText(e.target.value)}
+          style={styles.textarea}
+        />
+      )}
+
+      {showPredefined &&
         Object.entries(sections).map(([section, lines], sIdx) => {
           const idxBase = sectionOffsets[sIdx];
-          const isGrouped = groupedSections.includes(section);
-
           return (
             <div key={section} style={styles.section}>
               <div style={styles.title}>{section}</div>
+              {lines.map((line, lIdx) => {
+                const idx = idxBase + lIdx;
+                const selected = selectedLines.has(idx);
+                const locSelected = selectedOptions[`${idx}-location`] || "";
+                const lvlSelected = selectedOptions[`${idx}-level`] || "";
+                const inputValue = userInputs[idx] || "";
+                const showLevel = levels[section]?.length && lIdx === 2;
+                const hideLocation =
+                  (section === "Cervical" && lIdx === 3) ||
+                  (section === "Thoracic" && lIdx === 3) ||
+                  (section === "Other Issues" && lIdx === 0);
 
-              {isGrouped
-                ? Array.from({ length: Math.ceil(lines.length / 2) }).map(
-                    (_, rowIdx) => (
-                      <div key={rowIdx} style={{ display: "flex", gap: 12 }}>
-                        {[0, 1].map((offset) => {
-                          const lIdx = rowIdx * 2 + offset;
-                          if (lIdx >= lines.length) return null;
+                return (
+                  <div
+                    key={idx}
+                    style={styles.clickableLine(selected)}
+                    onClick={() => toggleLine(idx)}
+                  >
+                    <span style={styles.lineText}>{line}</span>
 
-                          const idx = idxBase + lIdx;
-                          const line = lines[lIdx];
-                          const selected = selectedLines.has(idx);
-                          const locSelected =
-                            selectedOptions[`${idx}-location`] || "";
-                          const lvlSelected =
-                            selectedOptions[`${idx}-level`] || "";
-                          const inputValue = userInputs[idx] || "";
-                          const showLevel =
-                            levels[section]?.length && lIdx === 2;
-                          const hideLocation =
-                            (section === "Cervical" && lIdx === 3) ||
-                            (section === "Thoracic" && lIdx === 3);
+                    {!hideLocation && (
+                      <OptionSelector
+                        options={LocationOptions}
+                        selectedValue={locSelected}
+                        onSelect={(v) =>
+                          setSelectedOptions((p) => ({
+                            ...p,
+                            [`${idx}-location`]: v
+                          }))
+                        }
+                      />
+                    )}
 
-                          return (
-                            <div
-                              key={idx}
-                              style={{
-                                ...styles.clickableLine(selected),
-                                flex: 1
-                              }}
-                              onClick={() => toggleLine(idx)}
-                            >
-                              <span style={styles.lineText}>{line}</span>
+                    {showLevel && (
+                      <OptionSelector
+                        options={levels[section].map((l) => ({ [l]: l }))}
+                        selectedValue={lvlSelected}
+                        onSelect={(v) =>
+                          setSelectedOptions((p) => ({
+                            ...p,
+                            [`${idx}-level`]: v
+                          }))
+                        }
+                      />
+                    )}
 
-                              {!hideLocation && (
-                                <OptionSelector
-                                  options={LocationOptions}
-                                  selectedValue={locSelected}
-                                  onSelect={(v) =>
-                                    setSelectedOptions((p) => ({
-                                      ...p,
-                                      [`${idx}-location`]: v
-                                    }))
-                                  }
-                                />
-                              )}
-
-                              {showLevel && (
-                                <OptionSelector
-                                  options={levels[section].map((l) => ({
-                                    [l]: l
-                                  }))}
-                                  selectedValue={lvlSelected}
-                                  onSelect={(v) =>
-                                    setSelectedOptions((p) => ({
-                                      ...p,
-                                      [`${idx}-level`]: v
-                                    }))
-                                  }
-                                />
-                              )}
-
-                              <input
-                                type="text"
-                                placeholder="Additional info"
-                                value={inputValue}
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={(e) =>
-                                  setUserInputs((p) => ({
-                                    ...p,
-                                    [idx]: e.target.value
-                                  }))
-                                }
-                                style={
-                                  showLevel ? styles.inputSmall : styles.input
-                                }
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )
-                  )
-                : lines.map((line, lIdx) => {
-                    const idx = idxBase + lIdx;
-                    const selected = selectedLines.has(idx);
-                    const locSelected =
-                      selectedOptions[`${idx}-location`] || "";
-                    const inputValue = userInputs[idx] || "";
-
-                    return (
-                      <div
-                        key={idx}
-                        style={styles.clickableLine(selected)}
-                        onClick={() => toggleLine(idx)}
-                      >
-                        <span style={styles.lineText}>{line}</span>
-
-                        <OptionSelector
-                          options={LocationOptions}
-                          selectedValue={locSelected}
-                          onSelect={(v) =>
-                            setSelectedOptions((p) => ({
-                              ...p,
-                              [`${idx}-location`]: v
-                            }))
-                          }
-                        />
-
-                        <input
-                          type="text"
-                          placeholder="Additional info"
-                          value={inputValue}
-                          onClick={(e) => e.stopPropagation()}
-                          onChange={(e) =>
-                            setUserInputs((p) => ({
-                              ...p,
-                              [idx]: e.target.value
-                            }))
-                          }
-                          style={styles.input}
-                        />
-                      </div>
-                    );
-                  })}
+                    <input
+                      type="text"
+                      placeholder="Info"
+                      value={inputValue}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) =>
+                        setUserInputs((p) => ({
+                          ...p,
+                          [idx]: e.target.value
+                        }))
+                      }
+                      style={styles.input}
+                    />
+                  </div>
+                );
+              })}
             </div>
           );
-        })
-      ) : (
-        <div style={styles.section}>
-          <textarea
-            rows={6}
-            value={customText}
-            onChange={(e) => setCustomText(e.target.value)}
-            placeholder="Enter your custom findings here..."
-            style={styles.textarea}
-          />
-        </div>
-      )}
+        })}
     </div>
   );
 };
