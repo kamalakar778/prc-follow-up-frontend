@@ -26,8 +26,8 @@ const styles = {
   input: { ...baseInput, minWidth: "20px", maxWidth: "50%" },
   inputSmall: { ...baseInput, minWidth: "40px", maxWidth: "100%" },
   button: {
-    padding: "2px 4px",
-    fontSize: 13,
+    padding: "8px 10px",
+    fontSize: 14,
     cursor: "pointer",
     background: "#007BFF",
     color: "#fff",
@@ -86,7 +86,7 @@ const styles = {
     // alignItems: "center",
     // gap: 8
     cursor: "pointer",
-    padding: "2px 6px", // Reduced vertical padding
+    // padding: "2px 6px", // Reduced vertical padding
     borderRadius: 6,
     backgroundColor: selected ? "#f7b688" : "#fff",
     boxShadow: selected ? "0 0 4px rgba(175, 76, 76, 0.5)" : "none", // Slightly lighter shadow
@@ -96,7 +96,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 4, // Tighter spacing between elements
-    fontSize: 14
+    fontSize: 15,
+    margin:"0px",
+    padding:"0px 6px"
   }),
   lineText: {
     flexShrink: 0,
@@ -273,7 +275,7 @@ const EstablishedComplaints = ({ onChange }) => {
   };
 
   return (
-    <div style={{ fontFamily: "Arial", fontSize: 13 }}>
+    <div style={{ fontFamily: "Arial", fontSize: 15 }}>
       <p>The following findings of ESTABLISHED complaints were positive:</p>
 
       {!!finalExamLines.length && (
