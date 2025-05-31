@@ -10,22 +10,7 @@ const SignatureLine = ({ onChange }) => {
     "Signature Line Missing": "__________ Page # Point # __________ "
   };
 
-  const initialLines = [
-    "Facet, RFA, & ESI/Caudal Injection:  Activity/exercise modifications discussed & implemented (eg McKenzie & stretching exercises).",
-    "MBB INITIAL:  The patient reports axial pain greater than or equal to x3 months AND NO untreated radicular pain AND Unsuccessful P.T./home exercise program x6 weeks AND decreased ADLs AND Medications tried.",
-    "RFA INITIAL:  The patient has received greater than or equal to 80% temporary pain relief from left, right and confirmatory bilateral MBB.",
-    "RFA REPEAT:The patient reports ",
-    "RFA will be ordered:",
-    "RFA in patient with spinal fusion, will be done:",
-    "ESI/Caudal Indication: The patient reports history of greater than or equal to 4 weeks of radicular pain",
-    "ESI/Caudal Indication: Imaging shows:",
-    "ESI/Caudal Indication:  is significantly impacted due to radicular/FBSS pain complaints.",
-    "ESI/Caudal Indication: The patient reports ",
-    "ESI/Caudal REPEAT SUCCESS: after last injection",
-    "ESI/Caudal REPEAT FAILURE: Will now use a"
-  ];
-
-  const optionMap = {
+    const optionMap = {
     0: [],
     1: [],
     2: [],
@@ -47,6 +32,23 @@ const SignatureLine = ({ onChange }) => {
     10: ["to date","50% relief", "Improved Function ADLs"],
     11: ["Different spinal level", "Different approach"]
   };
+
+  const initialLines = [
+    `Facet, RFA, & ESI/Caudal Injection:  Activity/exercise modifications discussed & implemented (eg McKenzie & stretching exercises).`,
+    `MBB INITIAL:  The patient reports axial pain greater than or equal to x3 months AND NO untreated radicular pain AND Unsuccessful P.T./home exercise program x6 weeks AND decreased ADLs AND Medications tried.`,
+    `RFA INITIAL:  The patient has received greater than or equal to 80% temporary pain relief from left, right and confirmatory bilateral MBB.`,
+    `RFA REPEAT:The patient reports ${optionMap[3]} `,
+    `RFA will be ordered: ${optionMap[4]}`,
+    `RFA in patient with spinal fusion, will be done: ${optionMap[5]}`,
+    `ESI/Caudal Indication: The patient reports history of greater than or equal to 4 weeks of radicular pain ${optionMap[6]}`,
+    `ESI/Caudal Indication: Imaging shows: ${optionMap[7]}`,
+    `ESI/Caudal Indication:  ${optionMap[8]} is significantly impacted due to radicular/FBSS pain complaints.`,
+    `ESI/Caudal Indication: The patient reports ${optionMap[9]}`,
+    `ESI/Caudal REPEAT SUCCESS: after last injection ${optionMap[10]}`,
+    `ESI/Caudal REPEAT FAILURE: Will now use a ${optionMap[11]}`
+  ];
+
+
 
   const followUpOptions = [
     "Two weeks",

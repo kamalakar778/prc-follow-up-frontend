@@ -185,11 +185,11 @@ const AssessmentCodes = ({ selected, setSelected }) => {
               padding: "6px",
               marginBottom: "4px",
               fontFamily: "Calibri",
-              fontSize: "13px"
+              fontSize: "14px"
             }}
           />
           <button
-            style={{ fontFamily: "Calibri", fontSize: "13px" }}
+            style={{ fontFamily: "Calibri", fontSize: "14px" }}
             onClick={addCustomCode}
           >
             Add
@@ -235,7 +235,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           display: "flex",
           gap: "20px",
           fontFamily: "Calibri",
-          fontSize: "13px"
+          fontSize: "15px"
         }}
       >
         {codes.map((group, i) => (
