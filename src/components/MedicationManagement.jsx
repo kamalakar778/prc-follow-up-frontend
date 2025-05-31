@@ -57,10 +57,10 @@ const styles = {
 
 
 const medicationReasons = [
-  {
-    id: 0,
-    text: "Due to acceptable ADL, efficacy & tolerance the C.S. dosing was unchanged (or no additional C.S.)."
-  },
+  // {
+  //   id: 0,
+  //   text: ""
+  // },
   {
     id: 1,
     text: "Due to acceptable ADL, efficacy & tolerance the C.S. dosing was unchanged (or no additional C.S.)."
@@ -71,13 +71,20 @@ const medicationReasons = [
   },
   {
     id: 3,
-    text: "No medications"
+    text: "Due to non-compliance with C.S. or illegal drug use, the patient is now on a NNCP (See U-Tox Log for justification)."
   },
   {
     id: 4,
+    text: "No medications"
+  },{
+    id:5,
     text: "______ Page # Point # ______"
   }
 ];
+
+
+
+
 
 const defaultMedication = {
   name: "",

@@ -60,17 +60,17 @@ const styles = {
     fontSize: "15px"
   },
   input: {
-    width:"160px",
+    width: "160px",
 
     flex: 1,
     padding: "0.5rem",
     borderRadius: "6px",
     border: "1px solid #ccc",
     fontSize: "15px",
-    margin:"auto"
+    margin: "auto"
   },
   select: {
-    width:"80px",
+    width: "80px",
     flex: 1,
     marginTop: "1rem",
     padding: "0.5rem",
@@ -136,7 +136,7 @@ const providerOptions = [
   "Cortney Lacefield, APRN",
   "Robert Klickovich, M.D",
   "Lauren Ellis, APRN",
-  "Taja Elder, APRN",
+  "Taja Elder, APRN"
 ];
 
 const cmaOptions = [
@@ -170,6 +170,7 @@ const Demography = ({
     formData.patientName || ""
   );
 
+  
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
     onChange(e);
@@ -300,6 +301,7 @@ const Demography = ({
     </div>
   );
 
+ 
   return (
     <form onSubmit={(e) => e.preventDefault()} style={styles.container}>
       <style>{responsiveStyles}</style>
