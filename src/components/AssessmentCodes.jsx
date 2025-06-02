@@ -235,7 +235,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           display: "flex",
           gap: "20px",
           fontFamily: "Calibri",
-          fontSize: "15px"
+          fontSize: "14px"
         }}
       >
         {codes.map((group, i) => (

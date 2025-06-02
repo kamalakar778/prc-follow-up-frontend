@@ -41,7 +41,7 @@ const styles = {
     border: "1px solid #d1d5db"
   },
   index: {
-    // fontWeight: "bold",
+    fontWeight: "bold",
     fontSize: 14,
     minWidth: 0,
     textAlign: "left"
