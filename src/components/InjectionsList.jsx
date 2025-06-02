@@ -12,26 +12,26 @@ const directionOptions = [
 const injectionSet1 = [
   {
     direction: true,
-    label: " lumbar medial branch blocks at",
+    label: "lumbar medial branch blocks at",
     levels: ["L3/4, L4/5, L5/S1", ""]
   },
   {
     direction: true,
-    label: " radiofrequency ablation at",
+    label: "radiofrequency ablation at",
     levels: ["L3/4, L4/5, L5/S1", ""]
   },
   {
     direction: true,
-    label: " cervical medial branch blocks at",
+    label: "cervical medial branch blocks at",
     levels: ["C5/6, C6/7, C7/T1", ""]
   },
   {
     direction: true,
-    label: " radiofrequency ablation at",
+    label: "radiofrequency ablation at",
     levels: ["C5/6, C6/7, C7/T1", "",]
   },
   {
-    label: " thoracic medial branch blocks at",
+    label: "thoracic medial branch blocks at",
     levels: [
       "T2/3, T3/4, and T4/5",
       "T5/6, T6/7, and T7/8",
@@ -41,7 +41,7 @@ const injectionSet1 = [
     direction: true
   },
   {
-    label: " radiofrequency ablation at",
+    label: "radiofrequency ablation at",
     levels: [
       "T2/3, T3/4, and T4/5",
       "T5/6, T6/7, and T7/8",
@@ -54,51 +54,51 @@ const injectionSet1 = [
 
 const injectionSet2 = [
   {
-    label: " midline epidural steroid injection at",
+    label: "midline epidural steroid injection at",
     levels: [],
     direction: false
   },
-  { label: " midline caudal block", levels: [], direction: false },
-  { label: " TFESI at", levels: [], direction: true, directionAfter: true },
+  { label: "midline caudal block", levels: [], direction: false },
+  { label: "TFESI at", levels: [], direction: true, directionAfter: true },
   {
-    label: " SIJ Injection at",
+    label: "SIJ Injection at",
     levels: [],
     direction: true,
     directionAfter: true
   },
   {
-    label: " hip injection (intra-articularly) at",
+    label: "hip injection (intra-articularly) at",
     levels: [],
     direction: true,
     directionAfter: true
   },
   {
-    label: " trochanteric bursa hip injection at",
+    label: "trochanteric bursa hip injection at",
     levels: [],
     direction: true,
     directionAfter: true
   },
   {
-    label: " knee injection (intra-articularly) at",
+    label: "knee injection (intra-articularly) at",
     levels: [],
     direction: true,
     directionAfter: true
   },
   {
-    label: " subacromial shoulder injection at",
+    label: "subacromial shoulder injection at",
     levels: [],
     direction: true,
     directionAfter: true
   },
   {
-    label: " shoulder injection (intra-articularly) at",
+    label: "shoulder injection (intra-articularly) at",
     levels: [],
     direction: true,
     directionAfter: true
   },
-  { label: " SCS trial lumbar at", levels: [], direction: false },
-  { label: " SCS implantation lumbar at", levels: [], direction: false },
-  { label: " trigger point injection at", levels: [], direction: false }
+  { label: "SCS trial lumbar at", levels: [], direction: false },
+  { label: "SCS implantation lumbar at", levels: [], direction: false },
+  { label: "trigger point injection at", levels: [], direction: false }
 ];
 
 const baseInjections = [...injectionSet1, ...injectionSet2, { label: "", levels: [], direction: false }];
@@ -119,7 +119,6 @@ const styles = {
   injectionRow: {
     borderRadius: 4,
     backgroundColor: "#f3f4f6",
-    // marginBottom: 4,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -161,7 +160,6 @@ const styles = {
     border: "1px solid #d1d5db"
   },
   removeButton: {
-    // marginLeft: "-10",
     marginRight: "auto",
     backgroundColor: "#dc2626",
     color: "white",
@@ -174,7 +172,6 @@ const styles = {
   },
   index: {
     fontWeight: "bold",
-    // marginRight: 4,
     fontSize: 12,
     minWidth: 0,
     textAlign: "left"
@@ -185,21 +182,15 @@ const InjectionsList = ({ onInjectionChange }) => {
   const [injections, setInjections] = useState(getInitialInjections);
   const [addCounter, setAddCounter] = useState(0);
 
-  // Helper to check if an injection is "filled" enough to consider adding a new empty one
-  const isInjectionFilled = (inj) => {
-    return (
-      (inj.label && inj.label.trim() !== "") ||
-      (inj.directionSelected && inj.directionSelected.trim() !== "") ||
-      (inj.selectedLevel && inj.selectedLevel.trim() !== "") ||
-      (inj.notes && inj.notes.trim() !== "")
-    );
-  };
+  const isInjectionFilled = (inj) =>
+    (inj.label && inj.label.trim() !== "") ||
+    (inj.directionSelected && inj.directionSelected.trim() !== "") ||
+    (inj.selectedLevel && inj.selectedLevel.trim() !== "") ||
+    (inj.notes && inj.notes.trim() !== "");
 
-  // Ensure always an empty injection at the end
   const ensureEmptyInjectionAtEnd = (list) => {
     const last = list[list.length - 1];
     if (last && isInjectionFilled(last)) {
-      // Add a new empty injection line
       return [
         ...list,
         {
@@ -215,7 +206,6 @@ const InjectionsList = ({ onInjectionChange }) => {
         }
       ];
     }
-    // If last one is empty, just return as is
     return list;
   };
 
@@ -270,9 +260,15 @@ const InjectionsList = ({ onInjectionChange }) => {
 
   useEffect(() => {
     const included = injections.filter((inj) => inj.included);
-    const set1Labels = injectionSet1.map((i) => i.label);
 
-    const lines = included.map((inj, idx) => {
+    const orderedIncluded = [...included].sort((a, b) => {
+      if (a.timing === "Now schedule" && b.timing !== "Now schedule") return -1;
+      if (b.timing === "Now schedule" && a.timing !== "Now schedule") return 1;
+      return (a.addedOrder ?? 0) - (b.addedOrder ?? 0);
+    });
+
+    const set1Labels = injectionSet1.map((i) => i.label);
+    const lines = orderedIncluded.map((inj, idx) => {
       const isSet1 = set1Labels.includes(inj.label);
       const parts = isSet1
         ? [
@@ -283,7 +279,7 @@ const InjectionsList = ({ onInjectionChange }) => {
             inj.selectedLevel || inj.levels?.join(", ") || ""
           ]
         : [
-            inj.timing + " ",
+            inj.timing + "",
             inj.label,
             inj.directionAfter ? null : inj.directionSelected || "",
             inj.selectedLevel || inj.levels?.join(", ") || "",
@@ -343,7 +339,7 @@ const InjectionsList = ({ onInjectionChange }) => {
                         inj.directionAfter &&
                         inj.directionSelected &&
                         ` ${inj.directionSelected}`}
-                      {inj.notes && ` ${inj.notes}`}&nbsp; &nbsp; 
+                      {inj.notes && ` ${inj.notes}`}&nbsp;&nbsp;
                       <button
                         onClick={() => removeFromPreview(injections.indexOf(inj))}
                         style={styles.removeButton}
