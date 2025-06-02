@@ -70,9 +70,7 @@ const SignatureLine = ({ onChange }) => {
     return `${mm}/${dd}/${yyyy}`;
   };
 
-  // Track inclusion of lines 1 and 2 for add/remove toggle buttons
-  const [includedLines, setIncludedLines] = useState({ 1: true, 2: true });
-
+  const [includedLines, setIncludedLines] = useState({ 1: false, 2: false });
   const [selectedOptions, setSelectedOptions] = useState({});
   const [otherPlans, setOtherPlans] = useState([""]);
   const [followUpAppointment, setFollowUpAppointment] = useState(initialFollowUp);
@@ -81,16 +79,10 @@ const SignatureLine = ({ onChange }) => {
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
   const formatProcessedLines = useCallback(() => {
-    const hasAnyInput = Object.values(selectedOptions).some((opts) => opts.length > 0);
-
-    // Always include line 0
     const lines = [initialLines[0]];
-
-    // Include line 1 & 2 conditionally based on includedLines state
     if (includedLines[1]) lines.push(initialLines[1]);
     if (includedLines[2]) lines.push(initialLines[2]);
 
-    // For remaining lines (3+), include if options selected or line 0 if no input
     for (let idx = 3; idx < initialLines.length; idx++) {
       const opts = selectedOptions[idx] || [];
       const isSelected = opts.length > 0;
@@ -155,6 +147,14 @@ const SignatureLine = ({ onChange }) => {
     }));
   };
 
+  const sectionWrapperStyle = {
+    border: "1px solid #ccc",
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 6,
+    backgroundColor: "#fafafa",
+  };
+
   const styles = {
     optionButton: (isSelected) => ({
       cursor: "pointer",
@@ -206,40 +206,35 @@ const SignatureLine = ({ onChange }) => {
       fontWeight: "bold",
       fontSize: 16,
       display: "block",
+      marginBottom: 8,
     },
     inputText: {
-      flex: "1 1 0%",
-      minWidth: "5%",
+      minWidth: "80%",
       padding: "4px 6px",
+      margin:"0px 0px",
       fontSize: 14,
       borderRadius: 3,
       border: "1px solid rgb(209, 213, 219)",
     },
-    section: { marginBottom: 12 },
-    // lineContainer: { marginBottom: 8, display: "flex", alignItems: "center" },
-    lineContainer: { marginBottom: 8, display: "flex", alignItems: "center", borderBottom: "1px solid #ccc",  // <-- added this paddingBottom: 8,                 // <-- spacing below the row
-}
-
-    // lineText: { flex: "1 1 auto" },
+    lineContainer: {
+      marginBottom: 8,
+      display: "flex",
+      alignItems: "center",
+      borderBottom: "1px solid #ccc",
+      paddingBottom: 8,
+    },
   };
 
   return (
     <div>
       {/* Other Plans */}
-      <div style={styles.section}>
+      <div style={sectionWrapperStyle}>
         <label style={styles.label}>Other Plans:</label>
         {otherPlans.map((line, idx) => {
           const isLast = idx === otherPlans.length - 1;
           const isEmpty = line.trim() === "";
           return (
-            <div
-              key={idx}
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                marginBottom: 8,
-              }}
-            >
+            <div key={idx} style={{ display: "flex", alignItems: "flex-start", marginBottom: 8 }}>
               <label style={{ marginRight: 8, marginTop: 4 }}>{idx + 1}.</label>
               <input
                 type="text"
@@ -247,9 +242,7 @@ const SignatureLine = ({ onChange }) => {
                 onChange={(e) => {
                   let linesCopy = [...otherPlans];
                   linesCopy[idx] = e.target.value;
-                  linesCopy = linesCopy.filter((line, i) => {
-                    return line.trim() !== "" || i === linesCopy.length - 1;
-                  });
+                  linesCopy = linesCopy.filter((line, i) => line.trim() !== "" || i === linesCopy.length - 1);
                   if (linesCopy.length === 0 || linesCopy[linesCopy.length - 1].trim() !== "") {
                     linesCopy.push("");
                   }
@@ -265,9 +258,9 @@ const SignatureLine = ({ onChange }) => {
       </div>
 
       {/* Procedure Lines */}
-      <div style={styles.section}>
+      <div style={sectionWrapperStyle}>
+        <label style={styles.label}>Procedure Lines:</label>
         {initialLines.map((line, idx) => {
-          // For lines 1 & 2, show Add/Remove toggle buttons
           if (idx === 1 || idx === 2) {
             return (
               <div key={idx} style={styles.lineContainer}>
@@ -278,16 +271,14 @@ const SignatureLine = ({ onChange }) => {
                 >
                   {includedLines[idx] ? "Remove" : "Add"}
                 </button>
-                <div style={styles.lineText}>{line}</div>
-                
+                <div>{line}</div>
               </div>
             );
           }
 
-          // Other lines
           return (
             <div key={idx} style={styles.lineContainer}>
-              <div style={styles.lineText}>{line}</div>
+              <div>{line}</div>
               {optionMap[idx]?.length > 0 && (
                 <div>
                   {optionMap[idx].map((opt) => {
@@ -311,7 +302,7 @@ const SignatureLine = ({ onChange }) => {
       </div>
 
       {/* Follow-up */}
-      <div style={styles.section}>
+      <div style={sectionWrapperStyle}>
         <label style={styles.label}>Follow-up Appointment:</label>
         <div>
           {followUpOptions.map((opt) => {
@@ -338,17 +329,12 @@ const SignatureLine = ({ onChange }) => {
             setFollowUpAppointment("");
           }}
           placeholder="Specify custom follow-up"
-          style={{
-            fontSize: 14,
-            padding: "4px 4px",
-            marginTop: 4,
-            width: "100%",
-          }}
+          style={{ fontSize: 14, padding: "4px 4px", marginTop: 4, width: "100%" }}
         />
       </div>
 
       {/* Signature Line */}
-      <div style={styles.section}>
+      <div style={sectionWrapperStyle}>
         <label style={styles.label}>Physician Signature Line:</label>
         {Object.keys(buttonTexts).map((name) => (
           <button
@@ -362,7 +348,7 @@ const SignatureLine = ({ onChange }) => {
       </div>
 
       {/* Date Transcribed */}
-      <div style={styles.section}>
+      <div style={sectionWrapperStyle}>
         <label style={styles.label}>Date Transcribed:</label>
         <input
           type="date"
