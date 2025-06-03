@@ -78,29 +78,59 @@ const SignatureLine = ({ onChange }) => {
   const [selectedButton, setSelectedButton] = useState("Dr. Klickovich");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
 
-  const formatProcessedLines = useCallback(() => {
-    const lines = [initialLines[0]];
-    if (includedLines[1]) lines.push(initialLines[1]);
-    if (includedLines[2]) lines.push(initialLines[2]);
+  // const formatProcessedLines = useCallback(() => {
+  //   const lines = [initialLines[0]];
+  //   if (includedLines[1]) lines.push(initialLines[1]);
+  //   if (includedLines[2]) lines.push(initialLines[2]);
 
-    for (let idx = 3; idx < initialLines.length; idx++) {
-      const opts = selectedOptions[idx] || [];
-      const isSelected = opts.length > 0;
+  //   for (let idx = 3; idx < initialLines.length; idx++) {
+  //     const opts = selectedOptions[idx] || [];
+  //     const isSelected = opts.length > 0;
 
-      if (idx === 8 && isSelected) {
-        lines.push(
-          `ESI/Caudal Indication: ${opts.join(", ")} is significantly impacted due to radicular/FBSS pain complaints.`
-        );
-      } else {
-        const appended = isSelected ? ` ${opts.join(", ")}` : "";
-        if (isSelected || idx === 0) {
-          lines.push(`${initialLines[idx]}${appended}`);
-        }
+  //     if (idx === 8 && isSelected) {
+  //       lines.push(
+  //         `ESI/Caudal Indication: ${opts.join(", ")} is significantly impacted due to radicular/FBSS pain complaints.`
+  //       );
+  //     } else {
+  //       const appended = isSelected ? ` ${opts.join(", ")}` : "";
+  //       if (isSelected || idx === 0) {
+  //         lines.push(`${initialLines[idx]}${appended}`);
+  //       }
+  //     }
+  //   }
+
+  //   return lines.join("\n");
+  // }, [selectedOptions, includedLines]);
+const formatProcessedLines = useCallback(() => {
+  const hasIncludedLines = includedLines[1] || includedLines[2];
+  const hasSelectedOptions = Object.values(selectedOptions).some((opts) => opts.length > 0);
+
+  if (!hasIncludedLines && !hasSelectedOptions) {
+    return "";  // Return empty string if nothing selected or added
+  }
+
+  const lines = [initialLines[0]];
+  if (includedLines[1]) lines.push(initialLines[1]);
+  if (includedLines[2]) lines.push(initialLines[2]);
+
+  for (let idx = 3; idx < initialLines.length; idx++) {
+    const opts = selectedOptions[idx] || [];
+    const isSelected = opts.length > 0;
+
+    if (idx === 8 && isSelected) {
+      lines.push(
+        `ESI/Caudal Indication: ${opts.join(", ")} is significantly impacted due to radicular/FBSS pain complaints.`
+      );
+    } else {
+      const appended = isSelected ? ` ${opts.join(", ")}` : "";
+      if (isSelected || idx === 0) {
+        lines.push(`${initialLines[idx]}${appended}`);
       }
     }
+  }
 
-    return lines.join("\n");
-  }, [selectedOptions, includedLines]);
+  return lines.join("\n");
+}, [selectedOptions, includedLines]);
 
   const formatOtherPlans = () => {
     const filtered = otherPlans.filter((line, idx, arr) => idx < arr.length - 1 || line.trim() !== "");
