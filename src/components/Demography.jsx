@@ -24,83 +24,83 @@ const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
     maxWidth: 950,
-    margin: "30px auto",
-    padding: "1rem",
+    margin: "10px auto",
+    padding: "0.5rem",
     backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)"
+    borderRadius: "4px",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)"
   },
   section: {
-    padding: "1.5rem",
+    padding: "0.75rem",
     border: "1px solid rgb(217, 157, 157)",
-    borderRadius: "8px",
+    borderRadius: "4px",
     backgroundColor: "#f9f9f9",
-    marginTop: "1.5rem"
+    marginTop: "1rem"
   },
   grid: {
     width: "100%",
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "1rem"
+    gap: "0.5rem"
   },
   label: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#333",
-    gap: "0.5rem"
+    gap: "0.3rem",
+    marginBottom: "-0.2rem"
   },
   fileNameinput: {
     margin: "auto",
     flex: 1,
-    padding: "0.5rem",
-    borderRadius: "6px",
+    padding: "0.3rem",
+    borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "15px"
+    fontSize: "14px"
   },
   input: {
-    width: "160px",
-
+    width: "140px",
     flex: 1,
-    padding: "0.5rem",
-    borderRadius: "6px",
+    padding: "0.3rem",
+    borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "15px",
+    fontSize: "14px",
     margin: "auto"
   },
   select: {
-    width: "80px",
+    width: "70px",
     flex: 1,
-    marginTop: "1rem",
-    padding: "0.5rem",
-    borderRadius: "6px",
+    marginTop: "0.5rem",
+    padding: "0.3rem",
+    borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "15px",
+    fontSize: "14px",
     backgroundColor: "#fff"
   },
   buttonRow: {
     display: "flex",
     justifyContent: "flex-end",
-    gap: "1rem",
-    marginTop: "1rem"
+    gap: "0.5rem",
+    marginTop: "0.5rem"
   },
   button: {
-    padding: "0.6rem 1.2rem",
-    borderRadius: "6px",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "4px",
     border: "none",
     fontWeight: "bold",
-    fontSize: "15px",
+    fontSize: "14px",
     cursor: "pointer",
     backgroundColor: "#3498db",
     color: "#fff",
     transition: "background-color 0.2s ease"
   },
   optionButton: (isSelected) => ({
-    marginRight: 6,
-    marginTop: 6,
-    padding: "6px 12px",
-    borderRadius: "10px",
+    marginRight: 4,
+    marginTop: 4,
+    padding: "4px 8px",
+    borderRadius: "6px",
     border: "1px solid",
     borderColor: isSelected ? "green" : "gray",
     backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
@@ -108,53 +108,28 @@ const styles = {
     fontWeight: isSelected ? "bold" : "normal",
     cursor: "pointer",
     transition: "all 0.2s ease",
-    display: "inline-block"
+    display: "inline-block",
+    fontSize: "13px"
   })
 };
 
 const insuranceOptions = [
-  "Aetna",
-  "BCBS",
-  "Ambetter",
-  "Cigna",
-  "Commercial",
-  "Humana",
-  "PP",
-  "Medicare",
-  "Medicare B",
-  "Medicaid",
-  "TriCare",
-  "Trieast",
-  "WellCare",
-  "Work. Comp",
-  "UHC",
-  "Other"
+  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP",
+  "Medicare", "Medicare B", "Medicaid", "TriCare", "Trieast", "WellCare",
+  "Work. Comp", "UHC", "Other"
 ];
 
 const locationOptions = ["Louisville", "E-town"];
 const providerOptions = [
-  "Cortney Lacefield, APRN",
-  "Robert Klickovich, M.D",
-  "Lauren Ellis, APRN",
-  "Taja Elder, APRN"
+  { "Cortney Lacefield": "Cortney Lacefield, APRN" },
+  { "Robert Klickovich": "Robert Klickovich, M.D" },
+  { "Lauren Ellis": "Lauren Ellis, APRN" },
+  { "Taja Elder": "Taja Elder, APRN" }
 ];
 
 const cmaOptions = [
-  "Alyson",
-  "Brenda",
-  "Erika",
-  "Janelle",
-  "Laurie",
-  "Melanie",
-  "MS",
-  "Nick",
-  "PP",
-  "SC",
-  "Steph",
-  "Tony",
-  "Tina",
-  "DJ",
-  "Other"
+  "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie", "MS", "Nick",
+  "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Other"
 ];
 
 const Demography = ({
@@ -166,11 +141,8 @@ const Demography = ({
   onSubmit,
   setFormData
 }) => {
-  const [localPatientName, setLocalPatientName] = useState(
-    formData.patientName || ""
-  );
+  const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
 
-  
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
     onChange(e);
@@ -229,9 +201,7 @@ const Demography = ({
         >
           <option value="">-- Select {label} --</option>
           {insuranceOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
         <input
@@ -248,7 +218,7 @@ const Demography = ({
 
   const renderCMASelect = () => (
     <div className="responsive-label" style={styles.label} key="CMA">
-      <span>CMA :</span>
+      <span>CMA:</span>
       <select
         name="CMA"
         className="responsive-select"
@@ -258,9 +228,7 @@ const Demography = ({
       >
         <option value="">-- Select CMA --</option>
         {cmaOptions.map((cma) => (
-          <option key={cma} value={cma}>
-            {cma}
-          </option>
+          <option key={cma} value={cma}>{cma}</option>
         ))}
       </select>
       <input
@@ -279,21 +247,23 @@ const Demography = ({
       <span>{label}:</span>
       <div>
         {options.map((option) => {
-          const isSelected = formData[name] === option;
+          const value = typeof option === "object" ? Object.values(option)[0] : option;
+          const key = typeof option === "object" ? Object.keys(option)[0] : option;
+          const isSelected = formData[name] === value;
           return (
             <span
-              key={option}
+              key={key}
               style={styles.optionButton(isSelected)}
-              onClick={() => handleToggle(name, option)}
+              onClick={() => handleToggle(name, value)}
               role="button"
               tabIndex={0}
               onKeyPress={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  handleToggle(name, option);
+                  handleToggle(name, value);
                 }
               }}
             >
-              {option}
+              {key}
             </span>
           );
         })}
@@ -301,14 +271,12 @@ const Demography = ({
     </div>
   );
 
- 
   return (
     <form onSubmit={(e) => e.preventDefault()} style={styles.container}>
       <style>{responsiveStyles}</style>
 
       <div className="responsive-label" style={styles.label}>
         <span>File Name:</span>
-        <br />
         <input
           type="text"
           className="responsive-input"
@@ -321,45 +289,16 @@ const Demography = ({
           Generate Document
         </button>
       </div>
-      <div className="responsive-grid" style={styles.grid}>
-        <div className="button-row" style={styles.buttonRow}>
-          {/* <button
-            type="button"
-            onClick={onReset}
-            style={{ ...styles.button, backgroundColor: "#95a5a6" }}
-          >
-            Reset
-          </button> */}
-        </div>
-      </div>
 
       <div style={styles.section}>
         <div className="responsive-grid" style={styles.grid}>
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
-            {
-              label: "Date of Evaluation",
-              name: "dateOfEvaluation",
-              type: "input"
-            },
+            { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
-            {
-              label: "Referring Physician",
-              name: "referringPhysician",
-              type: "input"
-            },
-            {
-              label: "Provider",
-              name: "provider",
-              type: "toggle",
-              options: providerOptions
-            },
-            {
-              label: "Location",
-              name: "location",
-              type: "toggle",
-              options: locationOptions
-            },
+            { label: "Referring Physician", name: "referringPhysician", type: "input" },
+            { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
+            { label: "Location", name: "location", type: "toggle", options: locationOptions },
             { label: "Insurance 1", name: "insurance1", type: "insurance" },
             { label: "CMA", name: "CMA", type: "cma" },
             { label: "Insurance 2", name: "insurance2", type: "insurance" },
@@ -368,11 +307,7 @@ const Demography = ({
             if (type === "input") {
               if (name === "patientName") {
                 return (
-                  <div
-                    key={name}
-                    className="responsive-label"
-                    style={styles.label}
-                  >
+                  <div key={name} className="responsive-label" style={styles.label}>
                     <span>{label}:</span>
                     <input
                       name={name}
@@ -384,11 +319,7 @@ const Demography = ({
                     <button
                       type="button"
                       onClick={transformPatientName}
-                      style={{
-                        ...styles.button,
-                        marginLeft: "0.5rem",
-                        padding: "0.3rem 0.6rem"
-                      }}
+                      style={{ ...styles.button, marginLeft: "0.3rem", padding: "0.2rem 0.5rem" }}
                     >
                       Transform
                     </button>
@@ -396,11 +327,7 @@ const Demography = ({
                 );
               }
               return (
-                <div
-                  key={name}
-                  className="responsive-label"
-                  style={styles.label}
-                >
+                <div key={name} className="responsive-label" style={styles.label}>
                   <span>{label}:</span>
                   <input
                     name={name}
@@ -413,8 +340,7 @@ const Demography = ({
               );
             }
             if (type === "insurance") return renderInsuranceSelect(label, name);
-            if (type === "toggle")
-              return renderToggleButtons(label, name, options);
+            if (type === "toggle") return renderToggleButtons(label, name, options);
             if (type === "cma") return renderCMASelect();
             return null;
           })}

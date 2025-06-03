@@ -264,27 +264,6 @@ const EstablishedComplaints = ({ onChange }) => {
 
   return (
     <div style={styles.container}>
-      <p>The following findings of ESTABLISHED complaints were positive:</p>
-
-      {!!finalExamLines.length && (
-        <div style={styles.sectionBox}>
-          <ul style={styles.list}>
-            {finalExamLines.map((line, i) =>
-              line === "" ? (
-                <hr
-                  key={`hr-${i}`}
-                  style={{ border: "none", borderTop: "1px solid #ddd", margin: "6px 0" }}
-                />
-              ) : (
-                <li key={i} style={styles.listItem}>
-                  {line}
-                </li>
-              )
-            )}
-          </ul>
-        </div>
-      )}
-
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <button
           style={styles.button}
@@ -328,7 +307,10 @@ const EstablishedComplaints = ({ onChange }) => {
                 const inputValue = userInputs[idx] || "";
 
                 const isInteracted =
-                  selected || locSelected || lvlSelected || inputValue.trim() !== "";
+                  selected ||
+                  locSelected ||
+                  lvlSelected ||
+                  inputValue.trim() !== "";
 
                 const rowStyle = {
                   ...styles.injectionRowEditable,
@@ -342,7 +324,11 @@ const EstablishedComplaints = ({ onChange }) => {
                   (section === "Other Issues" && lIdx === 0);
 
                 return (
-                  <div key={idx} style={rowStyle} onClick={() => toggleLine(idx)}>
+                  <div
+                    key={idx}
+                    style={rowStyle}
+                    onClick={() => toggleLine(idx)}
+                  >
                     <span style={styles.index}>{line}</span>
 
                     {!hideLocation && (
@@ -390,6 +376,30 @@ const EstablishedComplaints = ({ onChange }) => {
             </div>
           );
         })}
+      <p>The following findings of ESTABLISHED complaints were positive:</p>
+
+      {!!finalExamLines.length && (
+        <div style={styles.sectionBox}>
+          <ul style={styles.list}>
+            {finalExamLines.map((line, i) =>
+              line === "" ? (
+                <hr
+                  key={`hr-${i}`}
+                  style={{
+                    border: "none",
+                    borderTop: "1px solid #ddd",
+                    margin: "6px 0"
+                  }}
+                />
+              ) : (
+                <li key={i} style={styles.listItem}>
+                  {line}
+                </li>
+              )
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
