@@ -290,8 +290,8 @@ const PhysicalExamination = ({ onChange }) => {
         options={[
           "Within normal limits",
           "Antalgic",
-          "Ataxic",
-          "Spastic",
+          "Unsteady",
+          "Wheelchair-bound",
           "________"
         ]}
         value={gait}

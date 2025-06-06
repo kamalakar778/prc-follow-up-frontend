@@ -3,6 +3,10 @@ import PropTypes from "prop-types";
 
 const severityOptions = ["None", "Mild", "Moderate", "Significant"];
 const contrastOptions = ["with contrast", "without contrast"];
+const imageTypeOptions = [
+  "Due to worsening pain/symptoms",
+  "Due to intermittent tingling &/or numbness into extremity"
+];
 const imageTypes = ["MRI Scan", "CT Scan"];
 const actionOptions = [
   "The patient counseled/warned on need to engage treatment plan",
@@ -97,6 +101,7 @@ const FollowupPlan = ({ setFormData }) => {
   const [xrayOf, setXrayOf] = useState("");
   const [behavioralFocus, setBehavioralFocus] = useState("");
   const [referral, setReferral] = useState("");
+  const [selectedImageTypeOptions, setSelectedImageTypeOptions] = useState([]);
 
   const getUDTStatus = () => {
     if (willOrderUDT) {
@@ -130,7 +135,11 @@ const FollowupPlan = ({ setFormData }) => {
 
     const formattedImaging =
       imageType && imaging
-        ? `\nWill order ${imageType} ${imagingContrast} of: ${imaging}`
+        ? `\nWill order ${imageType} ${imagingContrast} of: ${imaging}\n\t${
+            selectedImageTypeOptions.length > 0
+              ? selectedImageTypeOptions.map((opt) => `• ${opt}`).join("\n\t")
+              : "No specific reason selected"
+          }`
         : "";
 
     const formattedXrayOf = xrayOf ? `\nWill order X-Ray of: ${xrayOf}` : "";
@@ -172,6 +181,7 @@ const FollowupPlan = ({ setFormData }) => {
     xrayOf,
     behavioralFocus,
     referral,
+    selectedImageTypeOptions,
     setFormData
   ]);
 
@@ -179,30 +189,28 @@ const FollowupPlan = ({ setFormData }) => {
     <div style={styles.container}>
       <div style={styles.group}>
         <div style={{ marginBottom: 12 }}>
-          <label style={styles.labelText}>
-            Non-compliance severity: &nbsp; &nbsp;
-            {severityOptions.map((option) => {
-              const isSelected = nonComplianceSeverity === option;
-              return (
-                <span
-                  key={option}
-                  style={styles.optionButton(isSelected)}
-                  onClick={() =>
-                    setNonComplianceSeverity(isSelected ? "" : option)
+          <label style={styles.labelText}>Non-compliance severity:</label>
+          {severityOptions.map((option) => {
+            const isSelected = nonComplianceSeverity === option;
+            return (
+              <span
+                key={option}
+                style={styles.optionButton(isSelected)}
+                onClick={() =>
+                  setNonComplianceSeverity(isSelected ? "" : option)
+                }
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setNonComplianceSeverity(isSelected ? "" : option);
                   }
-                  role="button"
-                  tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setNonComplianceSeverity(isSelected ? "" : option);
-                    }
-                  }}
-                >
-                  {option}
-                </span>
-              );
-            })}
-          </label>
+                }}
+              >
+                {option}
+              </span>
+            );
+          })}
         </div>
 
         <div style={{ marginBottom: 12 }}>
@@ -335,10 +343,6 @@ const FollowupPlan = ({ setFormData }) => {
               {type}
             </span>
           ))}
-        </div>
-
-        <div style={styles.inlineGroup}>
-          <span style={styles.labelText}>Imaging Contrast:</span>
           {contrastOptions.map((option) => (
             <span
               key={option}
@@ -357,10 +361,6 @@ const FollowupPlan = ({ setFormData }) => {
               {option}
             </span>
           ))}
-        </div>
-
-        <div style={styles.inlineGroup}>
-          <span style={styles.labelText}>of:</span>
           <input
             type="text"
             value={imaging}
@@ -368,8 +368,39 @@ const FollowupPlan = ({ setFormData }) => {
             style={styles.input}
             placeholder="e.g. lumbar spine"
           />
+          <br />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {imageTypeOptions.map((option) => {
+              const isSelected = selectedImageTypeOptions.includes(option);
+              return (
+                <span
+                  key={option}
+                  style={styles.optionButton(isSelected)}
+                  onClick={() => {
+                    setSelectedImageTypeOptions((prev) =>
+                      isSelected
+                        ? prev.filter((item) => item !== option)
+                        : [...prev, option]
+                    );
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSelectedImageTypeOptions((prev) =>
+                        isSelected
+                          ? prev.filter((item) => item !== option)
+                          : [...prev, option]
+                      );
+                    }
+                  }}
+                >
+                  {option}
+                </span>
+              );
+            })}
+          </div>
         </div>
-
         <div style={styles.inlineGroup}>
           <span style={styles.labelText}>X-Ray of:</span>
           <input

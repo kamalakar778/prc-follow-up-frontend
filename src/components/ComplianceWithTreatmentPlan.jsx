@@ -321,6 +321,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         <option value="At Home">At Home</option>
                         <option value="HEP">HEP</option>
                         <option value="On Base">On Base</option>
+                        <option value="Pro Rehab">Pro Rehab</option>
                         <option value="KASPER">KASPER</option>
                       </select>
                       <input
@@ -348,8 +349,8 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         }
                       >
                         <option value="">Unit</option>
-                        <option value="per week">per week</option>
-                        <option value="per month">per month</option>
+                        <option value="times per week">times per week</option>
+                        <option value="times per month">times per month</option>
                       </select>
                       <input
                         type="text"

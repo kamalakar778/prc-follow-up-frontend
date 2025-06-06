@@ -42,7 +42,7 @@ const SignatureLine = ({ onChange }) => {
     7: ["HNP", "Bulging", "Protrusion", "Osteophytes", "DDD", "Stenosis", "FBNSS", "FBSS"],
     8: ["Overall quality of life", "and function (ADLs)"],
     9: ["greater than or equal to 4 weeks of P.T./home exercise done", "and unsuccessful P.T./home exercise program x4 weeks due to pain."],
-    10: ["to date", "50% relief", "Improved Function ADLs"],
+    10: ["for 3 months","to date", "50% relief", "Improved Function ADLs"],
     11: ["Different spinal level", "Different approach"],
   };
 

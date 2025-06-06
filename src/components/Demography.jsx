@@ -122,9 +122,9 @@ const insuranceOptions = [
 const locationOptions = ["Louisville", "E-town"];
 const providerOptions = [
   { "Cortney Lacefield": "Cortney Lacefield, APRN" },
-  { "Robert Klickovich": "Robert Klickovich, M.D" },
   { "Lauren Ellis": "Lauren Ellis, APRN" },
-  { "Taja Elder": "Taja Elder, APRN" }
+  { "Taja Elder": "Taja Elder, APRN" },
+  { "Robert Klickovich": "Robert Klickovich, M.D" },
 ];
 
 const cmaOptions = [
