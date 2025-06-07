@@ -124,6 +124,8 @@ const SignatureLine = ({ onChange }) => {
     },
     label: { fontWeight: "bold", fontSize: 16, display: "block", marginBottom: 8 },
     optionBtn: (selected) => ({
+      // display:"flex",
+      flexDirection:"column",
       cursor: "pointer",
       padding: "5px 15px",
       borderRadius: "6px",
@@ -131,8 +133,8 @@ const SignatureLine = ({ onChange }) => {
       borderColor: selected ? "green" : "#999",
       backgroundColor: selected ? "#e0f7e9" : "#f0f0f0",
       color: selected ? "green" : "#333",
-      marginRight: 4,
-      marginBottom: 4,
+      marginRight: 0,
+      marginLeft: 0,
       fontSize: 14,
       fontWeight: selected ? "bold" : "normal",
     }),
@@ -155,10 +157,13 @@ const SignatureLine = ({ onChange }) => {
       };
     },
     inputText: {
-      minWidth: "80%", padding: "4px 6px", fontSize: 14, borderRadius: 3, border: "1px solid rgb(209,213,219)",
+      minWidth: "80%", padding: "5px 7px", fontSize: 14, borderRadius: 6, border: "1px solid rgb(209,213,219)",
+    },
+    followUpIinputText: {
+      minWidth: "20%", padding: "6px 6px", fontSize: 14, borderRadius: 8, border: "1px solid rgb(209,213,219)",
     },
     lineWrap: {
-      marginBottom: 8, display: "flex", alignItems: "center", borderBottom: "1px solid #ccc", paddingBottom: 8,
+      marginBottom: 4, display: "flex", borderBottom: "2px solid #ccc", paddingBottom: 4,
     },
   };
 
@@ -192,12 +197,12 @@ const SignatureLine = ({ onChange }) => {
         <label style={styles.label}>Procedure Lines:</label>
         {initialLines.map((line, idx) => (
           <div key={idx} style={styles.lineWrap}>
-            {(idx === 1 || idx === 2) ? (
+            {/* {(idx === 1 || idx === 2) ? (
               <button onClick={() => toggleLine(idx)} style={styles.optionBtn(includedLines[idx])}>
                 {includedLines[idx] ? "Remove" : "Add"}
               </button>
-            ) : null}
-            <div>{line}</div>
+            ) : null} */}
+            <div style={{fontSize:"15px"}}>{line}</div>
             {optionMap[idx]?.length > 0 && (
               <div>
                 {optionMap[idx].map((opt) => (
@@ -227,14 +232,15 @@ const SignatureLine = ({ onChange }) => {
               {opt}
             </button>
           ))}
-        </div>
-        <input
+          <input
           type="text"
           value={customFollowUp}
           onChange={(e) => { setCustomFollowUp(e.target.value); setFollowUpAppointment(""); }}
           placeholder="Specify custom follow-up"
-          style={{ ...styles.inputText, width: "100%", marginTop: 4 }}
+          style={{ ...styles.followUpIinputText, marginTop: 4 }}
         />
+        </div>
+        
       </div>
 
       <div style={styles.section}>
@@ -256,7 +262,7 @@ const SignatureLine = ({ onChange }) => {
           type="date"
           value={dateTranscribed}
           onChange={(e) => setDateTranscribed(e.target.value)}
-          style={{ ...styles.inputText, maxWidth: 150 }}
+          style={{ ...styles.inputText, fontSize:18, font:"bold", minWidth:80, maxWidth: 150 }}
         />
       </div>
     </div>
