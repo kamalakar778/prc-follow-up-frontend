@@ -3,22 +3,28 @@ import React, { useState, useEffect, useMemo } from "react";
 const styles = {
   container: { maxWidth: 1000, margin: "auto", padding: 0 },
   injectionRowEditable: {
+    height: "27px",
+    // width:"15%",
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
-    gap: 4,
-    padding: "0px 8px",
-    borderBottom: "1px solid #e5e7eb",
+    gap: 0,
+    padding: "3px 2px",
+    // marginBottom: 8, // ensure spacing between rows
     fontSize: 14,
-    transition: "background-color 0.3s ease"
+    borderRadius: 6,
+    border: "1px solid rgb(164, 170, 189)", // thick dark border
+    backgroundColor: "#f9fafb", // subtle light background
+    transition: "background-color 0.3s ease, box-shadow 0.3s ease"
   },
+
   button: {
     border: "none",
-    padding: "2px 5px",
+    padding: "8px 8px",
     borderRadius: 3,
     cursor: "pointer",
     fontSize: 14,
-    lineHeight: 1.2,
+    lineHeight: 1,
     minWidth: 40,
     whiteSpace: "nowrap",
     background: "#007BFF",
@@ -33,18 +39,30 @@ const styles = {
   },
   notesInput: {
     flex: 1,
+    margin: "0px 2px",
     minWidth: "5%",
-    maxWidth: "10%",
-    padding: "4px 6px",
+    maxWidth: "20%",
+    padding: "5px 6px",
     fontSize: 14,
-    borderRadius: 3,
-    border: "1px solid #d1d5db"
+    borderRadius: 5
+    // border: "1px solidrgb(9, 20, 37)"
   },
+  otherNotesInput: {
+    flex: 1,
+    margin: "0px 2px",
+    padding: "5px 6px",
+    fontSize: 14,
+    borderRadius: 5,
+    width: "100%", // make it take up its parent width
+    boxSizing: "border-box"
+  },
+
   index: {
-    // fontWeight: "bold",
     fontSize: 14,
     minWidth: 0,
-    textAlign: "left"
+    display:"flex",
+    textAlign: "left",
+    marginBottom:"2px"
   },
   sectionBox: {
     marginTop: 8,
@@ -60,8 +78,9 @@ const styles = {
     marginBottom: 4
   },
   optionButton: (selected) => ({
+    marginLeft: "-1px",
     cursor: "pointer",
-    padding: "4px 6px",
+    padding: "4px 3px",
     borderRadius: 4,
     border: "1px solid",
     borderColor: selected ? "green" : "#999",
@@ -82,7 +101,7 @@ const styles = {
     fontSize: 13,
     borderRadius: 4,
     border: "1px solid #d1d5db",
-    resize: "both", // allows resizing
+    resize: "both",
     background: "#fff",
     whiteSpace: "pre-wrap",
     fontFamily: "monospace",
@@ -154,7 +173,7 @@ const levels = {
 const LocationOptions = [
   { left: "on left" },
   { right: "on right" },
-  { bilaterally: "on bilaterally" }
+  { bilateral: "on bilaterally" }
 ];
 
 const OptionSelector = ({ options, selectedValue, onSelect }) => (
@@ -175,6 +194,50 @@ const OptionSelector = ({ options, selectedValue, onSelect }) => (
     })}
   </div>
 );
+
+const isLocationExcluded = (section, lIdx) =>
+  (section === "Cervical" && lIdx === 3) ||
+  (section === "Thoracic" && lIdx === 3) ||
+  (section === "Other Issues" && lIdx === 0) ||
+  (section === "Hip-Squat" && lIdx === 0);
+
+const getGroupedIndices = (section) => {
+  switch (section) {
+    case "Other Issues":
+      return [[0, 1]];
+    case "Cervical":
+      return [[0, 1],[2,3]];
+
+    case "Thoracic":
+      return [
+        [0, 1],
+        [2, 3]
+      ];
+    case "Lumbar":
+      return [
+        [0, 1],
+        [2, 3],
+        [4, 5, 6, 7, 8]
+      ];
+    case "Aplyes-Scratch":
+      return [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7]
+      ];
+    case "Hip-Squat":
+      return [
+        [0, 1, 2],
+        [3, 4]
+      ];
+    case "Peri-Patella":
+      return [
+        [0, 1, 2],
+        [3, 4, 5]
+      ];
+    default:
+      return sections[section].map((_, idx) => [idx]);
+  }
+};
 
 const EstablishedComplaints = ({ onChange }) => {
   const [finalExamLines, setFinalExamLines] = useState([]);
@@ -202,7 +265,7 @@ const EstablishedComplaints = ({ onChange }) => {
       const normalLines = [];
       const levelLines = [];
 
-      lines.forEach((line) => {
+      lines.forEach((line, lIdx) => {
         const locValue = selectedOptions[`${idx}-location`] || "";
         const lvl = selectedOptions[`${idx}-level`] || "";
         const input = userInputs[idx] || "";
@@ -296,86 +359,115 @@ const EstablishedComplaints = ({ onChange }) => {
       {showPredefined &&
         Object.entries(sections).map(([section, lines], sIdx) => {
           const idxBase = sectionOffsets[sIdx];
+          const rowGroups = getGroupedIndices(section);
           return (
             <div key={section} style={styles.sectionBox}>
               <div style={styles.sectionTitle}>{section}</div>
-              {lines.map((line, lIdx) => {
-                const idx = idxBase + lIdx;
-                const selected = selectedLines.has(idx);
-                const locSelected = selectedOptions[`${idx}-location`] || "";
-                const lvlSelected = selectedOptions[`${idx}-level`] || "";
-                const inputValue = userInputs[idx] || "";
+              {rowGroups.map((group, gIdx) => (
+                <div key={`group-${section}-${gIdx}`} style={styles.optionRow}>
+                  {group.map((lIdx) => {
+                    const idx = idxBase + lIdx;
+                    const line = lines[lIdx];
+                    const selected = selectedLines.has(idx);
+                    const locSelected =
+                      selectedOptions[`${idx}-location`] || "";
+                    const lvlSelected = selectedOptions[`${idx}-level`] || "";
+                    const inputValue = userInputs[idx] || "";
 
-                const isInteracted =
-                  selected ||
-                  locSelected ||
-                  lvlSelected ||
-                  inputValue.trim() !== "";
+                    const isInteracted =
+                      selected ||
+                      locSelected ||
+                      lvlSelected ||
+                      inputValue.trim() !== "";
 
-                const rowStyle = {
-                  ...styles.injectionRowEditable,
-                  backgroundColor: isInteracted ? "#e39b1e" : "transparent"
-                };
+                    const rowStyle = {
+                      ...styles.injectionRowEditable,
+                      backgroundColor: isInteracted ? "#e39b1e" : "transparent",
+                      flex: "1 1 auto"
+                    };
 
-                const showLevel = levels[section]?.length && lIdx === 2;
-                const hideLocation =
-                  (section === "Cervical" && lIdx === 3) ||
-                  (section === "Thoracic" && lIdx === 3) ||
-                  (section === "Other Issues" && lIdx === 0);
+                    const showLevel = levels[section]?.length && lIdx === 2;
+                    const hideLocation = isLocationExcluded(section, lIdx);
 
-                return (
-                  <div
-                    key={idx}
-                    style={rowStyle}
-                    onClick={() => toggleLine(idx)}
-                  >
-                    <span style={styles.index}>{line}</span>
+                    return (
+                      <div
+                        key={idx}
+                        style={rowStyle}
+                        onClick={() => toggleLine(idx)}
+                      >
+                        <span style={styles.index}>
+                          {line}
+                          {section === "Other Issues" && lIdx === 0 && (
+                            <input
+                              type="text"
+                              placeholder="Enter other issue"
+                              value={userInputs[idx] || ""}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) =>
+                                setUserInputs((p) => ({
+                                  ...p,
+                                  [idx]: e.target.value
+                                }))
+                              }
+                              style={{
+                                ...styles.otherNotesInput,
+                                marginLeft: 8,
+                                minWidth:"175%",
+                                maxWidth:"150%"
+                              }}
+                            />
+                          )}
+                        </span>
 
-                    {!hideLocation && (
-                      <OptionSelector
-                        options={LocationOptions}
-                        selectedValue={locSelected}
-                        onSelect={(v) =>
-                          setSelectedOptions((p) => ({
-                            ...p,
-                            [`${idx}-location`]: v
-                          }))
-                        }
-                      />
-                    )}
+                        {!hideLocation && (
+                          <OptionSelector
+                            options={LocationOptions}
+                            selectedValue={locSelected}
+                            onSelect={(v) =>
+                              setSelectedOptions((p) => ({
+                                ...p,
+                                [`${idx}-location`]: v
+                              }))
+                            }
+                          />
+                        )}
 
-                    {showLevel && (
-                      <OptionSelector
-                        options={levels[section].map((l) => ({ [l]: l }))}
-                        selectedValue={lvlSelected}
-                        onSelect={(v) =>
-                          setSelectedOptions((p) => ({
-                            ...p,
-                            [`${idx}-level`]: v
-                          }))
-                        }
-                      />
-                    )}
-
-                    <input
-                      type="text"
-                      placeholder="level"
-                      value={inputValue}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) =>
-                        setUserInputs((p) => ({
-                          ...p,
-                          [idx]: e.target.value
-                        }))
-                      }
-                      style={styles.notesInput}
-                    />
-                  </div>
-                );
-              })}
+                        {showLevel && (
+                          <>
+                            <OptionSelector
+                              options={levels[section].map((l) => ({ [l]: l }))}
+                              selectedValue={lvlSelected}
+                              onSelect={(v) =>
+                                setSelectedOptions((p) => ({
+                                  ...p,
+                                  [`${idx}-level`]: v
+                                }))
+                              }
+                            />
+                            <input
+                              type="text"
+                              placeholder="level"
+                              value={inputValue}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) =>
+                                setUserInputs((p) => ({
+                                  ...p,
+                                  [idx]: e.target.value
+                                }))
+                              }
+                              style={styles.notesInput}
+                            />
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           );
         })}
+
       <p>The following findings of ESTABLISHED complaints were positive:</p>
 
       {!!finalExamLines.length && (
