@@ -11,7 +11,7 @@ const styles = {
     lineHeight: 1.6
   },
   section: {
-    marginBottom: "16px"
+    marginBottom: "8px"
   },
   label: {
     display: "inline-block",
@@ -21,7 +21,7 @@ const styles = {
     width: "180px",
     padding: "4px 6px",
     margin: "0 5px",
-    borderRadius: "4px",
+    borderRadius: "6px",
     border: "1px solid #ccc"
   },
   button: (active) => ({

@@ -40,7 +40,7 @@ const styles = {
     alignItems: "center",
     flexWrap: "wrap",
     gap: 12,
-    marginBottom: 12
+    marginBottom: 2
   },
   labelText: {
     fontWeight: 600,
@@ -51,18 +51,37 @@ const styles = {
   },
   input: {
     flex: 1,
+    marginTop: 4,
     padding: "6px 10px",
     borderRadius: 4,
     border: "1px solid #ccc",
     fontSize: 14
   },
-  checkboxLabel: {
+  // checkboxLabel: {
+  //   display: "flex",
+  //   alignItems: "center",
+  //   fontSize: 17,
+  //   color: "#444",
+  //   gap: 8,
+  //   marginBottom: 8
+  // },
+ buttonContainer: {
     display: "flex",
     alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+  toggleButton: {
+    padding: "6px 16px",
+    fontSize: 16,
+    border: "1px solid",
+    borderRadius: 6,
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+  },
+  labelText: {
     fontSize: 17,
     color: "#444",
-    gap: 8,
-    marginBottom: 8
   },
   note: {
     fontSize: 13,
@@ -72,15 +91,18 @@ const styles = {
     lineHeight: 1.5
   },
   optionButton: (isSelected) => ({
-    marginRight: 4,
-    marginBottom: 3,
+    marginRight: 3,
+    marginBottom: 0,
     cursor: "pointer",
-    padding: "6px 12px",
+    padding: "6px 6px",
     borderRadius: "10px",
     border: "1px solid",
-    borderColor: isSelected ? "green" : "gray",
-    backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
-    color: isSelected ? "green" : "gray",
+    borderColor: isSelected ? "green" : "#999",
+    backgroundColor: isSelected ? "#e0f6e9" : "#f0f0f0",
+    color: isSelected ? "green" : "#333",
+    // borderColor: isSelected ? "green" : "gray",
+    // backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
+    // color: isSelected ? "green" : "gray",
     display: "inline-block",
     fontWeight: isSelected ? "bold" : "normal",
     transition: "all 0.3s ease"
@@ -305,14 +327,30 @@ const FollowupPlan = ({ setFormData }) => {
           />
         </div>
 
-        <label style={styles.checkboxLabel}>
+        {/* <label style={styles.checkboxLabel}>
           <input
             type="checkbox"
             checked={pillCount}
             onChange={() => setPillCount(!pillCount)}
           />
           Will order pill count and U-Tox Screen
-        </label>
+        </label> */}
+        <div style={styles.buttonContainer}>
+          <button
+            style={{
+              ...styles.toggleButton,
+              backgroundColor: pillCount ? "#dc2626" : "#16a34a", // red for remove, green for add
+              color: "#fff",
+              borderColor: pillCount ? "#dc2626" : "#16a34a"
+            }}
+            onClick={() => setPillCount(!pillCount)}
+          >
+            {pillCount ? "Remove" : "Add"}
+          </button>
+          <span style={styles.labelText}>
+            Will order pill count and U-Tox Screen
+          </span>
+        </div>
 
         <div style={styles.inlineGroup}>
           <span style={styles.labelText}>PT Eval & Tx for:</span>
