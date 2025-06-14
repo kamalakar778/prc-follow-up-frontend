@@ -27,7 +27,7 @@ const responsiveStyles = `
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 950,
+    maxWidth: 1200,
     margin: "10px auto",
     padding: "0.5rem",
     // backgroundColor: "#fff",
@@ -65,7 +65,7 @@ const styles = {
     padding: "6px",
     borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "14px"
+    fontSize: "15px"
   },
   input: {
     width: "140px",
@@ -73,7 +73,7 @@ const styles = {
     padding: "6px 6px",
     borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "14px",
+    fontSize: "16px",
     margin: "6px"
   },
   select: {
@@ -99,7 +99,7 @@ const styles = {
     borderRadius: "4px",
     border: "none",
     fontWeight: "bold",
-    fontSize: "14px",
+    fontSize: "16px",
     cursor: "pointer",
     backgroundColor: "#3498db",
     color: "#fff",
@@ -118,7 +118,7 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.2s ease",
     display: "inline-block",
-    fontSize: "13px"
+    fontSize: "15px"
   })
 };
 

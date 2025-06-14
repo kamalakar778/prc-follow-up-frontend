@@ -1,4 +1,3 @@
-// MedicationManagement.jsx
 import React, { useState, useEffect, useContext } from "react";
 import ShortcutMedicationSection from "../components/ShortcutMedicationSection";
 import { MedicationContext } from "../components/context/MedicationContext";
@@ -6,7 +5,7 @@ import { MedicationContext } from "../components/context/MedicationContext";
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 1400,
+    maxWidth: 1000,
     margin: "0 auto",
     padding: 16,
     backgroundColor: "#f9f9f9",
@@ -33,7 +32,7 @@ const styles = {
     alignItems: "center",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: "0.75rem"
+    marginBottom: "-0.5rem"
   },
   input: {
     padding: "6px 8px",
@@ -54,22 +53,6 @@ const styles = {
     cursor: "pointer",
     textDecoration: "underline",
     fontSize: 13
-  },
-  dosageButtons: {
-    display: "flex",
-    backgroundColor: "#F5F5F5",
-    gap: 8,
-    flexWrap: "wrap",
-    margin: "4px 0 12px 0"
-  },
-  dosageButton: {
-    padding: "4px 10px",
-    borderRadius: 1,
-    border: "1px solid #888",
-    backgroundColor: "#808080",
-    cursor: "pointer",
-    fontSize: 13,
-    color: "#fff"
   }
 };
 
@@ -92,14 +75,13 @@ const defaultMedication = {
 const MedicationManagement = ({ setMedicationListData = () => {} }) => {
   const [selectedReason, setSelectedReason] = useState(null);
   const [medications, setMedications] = useState([defaultMedication]);
-  const [activeDosageIndex, setActiveDosageIndex] = useState(null);
 
   const {
+    medicationInput,
+    setMedicationInput,
     medicationSelected,
     flatMedications,
-    setMedicationSelected,
-    predefinedDosages,
-    setAddMedication
+    setMedicationSelected
   } = useContext(MedicationContext);
 
   const handleReasonChange = (e) => {
@@ -110,13 +92,15 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
   const handleMedicationChange = (index, field, value) => {
     const updated = [...medications];
     updated[index] = { ...updated[index], [field]: value };
-    setMedications(updated);
 
     const isLast = index === medications.length - 1;
     const isFilled = Object.values(updated[index]).some((v) => v?.toString().trim() !== "");
+
     if (isLast && isFilled) {
-      setMedications([...updated, defaultMedication]);
+      updated.push(defaultMedication);
     }
+
+    setMedications(updated);
   };
 
   const handleRemoveMedication = (index) => {
@@ -124,13 +108,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
     setMedications(updated.length > 0 ? updated : [defaultMedication]);
   };
 
-  const handleDosageClick = (index, dosage) => {
-    const updated = [...medications];
-    const baseName = updated[index].name.split(" ")[0];
-    updated[index].name = `${baseName} ${dosage}`;
-    setMedications(updated);
-  };
-
+  // Apply selected shortcuts from context
   useEffect(() => {
     if (medicationSelected.size > 0) {
       const newMeds = Array.from(medicationSelected).map((key) => ({
@@ -143,11 +121,22 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
       });
       setMedicationSelected(new Set());
     }
-  }, [medicationSelected, flatMedications, setMedicationSelected]);
+  }, [medicationSelected]);
 
+  // Watch for medicationInput updates and push it as a medication
+  useEffect(() => {
+    if (medicationInput.trim()) {
+      setMedications((prev) => {
+        const filtered = prev.filter((med) => med.name.trim() !== "");
+        return [...filtered, { ...defaultMedication, name: medicationInput }, defaultMedication];
+      });
+      setMedicationInput(""); // Clear after processing
+    }
+  }, [medicationInput]);
+
+  // Generate output text
   useEffect(() => {
     const reasonText = medicationReasons.find((r) => r.id === selectedReason)?.text || "";
-
     const medicationLines = medications
       .filter((med) => med.name.trim())
       .map((med, idx) => {
@@ -165,16 +154,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
       : "";
 
     setMedicationListData(formattedText);
-  }, [selectedReason, medications, setMedicationListData]);
-
-  useEffect(() => {
-    setAddMedication(() => (value) => {
-      setMedications((prev) => {
-        const filtered = prev.filter((med) => med.name.trim() !== "");
-        return [...filtered, { ...defaultMedication, name: value }, defaultMedication];
-      });
-    });
-  }, [setAddMedication]);
+  }, [selectedReason, medications]);
 
   return (
     <div style={styles.container}>
@@ -196,92 +176,59 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
 
       <div style={{ marginTop: 16 }}>
         <label style={styles.label}>Medications:</label>
-        {medications.map((med, index) => {
-          const medKey = med.name.split(" ")[0]?.toLowerCase();
-          const dosages = predefinedDosages[medKey] || [];
+        {medications.map((med, index) => (
+          <div key={index} style={styles.medicationRow}>
+            <select
+              value={med.status}
+              onChange={(e) => handleMedicationChange(index, "status", e.target.value)}
+              style={{ ...styles.select, minWidth: 120 }}
+            >
+              <option value="">-- Select --</option>
+              <option value="Continue">Continue</option>
+              <option value="Start">Start</option>
+              <option value="Change">Change</option>
+              <option value="Later">Later</option>
+              <option value="Start next visit">Start next visit</option>
+              <option value="D/C">D/C</option>
+              <option value="hold">hold</option>
+            </select>
 
-          return (
-            <div key={index}>
-              <div style={styles.medicationRow}>
-                <select
-                  value={med.status}
-                  onChange={(e) => handleMedicationChange(index, "status", e.target.value)}
-                  style={{ ...styles.select, minWidth: 10 }}
-                >
-                  <option value="">-- Select --</option>
-                  <option value="Continue">Continue</option>
-                  <option value="Start">Start</option>
-                  <option value="Change">Change</option>
-                  <option value="Later">Later</option>
-                  <option value="Start next visit">Start next visit</option>
-                  <option value="D/C">D/C</option>
-                  <option value="hold">hold</option>
-                </select>
-
-                <input
-                  type="text"
-                  placeholder="Medication name"
-                  value={med.name}
-                  onChange={(e) => handleMedicationChange(index, "name", e.target.value)}
-                  onFocus={() => setActiveDosageIndex(index)}
-                  style={{ ...styles.input, ...styles.inputLarge }}
-                />
-
-                <input
-                  type="text"
-                  placeholder="# Days"
-                  value={med.days}
-                  onChange={(e) => handleMedicationChange(index, "days", e.target.value)}
-                  style={{ ...styles.input, ...styles.inputSmall }}
-                />
-
-                <input
-                  type="text"
-                  placeholder="% Relief"
-                  value={med.relief}
-                  onChange={(e) => handleMedicationChange(index, "relief", e.target.value)}
-                  style={{ ...styles.input, ...styles.inputSmall }}
-                />
-
-                {medications.length > 1 && index !== medications.length - 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveMedication(index)}
-                    style={styles.removeButton}
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-
-              {activeDosageIndex === index && dosages.length > 0 && med.name.trim() && (
-                <div style={styles.dosageButtons}>
-                  {dosages.map((dose, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => handleDosageClick(index, dose)}
-                      style={styles.dosageButton}
-                    >
-                      {dose}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            <input
+              type="text"
+              placeholder="Medication name"
+              value={med.name}
+              onChange={(e) => handleMedicationChange(index, "name", e.target.value)}
+              style={{ ...styles.input, ...styles.inputLarge }}
+            />
+            <input
+              type="text"
+              placeholder="# Days"
+              value={med.days}
+              onChange={(e) => handleMedicationChange(index, "days", e.target.value)}
+              style={{ ...styles.input, ...styles.inputSmall }}
+            />
+            <input
+              type="text"
+              placeholder="% Relief"
+              value={med.relief}
+              onChange={(e) => handleMedicationChange(index, "relief", e.target.value)}
+              style={{ ...styles.input, ...styles.inputSmall }}
+            />
+            {medications.length > 1 && index !== medications.length - 1 && (
+              <button
+                type="button"
+                onClick={() => handleRemoveMedication(index)}
+                style={styles.removeButton}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
       </div>
 
-      <div
-        style={{
-          padding: "16px",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          marginTop: "20px"
-        }}
-      >
-        <h2>Medication Management</h2>
+      <div style={{ padding: "16px", border: "1px solid #ccc", borderRadius: "8px", marginTop: "20px" }}>
+        <h2 style={{ marginBottom: "12px" }}>💊 Medication Shortcuts</h2>
         <ShortcutMedicationSection />
       </div>
     </div>

@@ -1,4 +1,3 @@
-// MedicationManagement.jsx
 import React, { useState, useEffect, useContext } from "react";
 import ShortcutMedicationSection from "../components/ShortcutMedicationSection";
 import { MedicationContext } from "../components/context/MedicationContext";
@@ -6,7 +5,7 @@ import { MedicationContext } from "../components/context/MedicationContext";
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 1400,
+    maxWidth: 1000,
     margin: "0 auto",
     padding: 16,
     backgroundColor: "#f9f9f9",
@@ -58,18 +57,20 @@ const styles = {
   dosageButtons: {
     display: "flex",
     backgroundColor: "#F5F5F5",
+
     gap: 8,
     flexWrap: "wrap",
     margin: "4px 0 12px 0"
   },
   dosageButton: {
     padding: "4px 10px",
-    borderRadius: 1,
+    borderRadius: 4,
     border: "1px solid #888",
     backgroundColor: "#808080",
+
+    // backgroundColor: "#fff",
     cursor: "pointer",
-    fontSize: 13,
-    color: "#fff"
+    fontSize: 13
   }
 };
 
@@ -98,8 +99,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
     medicationSelected,
     flatMedications,
     setMedicationSelected,
-    predefinedDosages,
-    setAddMedication
+    predefinedDosages
   } = useContext(MedicationContext);
 
   const handleReasonChange = (e) => {
@@ -126,8 +126,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
 
   const handleDosageClick = (index, dosage) => {
     const updated = [...medications];
-    const baseName = updated[index].name.split(" ")[0];
-    updated[index].name = `${baseName} ${dosage}`;
+    updated[index].name = `${updated[index].name.split(" ")[0]} ${dosage}`;
     setMedications(updated);
   };
 
@@ -147,7 +146,6 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
 
   useEffect(() => {
     const reasonText = medicationReasons.find((r) => r.id === selectedReason)?.text || "";
-
     const medicationLines = medications
       .filter((med) => med.name.trim())
       .map((med, idx) => {
@@ -166,15 +164,6 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
 
     setMedicationListData(formattedText);
   }, [selectedReason, medications, setMedicationListData]);
-
-  useEffect(() => {
-    setAddMedication(() => (value) => {
-      setMedications((prev) => {
-        const filtered = prev.filter((med) => med.name.trim() !== "");
-        return [...filtered, { ...defaultMedication, name: value }, defaultMedication];
-      });
-    });
-  }, [setAddMedication]);
 
   return (
     <div style={styles.container}>
@@ -206,7 +195,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
                 <select
                   value={med.status}
                   onChange={(e) => handleMedicationChange(index, "status", e.target.value)}
-                  style={{ ...styles.select, minWidth: 10 }}
+                  style={{ ...styles.select, minWidth: 120 }}
                 >
                   <option value="">-- Select --</option>
                   <option value="Continue">Continue</option>
@@ -254,7 +243,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
                 )}
               </div>
 
-              {activeDosageIndex === index && dosages.length > 0 && med.name.trim() && (
+              {activeDosageIndex === index && dosages.length > 0 && (
                 <div style={styles.dosageButtons}>
                   {dosages.map((dose, i) => (
                     <button

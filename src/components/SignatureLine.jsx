@@ -82,7 +82,8 @@ const SignatureLine = ({ onChange }) => {
       "Twelve weeks",
       "Several weeks after procedure",
       "Yet to be determined",
-      "Discharge"
+      "Discharge",
+      "p.r.n",
     ],
     []
   );

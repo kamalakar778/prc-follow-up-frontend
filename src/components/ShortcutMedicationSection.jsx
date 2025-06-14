@@ -1,283 +1,264 @@
-// src/components/ShortcutMedicationSection.jsx
 import React, { useContext, useState } from "react";
 import { MedicationContext } from "../components/context/MedicationContext";
 
 const styles = {
-  section: {
-    marginBottom: "12px",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
-    backgroundColor: "#f9f9f9",
-  },
-  horizontalLayout: {
-    display: "flex",
-    gap: "16px",
-    alignItems: "flex-start",
-    flexWrap: "nowrap",
-  },
-  leftPanel: {
+  wrapper: {
     display: "flex",
     flexDirection: "row",
+    flexWrap: "wrap",
+    padding: "12px",
+    background: "#fff",
+    borderRadius: "12px",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    marginBottom: "6px",
     gap: "12px",
-    maxHeight: "400px",
-    overflowY: "auto",
-    overflowX: "hidden",
-    flexShrink: 0,
-    maxWidth: "70%",
+    alignItems: "flex-start",
+    overflow: "visible",
+  },
+  groupContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "0px",
+    flex: 1,
     alignItems: "flex-start",
   },
-  column: {
+  group: {
+    minWidth: "100px",
     display: "flex",
     flexDirection: "column",
+    gap: "4px",
+    flexShrink: 0,
   },
   groupLabel: {
-    fontWeight: "500",
-    fontSize: "14px",
-    marginBottom: "4px",
-    color: "#333",
-    textTransform: "capitalize",
-  },
-  button: {
-    padding: "4px 8px",
-    fontSize: "14px",
-    border: "1px solid #888",
-    borderRadius: "4px",
-    backgroundColor: "#F5F5F5",
-    color: "#333",
-    cursor: "pointer",
-    margin: "1px",
-  },
-  selectedButton: {
-    backgroundColor: "#E0F0FF",
-    fontSize: "14px",
-    color: "#0066cc",
-    borderColor: "#0066cc",
-  },
-  copyButton: {
-    backgroundColor: "#d4edda",
-    borderColor: "#c3e6cb",
-    color: "#155724",
-    marginTop: "22px",
-    minWidth: "70px",
-  },
-  addButton: {
-    backgroundColor: "#ffeeba",
-    borderColor: "#ffeeba",
-    color: "#856404",
-    marginTop: "6px",
-    minWidth: "70px",
-  },
-  resetButton: {
-    backgroundColor: "#f8d7da",
-    borderColor: "#f5c6cb",
-    color: "#721c24",
-    marginTop: "6px",
-    minWidth: "70px",
-  },
-  copyAllButton: {
-    backgroundColor: "#cce5ff",
-    borderColor: "#b8daff",
-    color: "#004085",
-    marginTop: "8px",
-    minWidth: "160px",
-    alignSelf: "flex-start",
-  },
-  previewBox: {
-    padding: "8px",
-    border: "1px dashed #aaa",
-    borderRadius: "6px",
-    backgroundColor: "#fcfcfc",
-    color: "#333",
-    fontSize: "13px",
-    minWidth: "250px",
-    maxWidth: "300px",
-    flexShrink: 0,
-    height: "fit-content",
-  },
-  previewLabel: {
     fontWeight: "bold",
-    marginBottom: "6px",
+    fontSize: "13px",
+    marginBottom: "4px",
+    color: "#34495e",
+    borderBottom: "1px solid #ccc",
+    paddingBottom: "2px",
+    textTransform: "uppercase",
   },
-  previewItem: {
-    display: "inline-block",
-    padding: "4px 8px",
-    margin: "4px",
-    border: "1px solid #aaa",
+  medRow: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "4px",
+    marginBottom: "2px",
+  },
+  medButton: {
+    background: "#ecf0f1",
+    border: "1px solid #ccc",
+    borderRadius: "6px",
+    padding: "2px 4px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: 500,
+    whiteSpace: "nowrap",
+    transition: "all 0.2s ease-in-out",
+    margin: "0px -10px",
+  },
+  medButtonActive: {
+    background: "#3498db",
+    color: "#fff",
+    fontWeight: "600",
+    border: "1px solid #2980b9",
+  },
+  dosageContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "2px",
+    marginTop: "2px",
+    maxWidth: "100%",
+  },
+  dosageButton: {
+    padding: "2px 4px",
+    fontSize: "13px",
     borderRadius: "4px",
+    background: "#f0f0f0",
+    border: "1px solid #ccc",
     cursor: "pointer",
-    backgroundColor: "#f0f0f0",
-    color: "#333",
+    whiteSpace: "nowrap",
+    boxShadow: "0 1px 1px rgba(0,0,0,0.03)",
+    margin: "0",
+    transition: "background 0.2s ease",
   },
-  previewDisabled: {
-    textDecoration: "line-through",
-    opacity: 0.6,
-    backgroundColor: "#e2e2e2",
-    color: "#999",
-    borderColor: "#ccc",
+  dosageButtonActive: {
+    background: "#2ecc71",
+    color: "#fff",
+    border: "1px solid #27ae60",
+  },
+  actionPanel: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    minWidth: "70px",
+    marginLeft: "8px",
+  },
+  actionButton: {
+    padding: "6px 8px",
+    borderRadius: "6px",
+    border: "none",
     cursor: "pointer",
+    fontSize: "12px",
+    fontWeight: "600",
   },
-};
-
-const directionWords = ["left", "right", "upper", "lower", "bilateral", "medial", "lateral"];
-
-const formatWithOptionalComma = (text) => {
-  return directionWords.includes(text.toLowerCase()) ? text : `${text},`;
+  copy: {
+    background: "#d1f7c4",
+    color: "#2d6a4f",
+  },
+  add: {
+    background: "#ffeaa7",
+    color: "#6c5b07",
+  },
+  reset: {
+    background: "#f8d7da",
+    color: "#721c24",
+  },
 };
 
 const ShortcutMedicationSection = () => {
   const {
     groupedMedications,
     flatMedications,
-    medicationSelected,
-    setMedicationSelected,
+    predefinedDosages,
+    addMedication,
+    medicationList,
   } = useContext(MedicationContext);
 
-  const [multiCopyBuffer, setMultiCopyBuffer] = useState([]);
+  const [selectedMeds, setSelectedMeds] = useState(new Set());
+  const [selectedDosages, setSelectedDosages] = useState({});
+  const [copied, setCopied] = useState(false);
+  const [added, setAdded] = useState(false);
 
-  const handleCopySelected = () => {
-    const copied = [...medicationSelected]
-      .map((k) => flatMedications[k])
-      .map(formatWithOptionalComma)
-      .join(" ")
-      .trim();
+  const toggleMed = (abbr) => {
+    setSelectedMeds((prev) => {
+      const next = new Set(prev);
+      next.has(abbr) ? next.delete(abbr) : next.add(abbr);
+      return next;
+    });
+  };
 
-    if (copied) {
-      navigator.clipboard.writeText(copied);
-      setMedicationSelected(new Set());
+  const toggleDosage = (abbr, dose) => {
+    setSelectedDosages((prev) => ({
+      ...prev,
+      [abbr]: prev[abbr] === dose ? null : dose,
+    }));
+  };
+
+  const handleCopy = () => {
+    const text = [...selectedMeds]
+      .map((abbr) => {
+        const label = flatMedications[abbr];
+        const dose = selectedDosages[abbr];
+        return dose ? `${label} ${dose}` : label;
+      })
+      .join(", ");
+
+    if (text) {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setSelectedMeds(new Set());         // Reset meds
+      setSelectedDosages({});             // Reset dosages
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  const handleAddToBuffer = () => {
-    const selectedValues = [...medicationSelected]
-      .map((k) => flatMedications[k])
-      .map(formatWithOptionalComma);
+  const handleAdd = () => {
+    const entry = [...selectedMeds]
+      .map((abbr) => {
+        const label = flatMedications[abbr];
+        const dose = selectedDosages[abbr];
+        return dose ? `${label} ${dose}` : label;
+      })
+      .join(", ");
 
-    if (selectedValues.length) {
-      const newGroup = selectedValues.map((text) => ({ text, enabled: true }));
-      setMultiCopyBuffer((prev) => [...prev, newGroup]);
-      setMedicationSelected(new Set());
+    if (!entry) return;
+
+    const alreadyExists =
+      Array.isArray(medicationList) &&
+      medicationList.some(
+        (med) => med.trim().toLowerCase() === entry.trim().toLowerCase()
+      );
+
+    if (!alreadyExists && typeof addMedication === "function") {
+      addMedication(entry.trim());
     }
-  };
 
-  const handleCopyMultiple = () => {
-    const enabledGroups = multiCopyBuffer
-      .map((group) => group.filter((item) => item.enabled).map((item) => item.text).join(" "))
-      .filter((text) => text !== "");
-
-    if (enabledGroups.length) {
-      navigator.clipboard.writeText(enabledGroups.join(" | "));
-      setMultiCopyBuffer([]);
-    }
+    setAdded(true);
+    setSelectedMeds(new Set());
+    setSelectedDosages({});
+    setTimeout(() => setAdded(false), 2000);
   };
 
   const handleReset = () => {
-    setMedicationSelected(new Set());
-    setMultiCopyBuffer([]);
-  };
-
-  const togglePreviewItem = (groupIndex, itemIndex) => {
-    setMultiCopyBuffer((prev) =>
-      prev.map((group, gIdx) =>
-        gIdx === groupIndex
-          ? group.map((item, iIdx) =>
-              iIdx === itemIndex ? { ...item, enabled: !item.enabled } : item
-            )
-          : group
-      )
-    );
+    setSelectedMeds(new Set());
+    setSelectedDosages({});
+    setCopied(false);
+    setAdded(false);
   };
 
   return (
-    <div style={styles.section}>
-      <div style={styles.horizontalLayout}>
-        <div style={styles.leftPanel}>
-          {Object.entries(groupedMedications ?? {}).map(([groupLabel, group]) => (
-            <div key={groupLabel} style={styles.column}>
-              <div style={styles.groupLabel}>{groupLabel}</div>
-              {Object.entries(group).map(([abbr, fullLabel]) => {
-                const isSelected = medicationSelected.has(abbr);
-                return (
-                  <button
-                    key={abbr}
-                    type="button"
-                    style={{
-                      ...styles.button,
-                      ...(isSelected ? styles.selectedButton : {}),
-                    }}
-                    title={fullLabel}
-                    onClick={() => {
-                      setMedicationSelected((prev) => {
-                        const updated = new Set(prev);
-                        updated.has(abbr) ? updated.delete(abbr) : updated.add(abbr);
-                        return updated;
-                      });
-                    }}
-                  >
-                    {abbr}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-          <div style={styles.column}>
-            <button
-              type="button"
-              style={{ ...styles.button, ...styles.copyButton }}
-              onClick={handleCopySelected}
-            >
-              📋 Copy
-            </button>
-            <button
-              type="button"
-              style={{ ...styles.button, ...styles.addButton }}
-              onClick={handleAddToBuffer}
-            >
-              ➕ Add
-            </button>
-            <button
-              type="button"
-              style={{ ...styles.button, ...styles.resetButton }}
-              onClick={handleReset}
-            >
-              🔄 Reset
-            </button>
-          </div>
-        </div>
-
-        <div style={styles.previewBox}>
-          {multiCopyBuffer.length > 0 && (
-            <>
-              <div style={styles.previewLabel}>📝 Preview Added:</div>
-              <div>
-                {multiCopyBuffer.map((group, groupIndex) => (
-                  <div key={groupIndex} style={{ marginBottom: "8px" }}>
-                    {group.map((item, itemIndex) => (
-                      <span
-                        key={itemIndex}
-                        style={{
-                          ...styles.previewItem,
-                          ...(item.enabled ? {} : styles.previewDisabled),
-                        }}
-                        title={item.enabled ? "Click to disable" : "Click to enable"}
-                        onClick={() => togglePreviewItem(groupIndex, itemIndex)}
-                      >
-                        {item.text}
-                      </span>
-                    ))}
-                  </div>
-                ))}
+    <div style={styles.wrapper}>
+      <div style={styles.groupContainer}>
+        {Object.entries(groupedMedications ?? {}).map(([group, items]) => (
+          <div key={group} style={styles.group}>
+            <div style={styles.groupLabel}>{group}</div>
+            {Object.entries(items).map(([abbr, label]) => (
+              <div key={abbr} style={styles.medRow}>
+                <button
+                  style={{
+                    ...styles.medButton,
+                    ...(selectedMeds.has(abbr) ? styles.medButtonActive : {}),
+                  }}
+                  onClick={() => toggleMed(abbr)}
+                  title={label}
+                >
+                  {abbr}
+                </button>
+                {selectedMeds.has(abbr) &&
+                  predefinedDosages?.[abbr]?.length > 0 && (
+                    <div style={styles.dosageContainer}>
+                      {predefinedDosages[abbr].map((dose) => (
+                        <button
+                          key={dose}
+                          style={{
+                            ...styles.dosageButton,
+                            ...(selectedDosages[abbr] === dose
+                              ? styles.dosageButtonActive
+                              : {}),
+                          }}
+                          onClick={() => toggleDosage(abbr, dose)}
+                        >
+                          {dose}
+                        </button>
+                      ))}
+                    </div>
+                  )}
               </div>
-              <button
-                type="button"
-                style={{ ...styles.button, ...styles.copyAllButton }}
-                onClick={handleCopyMultiple}
-              >
-                📁 Copy All
-              </button>
-            </>
-          )}
-        </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div style={styles.actionPanel}>
+        <button
+          style={{ ...styles.actionButton, ...styles.copy }}
+          onClick={handleCopy}
+        >
+          📋 {copied ? "Copied!" : "Copy"}
+        </button>
+        <button
+          style={{ ...styles.actionButton, ...styles.add }}
+          onClick={handleAdd}
+        >
+          ➕ {added ? "Added!" : "Add"}
+        </button>
+        <button
+          style={{ ...styles.actionButton, ...styles.reset }}
+          onClick={handleReset}
+        >
+          🔄 Reset
+        </button>
       </div>
     </div>
   );

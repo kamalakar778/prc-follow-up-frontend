@@ -10,92 +10,32 @@ const directionOptions = [
 ];
 
 const injectionSet1 = [
-  {
-    direction: true,
-    label: "lumbar medial branch blocks at",
-    levels: ["L3/4, L4/5, L5/S1", ""]
-  },
-  {
-    direction: true,
-    label: "radiofrequency ablation at",
-    levels: ["L3/4, L4/5, L5/S1", ""]
-  },
-  {
-    direction: true,
-    label: "cervical medial branch blocks at",
-    levels: ["C5/6, C6/7, C7/T1", ""]
-  },
-  {
-    direction: true,
-    label: "radiofrequency ablation at",
-    levels: ["C5/6, C6/7, C7/T1", "",]
-  },
+  { direction: true, label: "lumbar medial branch blocks at", levels: ["L3/4, L4/5, L5/S1", ""] },
+  { direction: true, label: "radiofrequency ablation at", levels: ["L3/4, L4/5, L5/S1", ""] },
+  { direction: true, label: "cervical medial branch blocks at", levels: ["C5/6, C6/7, C7/T1", ""] },
+  { direction: true, label: "radiofrequency ablation at", levels: ["C5/6, C6/7, C7/T1", ""] },
   {
     label: "thoracic medial branch blocks at",
-    levels: [
-      "T2/3, T3/4, and T4/5",
-      "T5/6, T6/7, and T7/8",
-      "T9/10, T10/11, and T11/12",
-      ""
-    ],
+    levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12", ""],
     direction: true
   },
   {
     label: "radiofrequency ablation at",
-    levels: [
-      "T2/3, T3/4, and T4/5",
-      "T5/6, T6/7, and T7/8",
-      "T9/10, T10/11, and T11/12",
-      ""
-    ],
+    levels: ["T2/3, T3/4, and T4/5", "T5/6, T6/7, and T7/8", "T9/10, T10/11, and T11/12", ""],
     direction: true
   }
 ];
 
 const injectionSet2 = [
-  {
-    label: "midline epidural steroid injection at",
-    levels: [],
-    direction: false
-  },
+  { label: "midline epidural steroid injection at", levels: [], direction: false },
   { label: "midline caudal block", levels: [], direction: false },
   { label: "TFESI at", levels: [], direction: true, directionAfter: true },
-  {
-    label: "SIJ Injection at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
-  {
-    label: "hip injection (intra-articularly) at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
-  {
-    label: "trochanteric bursa hip injection at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
-  {
-    label: "knee injection (intra-articularly) at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
-  {
-    label: "subacromial shoulder injection at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
-  {
-    label: "shoulder injection (intra-articularly) at",
-    levels: [],
-    direction: true,
-    directionAfter: true
-  },
+  { label: "SIJ Injection at", levels: [], direction: true, directionAfter: true },
+  { label: "hip injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
+  { label: "trochanteric bursa hip injection at", levels: [], direction: true, directionAfter: true },
+  { label: "knee injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
+  { label: "subacromial shoulder injection at", levels: [], direction: true, directionAfter: true },
+  { label: "shoulder injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
   { label: "SCS trial lumbar at", levels: [], direction: false },
   { label: "SCS implantation lumbar at", levels: [], direction: false },
   { label: "trigger point injection at", levels: [], direction: false }
@@ -182,15 +122,15 @@ const InjectionsList = ({ onInjectionChange }) => {
   const [injections, setInjections] = useState(getInitialInjections);
   const [addCounter, setAddCounter] = useState(0);
 
-  const isInjectionFilled = (inj) =>
-    (inj.label && inj.label.trim() !== "") ||
-    (inj.directionSelected && inj.directionSelected.trim() !== "") ||
-    (inj.selectedLevel && inj.selectedLevel.trim() !== "") ||
-    (inj.notes && inj.notes.trim() !== "");
-
   const ensureEmptyInjectionAtEnd = (list) => {
     const last = list[list.length - 1];
-    if (last && isInjectionFilled(last)) {
+    const isFilled =
+      last?.label?.trim() ||
+      last?.directionSelected?.trim() ||
+      last?.selectedLevel?.trim() ||
+      last?.notes?.trim();
+
+    if (isFilled) {
       return [
         ...list,
         {
@@ -223,14 +163,10 @@ const InjectionsList = ({ onInjectionChange }) => {
 
   const toggleIncluded = (index) => {
     const updated = [...injections];
-    if (!updated[index].included) {
-      updated[index].included = true;
-      updated[index].addedOrder = addCounter;
-      setAddCounter((prev) => prev + 1);
-    } else {
-      updated[index].included = false;
-      updated[index].addedOrder = null;
-    }
+    const inj = updated[index];
+    inj.included = !inj.included;
+    inj.addedOrder = inj.included ? addCounter : null;
+    if (inj.included) setAddCounter((prev) => prev + 1);
     setInjections(ensureEmptyInjectionAtEnd(updated));
   };
 
@@ -242,11 +178,34 @@ const InjectionsList = ({ onInjectionChange }) => {
       updated.forEach((inj, i) => {
         if (i === index) {
           inj.timing = value;
-          if (value === "Now schedule") inj.included = true;
+          if (value === "Now schedule" || value === "Later schedule") {
+            if (!inj.included) {
+              inj.included = true;
+              if (inj.addedOrder === null) {
+                inj.addedOrder = addCounter;
+                setAddCounter((prev) => prev + 1);
+              }
+            }
+          }
         } else if (value === "Now schedule") {
           inj.timing = "Later schedule";
         }
       });
+    } else {
+      const inj = updated[index];
+      const shouldInclude =
+        inj.label?.trim() ||
+        inj.directionSelected?.trim() ||
+        inj.selectedLevel?.trim() ||
+        inj.notes?.trim();
+
+      if (shouldInclude && !inj.included) {
+        inj.included = true;
+        if (inj.addedOrder === null) {
+          inj.addedOrder = addCounter;
+          setAddCounter((prev) => prev + 1);
+        }
+      }
     }
 
     setInjections(ensureEmptyInjectionAtEnd(updated));
@@ -255,6 +214,7 @@ const InjectionsList = ({ onInjectionChange }) => {
   const removeFromPreview = (index) => {
     const updated = [...injections];
     updated[index].included = false;
+    updated[index].addedOrder = null;
     setInjections(ensureEmptyInjectionAtEnd(updated));
   };
 

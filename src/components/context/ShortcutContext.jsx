@@ -17,6 +17,8 @@ export const ShortcutProvider = ({ children }) => {
     "frequent pain":{
         "low back": "low back",
         neck: "neck",
+        hip: "hip",
+        shoulder: "shoulder",
 
     },
     spine: {
@@ -27,6 +29,8 @@ export const ShortcutProvider = ({ children }) => {
     joints: {
       knee: "knee",
       hip: "hip",
+      hand: "hand",
+      wrist: "wrist",
     },
     other: {
       abdomen: "abdomen",

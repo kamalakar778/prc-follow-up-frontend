@@ -1,5 +1,6 @@
+// src/components/ShortcutMedicationSection.jsx
 import React, { useContext, useState } from "react";
-import { ShortcutContext } from "../components/context/ShortcutContext";
+import { MedicationContext } from "../components/context/MedicationContext";
 
 const styles = {
   section: {
@@ -38,7 +39,7 @@ const styles = {
     textTransform: "capitalize",
   },
   button: {
-    padding: "4px 8px",
+    padding: "4px 10px",
     fontSize: "14px",
     border: "1px solid #888",
     borderRadius: "4px",
@@ -50,7 +51,6 @@ const styles = {
   selectedButton: {
     backgroundColor: "#E0F0FF",
     fontSize: "14px",
-
     color: "#0066cc",
     borderColor: "#0066cc",
   },
@@ -119,69 +119,58 @@ const styles = {
   },
 };
 
-const directionWords = ["left", "right", "upper", "lower", "bilateral", "medial", "lateral"];
-
 const formatWithOptionalComma = (text) => {
   return directionWords.includes(text.toLowerCase()) ? text : `${text},`;
 };
 
-const ShortcutSection = ({ type }) => {
+const ShortcutMedicationSection = () => {
   const {
-    groupedPainLocation,
-    painSelected,
-    setPainSelected,
-    abbrSelected,
-    setAbbrSelected,
-    abbreviations,
-  } = useContext(ShortcutContext);
+    groupedMedications,
+    flatMedications,
+    medicationSelected,
+    setMedicationSelected,
+  } = useContext(MedicationContext);
 
-  const isPain = type === "pain";
-  const entries = isPain ? groupedPainLocation : { Abbreviations: abbreviations };
-  const selectedSet = isPain ? painSelected : abbrSelected;
-  const setSelected = isPain ? setPainSelected : setAbbrSelected;
   const [multiCopyBuffer, setMultiCopyBuffer] = useState([]);
 
-  const allEntries = isPain
-    ? Object.assign({}, ...Object.values(groupedPainLocation))
-    : abbreviations;
-
   const handleCopySelected = () => {
-    const copied = [...selectedSet]
-      .map((k) => allEntries[k])
+    const copied = [...medicationSelected]
+      .map((k) => flatMedications[k])
       .map(formatWithOptionalComma)
-      .join(" ").trim();
+      .join(" ")
+      .trim();
 
     if (copied) {
       navigator.clipboard.writeText(copied);
-      setSelected(new Set());
+      setMedicationSelected(new Set());
     }
   };
 
   const handleAddToBuffer = () => {
-    const selectedValues = [...selectedSet]
-      .map((k) => allEntries[k])
+    const selectedValues = [...medicationSelected]
+      .map((k) => flatMedications[k])
       .map(formatWithOptionalComma);
 
     if (selectedValues.length) {
       const newGroup = selectedValues.map((text) => ({ text, enabled: true }));
       setMultiCopyBuffer((prev) => [...prev, newGroup]);
-      setSelected(new Set());
+      setMedicationSelected(new Set());
     }
   };
 
-  const handleCopyMultipleComplaints = () => {
+  const handleCopyMultiple = () => {
     const enabledGroups = multiCopyBuffer
       .map((group) => group.filter((item) => item.enabled).map((item) => item.text).join(" "))
       .filter((text) => text !== "");
 
     if (enabledGroups.length) {
-      navigator.clipboard.writeText(enabledGroups.join(" "));
+      navigator.clipboard.writeText(enabledGroups.join(" | "));
       setMultiCopyBuffer([]);
     }
   };
 
   const handleReset = () => {
-    setSelected(new Set());
+    setMedicationSelected(new Set());
     setMultiCopyBuffer([]);
   };
 
@@ -201,37 +190,11 @@ const ShortcutSection = ({ type }) => {
     <div style={styles.section}>
       <div style={styles.horizontalLayout}>
         <div style={styles.leftPanel}>
-          {Object.entries(entries).map(([groupKey, group]) =>
-            isPain ? (
-              <div key={groupKey} style={styles.column}>
-                <div style={styles.groupLabel}>{groupKey}</div>
-                {Object.entries(group).map(([abbr, fullLabel]) => {
-                  const isSelected = selectedSet.has(abbr);
-                  return (
-                    <button
-                      key={abbr}
-                      type="button"
-                      style={{
-                        ...styles.button,
-                        ...(isSelected ? styles.selectedButton : {}),
-                      }}
-                      title={fullLabel}
-                      onClick={() => {
-                        setSelected((prev) => {
-                          const updated = new Set(prev);
-                          updated.has(abbr) ? updated.delete(abbr) : updated.add(abbr);
-                          return updated;
-                        });
-                      }}
-                    >
-                      {abbr}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              Object.entries(group).map(([abbr, fullLabel]) => {
-                const isSelected = selectedSet.has(abbr);
+          {Object.entries(groupedMedications ?? {}).map(([groupLabel, group]) => (
+            <div key={groupLabel} style={styles.column}>
+              <div style={styles.groupLabel}>{groupLabel}</div>
+              {Object.entries(group).map(([abbr, fullLabel]) => {
+                const isSelected = medicationSelected.has(abbr);
                 return (
                   <button
                     key={abbr}
@@ -242,7 +205,7 @@ const ShortcutSection = ({ type }) => {
                     }}
                     title={fullLabel}
                     onClick={() => {
-                      setSelected((prev) => {
+                      setMedicationSelected((prev) => {
                         const updated = new Set(prev);
                         updated.has(abbr) ? updated.delete(abbr) : updated.add(abbr);
                         return updated;
@@ -252,10 +215,9 @@ const ShortcutSection = ({ type }) => {
                     {abbr}
                   </button>
                 );
-              })
-            )
-          )}
-
+              })}
+            </div>
+          ))}
           <div style={styles.column}>
             <button
               type="button"
@@ -281,10 +243,10 @@ const ShortcutSection = ({ type }) => {
           </div>
         </div>
 
-        <div style={styles.previewBox}>
+        {/* <div style={styles.previewBox}>
           {multiCopyBuffer.length > 0 && (
             <>
-              <div style={styles.previewLabel}>📝 Preview Added Complaints:</div>
+              <div style={styles.previewLabel}>📝 Preview Added:</div>
               <div>
                 {multiCopyBuffer.map((group, groupIndex) => (
                   <div key={groupIndex} style={{ marginBottom: "8px" }}>
@@ -307,16 +269,16 @@ const ShortcutSection = ({ type }) => {
               <button
                 type="button"
                 style={{ ...styles.button, ...styles.copyAllButton }}
-                onClick={handleCopyMultipleComplaints}
+                onClick={handleCopyMultiple}
               >
-                📁 Copy All Complaints
+                📁 Copy All
               </button>
             </>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default ShortcutSection;
+export default ShortcutMedicationSection;
