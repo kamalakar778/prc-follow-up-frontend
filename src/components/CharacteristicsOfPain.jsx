@@ -4,7 +4,6 @@ import QualitativePainList from "./QualitativePainList";
 const baselineOptions = ["continuous", "no"];
 const exacerbationOptions = ["frequent", "no"];
 const workingStatusOptions = [
-  "no",
   "Full-time",
   "Part-time",
   "Self-employed",
@@ -32,7 +31,8 @@ const styles = {
     marginBottom: "8px",
     backgroundColor: "#f9f9f9",
     display: "flex",
-    flexWrap: "wrap"
+    flexDirection:"column"
+    // flexWrap: "wrap"
   },
   fullWidthInput: {
     width: "95%",
@@ -64,7 +64,7 @@ const styles = {
   },
   optionButton: (isSelected) => ({
     cursor: "pointer",
-    padding: "6px 12px",
+    padding: "6px 6px",
     borderRadius: "10px",
     border: "1px solid",
     borderColor: isSelected ? "green" : "gray",
@@ -86,8 +86,8 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
     selectedWorkingStatus: Array.isArray(formData.workingStatus)
       ? formData.workingStatus
       : formData.workingStatus
-      ? [formData.workingStatus]
-      : [],
+        ? [formData.workingStatus]
+        : [],
     customWorkingStatus: "",
     comments: ""
   });
@@ -200,8 +200,8 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
               {field === "withMeds"
                 ? "W/meds:"
                 : field === "withoutMeds"
-                ? "W/o meds:"
-                : `${field.charAt(0).toUpperCase() + field.slice(1)}:`}
+                  ? "W/o meds:"
+                  : `${field.charAt(0).toUpperCase() + field.slice(1)}:`}
               <input
                 type="text"
                 name={field}
@@ -235,33 +235,38 @@ const CharacteristicsOfPain = ({ formData, onUpdate }) => {
                   }}
                 >
                   {option}
+
                 </span>
+
               );
+
             })}
+            <label style={{ marginTop: "8px", width: "40%" }}>
+              <input
+                name="customWorkingStatus"
+                style={styles.fullWidthInput}
+                value={state.customWorkingStatus}
+                onChange={handleChange}
+                placeholder="Enter additional details..."
+                // rows={2}
+              />
+            </label>
           </div>
-          <label style={{ marginTop: "8px", width: "100%" }}>
-            <strong>Additional details: </strong>
-            <textarea
-              name="customWorkingStatus"
-              style={styles.fullWidthInput}
-              value={state.customWorkingStatus}
-              onChange={handleChange}
-              placeholder="Enter additional details..."
-              rows={2}
-            />
-          </label>
+
         </div>
       </div>
 
       <div style={{ ...styles.container, ...styles.fontCalibri }}>
-        <label>Comments: </label>
+        <label>Comments: 
+
         <input
           name="comments"
           style={styles.fullWidthInput}
           value={state.comments}
           onChange={handleChange}
           placeholder="Optional comments"
-        />
+          />
+          </label>
       </div>
     </div>
   );

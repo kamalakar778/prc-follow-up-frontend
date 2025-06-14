@@ -110,7 +110,7 @@ const styles = {
 };
 
 const FollowupPlan = ({ setFormData }) => {
-  const [nonComplianceSeverity, setNonComplianceSeverity] = useState("");
+  const [nonComplianceSeverity, setNonComplianceSeverity] = useState("____________");
   const [actionTaken, setActionTaken] = useState("");
   const [willOrderUDT, setWillOrderUDT] = useState(false);
   const [willNotOrderUDT, setWillNotOrderUDT] = useState(false);

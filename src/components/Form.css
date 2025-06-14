@@ -10,7 +10,7 @@ body {
   margin: 1.5rem auto;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  max-width: 1000px;
+  max-width: 1200px;
 }
 
 .section-title {
@@ -62,4 +62,36 @@ button:hover {
 .dark-mode .form-section {
   background-color: #1e1e1e;
   color: white;
+}
+
+.shortcut‑row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.shortcut‑row button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.shortcut‑row button:hover {
+  background-color: #e2e2e2;
+}
+
+.shortcut‑row button.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.section-title {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
 }

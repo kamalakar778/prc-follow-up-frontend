@@ -84,6 +84,7 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       fontSize: 14,
       lineHeight: "18px",
       backgroundColor: "#fafafa",
+      
       maxWidth: 1000
     },
     table: {
@@ -152,9 +153,9 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
       marginBottom: 6,
       fontSize: 13
     },
-    textarea: {
+    input: {
       width: "100%",
-      padding: "4px 6px",
+      padding: "10px 6px",
       border: "1px solid #ccc",
       borderRadius: 4,
       resize: "vertical",
@@ -281,10 +282,10 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         <option value="Same">Same</option>
                       </select>
                     </div>
-                    <textarea
+                    <input
                       rows={2}
                       name="weightloss_manual_comment"
-                      style={styles.textarea}
+                      style={styles.input}
                       placeholder="Additional comments (optional)"
                       value={formData.weightloss_manual_comment || ""}
                       onChange={(e) =>
@@ -383,10 +384,10 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
                         <option value="Completed">Completed</option>
                       </select>
                     </div>
-                    <textarea
+                    <input
                       rows={2}
                       name="pt_manual_comment"
-                      style={styles.textarea}
+                      style={styles.input}
                       placeholder="Additional comments (optional)"
                       value={formData.pt_manual_comment || ""}
                       onChange={(e) =>
@@ -423,10 +424,10 @@ const ComplianceWithTreatmentPlan = ({ formData = {}, setFormData }) => {
         <label htmlFor="complianceComments" style={{ fontWeight: 600 }}>
           Comments (compliance, MRI, X-Ray, etc):
         </label>
-        <textarea
+        <input
           rows={3}
           name="complianceComments"
-          style={styles.textarea}
+          style={styles.input}
           placeholder="Enter overall compliance comments here..."
           value={formData.complianceComments || ""}
           onChange={(e) =>

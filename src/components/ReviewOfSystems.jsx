@@ -29,7 +29,7 @@ const styles = {
     maxWidth: "100%",
     margin: "auto",
     padding: "0px",
-    fontFamily: "Arial, sans-serif"
+    fontFamily: "Arial, sans-serif", 
   },
   heading: {
     fontWeight: "bold",

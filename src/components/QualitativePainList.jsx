@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const options = [
+const row1 = [
   "Burning",
   "Stabbing",
   "Shooting",
@@ -8,6 +8,9 @@ const options = [
   "Numb",
   "Tingling",
   "localized",
+];
+
+const row2 = [
   "Dull",
   "Aching",
   "Throbbing",
@@ -16,7 +19,7 @@ const options = [
   "Deep",
   "Crampy",
   "Pressure",
-  "Squeezing"
+  "Squeezing",
 ];
 
 const itemStyle = (isSelected) => ({
@@ -37,19 +40,20 @@ const itemStyle = (isSelected) => ({
 const QualitativePainList = ({ formData = {}, updateFormData }) => {
   const [selectedOptions, setSelectedOptions] = useState(new Set());
 
-  // Initialize selected options from string if available
   useEffect(() => {
-    if (typeof formData.qualitativePain === "string" && selectedOptions.size === 0) {
+    if (
+      typeof formData.qualitativePain === "string" &&
+      selectedOptions.size === 0
+    ) {
       const values = formData.qualitativePain
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
-        .filter((v) => v !== "________________"); // ignore placeholder
+        .filter((v) => v !== "________________");
       setSelectedOptions(new Set(values));
     }
   }, [formData]);
 
-  // Send formatted string back to parent
   useEffect(() => {
     const value =
       selectedOptions.size === 0
@@ -66,28 +70,33 @@ const QualitativePainList = ({ formData = {}, updateFormData }) => {
     });
   };
 
+  const renderRow = (options) => (
+    <div style={{ display: "flex", flexWrap: "wrap", marginBottom: "10px" }}>
+      {options.map((option) => {
+        const isSelected = selectedOptions.has(option);
+        return (
+          <span
+            key={option}
+            style={itemStyle(isSelected)}
+            onClick={() => toggleOption(option)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === "Enter" || e.key === " ") toggleOption(option);
+            }}
+          >
+            {option}
+          </span>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div>
       <strong>Qualitatively it is:</strong>
-      <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap" }}>
-        {options.map((option) => {
-          const isSelected = selectedOptions.has(option);
-          return (
-            <span
-              key={option}
-              style={itemStyle(isSelected)}
-              onClick={() => toggleOption(option)}
-              role="button"
-              tabIndex={0}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" || e.key === " ") toggleOption(option);
-              }}
-            >
-              {option}
-            </span>
-          );
-        })}
-      </div>
+      {renderRow(row1)}
+      {renderRow(row2)}
     </div>
   );
 };

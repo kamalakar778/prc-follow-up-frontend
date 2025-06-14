@@ -193,7 +193,6 @@ const SignatureLine = ({ onChange }) => {
       marginBottom: 8
     },
     optionBtn: (selected) => ({
-      // display:"flex",
       flexDirection: "column",
       cursor: "pointer",
       padding: "5px 8px",
@@ -202,11 +201,6 @@ const SignatureLine = ({ onChange }) => {
       borderColor: selected ? "green" : "#999",
       backgroundColor: selected ? "#e0f6e9" : "#f0f0f0",
       color: selected ? "green" : "#333",
-      // backgroundColor: "#f0f0f0",
-      // backgroundColor: selected ? "#16a34a" : "#f0f0f0",
-      // color: selected ? "white" : "#333",
-      // borderColor: selected ? "green" : "#999",
-      
       marginRight: 0,
       marginLeft: 0,
       fontSize: 14,
@@ -221,13 +215,8 @@ const SignatureLine = ({ onChange }) => {
       lineHeight: 1.2,
       minWidth: "40px",
       whiteSpace: "nowrap",
-      backgroundColor: "rgb(22, 163, 74)",
-      color: "white",
       backgroundColor: selected ? "#dc2626" : "#16a34a",
-      borderColor: selected ? "green" : "#999",
-      // backgroundColor: selected ? "#e0f7e9" : "#f0f0f0",
-      // color: selected ? "green" : "#333",
-      // fontWeight: selected ? "bold" : "normal"
+      color: "white"
     }),
     physicianBtn: (name, selected) => {
       const colorMap = {
@@ -273,36 +262,41 @@ const SignatureLine = ({ onChange }) => {
     <div>
       <div style={styles.section}>
         <label style={styles.label}>Other Plans:</label>
-        {otherPlans.map((line, idx) => {
-          const isLast = idx === otherPlans.length - 1;
-          return (
-            <div
-              key={idx}
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                marginBottom: 8
+        {otherPlans.map((line, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              marginBottom: 8
+            }}
+          >
+            <label style={{ marginRight: 8, marginTop: 4 }}>{idx + 1}.</label>
+            <input
+              type="text"
+              value={line}
+              onChange={(e) => {
+                const updated = [...otherPlans];
+                updated[idx] = e.target.value;
+
+                if (
+                  idx === updated.length - 1 &&
+                  e.target.value.trim() !== ""
+                ) {
+                  updated.push("");
+                }
+
+                const cleaned = updated.filter((val, i) =>
+                  i === updated.length - 1 || val.trim() !== ""
+                );
+
+                setOtherPlans(cleaned);
               }}
-            >
-              <label style={{ marginRight: 8, marginTop: 4 }}>{idx + 1}.</label>
-              <input
-                type="text"
-                value={line}
-                onChange={(e) => {
-                  let copy = [...otherPlans];
-                  copy[idx] = e.target.value;
-                  if (copy.length === 0 || copy[copy.length - 1].trim() !== "")
-                    copy.push("");
-                  setOtherPlans(
-                    copy.filter((l, i) => i < copy.length - 1 || l.trim())
-                  );
-                }}
-                style={styles.inputText}
-                placeholder="Enter other plan"
-              />
-            </div>
-          );
-        })}
+              style={styles.inputText}
+              placeholder="Enter other plan"
+            />
+          </div>
+        ))}
       </div>
 
       <div style={styles.section}>

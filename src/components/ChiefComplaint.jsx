@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import CustomAutoComplete from "./CustomAutoComplete2";
+import ShortcutSection from "./ShortcutSection";
 
 const watermelonRed = "#FF4C4C";
 
@@ -229,6 +229,12 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
   return (
     <div style={styles.container}>
       <div style={styles.outputBox}>{renderFinalText()}</div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <ShortcutSection type="pain" />
+        {/* <ShortcutSection type="abbreviation" /> */}
+      </div>
+
       <div style={styles.section}>
         The patient's worst pain complaint today is located in their
         <input
@@ -250,6 +256,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
         />
         complaints.
       </div>
+
       <div style={styles.section}>
         Flare up in
         <input
@@ -267,6 +274,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.flareUp ? "Add" : "Remove"}
         </button>
       </div>
+
       <div style={styles.section}>
         W/U of a new pain complaint, specifically:
         <input
@@ -284,6 +292,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.newComplaint ? "Add" : "Remove"}
         </button>
       </div>
+
       <div style={styles.section}>
         Re-evaluation S/P
         <input
@@ -319,6 +328,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.reEvaluation ? "Add" : "Remove"}
         </button>
       </div>
+
       <div style={styles.section}>
         And S/P
         <input
@@ -354,6 +364,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.spLine ? "Add" : "Remove"}
         </button>
       </div>
+
       <div style={styles.section}>
         Currently with
         <input
@@ -372,6 +383,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
           {removedLines.currentDecrease ? "Add" : "Remove"}
         </button>
       </div>
+
       <div style={styles.checkboxContainer}>
         <input
           type="checkbox"

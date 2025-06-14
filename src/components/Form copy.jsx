@@ -15,8 +15,6 @@ import InjectionsList from "./InjectionsList";
 import EarlierFollowups from "./EarlierFollowups";
 // import CustomAutoComplete from "./components/CustomAutoComplete";
 import CustomAutoComplete from "./CustomAutoComplete2";
-import ShortcutSection from "./ShortcutSection";
-import { MedicationProvider } from "./context/MedicationContext";
 
 import "./Form.css";
 
@@ -30,21 +28,6 @@ const Form = () => {
     item1: "",
     item2: ""
   });
-
-  const [painSelected, setPainSelected] = useState(new Set());
-  const [abbrSelected, setAbbrSelected] = useState(new Set());
-
-  const painLocation = {
-    burning: "Burning",
-    stabbing: "Stabbing",
-    dull: "Dull",
-  };
-
-  const abbreviations = {
-    PT: "Physical Therapy",
-    OT: "Occupational Therapy",
-    ROM: "Range of Motion",
-  };
 
   const [formData, setFormData] = useState({
     patientName: "________________",
@@ -141,7 +124,8 @@ const Form = () => {
     return Object.entries(complaints)
       .map(
         ([region, { enabled, side }]) =>
-          `${region.charAt(0).toUpperCase() + region.slice(1)}: ${enabled ? "Yes" : "No"
+          `${region.charAt(0).toUpperCase() + region.slice(1)}: ${
+            enabled ? "Yes" : "No"
           } (Side: ${side})`
       )
       .join("; ");
@@ -503,14 +487,7 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Chief Complaint</h2>
-        <ChiefComplaint initialValues={{}} onChange={setChiefComplaint}
-          painSelected={painSelected}
-          setPainSelected={setPainSelected}
-          painLocation={painLocation}
-          abbrSelected={abbrSelected}
-          setAbbrSelected={setAbbrSelected}
-          abbreviations={abbreviations}
-        />
+        <ChiefComplaint initialValues={{}} onChange={setChiefComplaint} />
       </div>
 
       <div className="form-section">
@@ -586,13 +563,11 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Medication Management</h2>
-        <MedicationProvider>
-          <MedicationManagement
-            setMedicationListData={(text) =>
-              setFormData((prev) => ({ ...prev, medication_management: text }))
-            }
-          />
-        </MedicationProvider>
+        <MedicationManagement
+          setMedicationListData={(text) =>
+            setFormData((prev) => ({ ...prev, medication_management: text }))
+          }
+        />
       </div>
 
       <div className="form-section">

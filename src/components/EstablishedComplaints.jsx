@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 const styles = {
-  container: { maxWidth: 1000, margin: "auto", padding: 0 },
+  container: { maxWidth: 1200, margin: "auto", padding: 0 },
   injectionRowEditable: {
     height: "27px",
-    // width:"15%",
+    // maxWidth:"35%",
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
@@ -32,7 +32,7 @@ const styles = {
   },
   select: {
     fontSize: 14,
-    padding: "0px 10px",
+    padding: "0px 6px",
     minWidth: 60,
     maxWidth: 130,
     margin: "auto"
@@ -78,7 +78,7 @@ const styles = {
     marginBottom: 4
   },
   optionButton: (selected) => ({
-    marginLeft: "-1px",
+    marginLeft: "0px",
     cursor: "pointer",
     padding: "4px 3px",
     borderRadius: 4,

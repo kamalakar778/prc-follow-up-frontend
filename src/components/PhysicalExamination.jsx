@@ -22,7 +22,6 @@ const styles = {
   },
   input: {
     width: 40,
-    // marginTop:"15px",
     padding: "6px 8px",
     borderRadius: 4,
     border: "1px solid #ccc",
@@ -38,14 +37,14 @@ const styles = {
     marginRight: 8
   },
   inputMedium: {
-    width: "40%",
-    display: "flex",
-    flexDirection: "row",
+    width: "15%",
+    // display: "flex",
+    // flexDirection: "column",
     padding: "8px 8px",
     borderRadius: 6,
     border: "1px solid #ccc",
     fontSize: 14,
-    marginRight: 8
+    marginRight: 0
   },
   optionButton: (isSelected) => ({
     marginRight: 6,
@@ -167,9 +166,8 @@ const PhysicalExamination = ({ onChange }) => {
       gait: gait.length ? gait.join(", ") : "None",
       stationStance,
       cardiovascular:
-        cardiovascular === "Present with pitting edema"
-          ? `${cardiovascular} of ${pittingEdema}`
-          : cardiovascular,
+        cardiovascular === "Present with pitting edema of"
+          ? `${cardiovascular} ${pittingEdema}` : cardiovascular,
       lymphadenopathy,
       coordinationBalance,
       motorFunction: motorFunctionText
@@ -332,7 +330,7 @@ const PhysicalExamination = ({ onChange }) => {
         onChange={setCardiovascular}
       />
 
-      {cardiovascular === "Present with pitting edema" && (
+      {cardiovascular === "Present with pitting edema of" && (
         <input
           type="text"
           value={pittingEdema}

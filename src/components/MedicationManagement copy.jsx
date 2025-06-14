@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
-import ShortcutMedicationSection from "../components/ShortcutMedicationSection";
-import { MedicationContext } from "../components/context/MedicationContext";
+import React, { useState, useEffect } from "react";
 
 const styles = {
   container: {
@@ -56,31 +54,49 @@ const styles = {
   }
 };
 
+
+
 const medicationReasons = [
-  { id: 1, text: "Due to acceptable ADL, efficacy & tolerance the C.S. dosing was unchanged (or no additional C.S.)." },
-  { id: 2, text: "Due to decreased ADL & efficacy and increased tolerance the C.S. dosing was changed accordingly." },
-  { id: 3, text: "Due to non-compliance with C.S. or illegal drug use, the patient is now on a NNCP (See U-Tox Log for justification)." },
-  { id: 4, text: "No medications" },
-  { id: 5, text: "______ Page # Point # ______" }
+  // {
+  //   id: 0,
+  //   text: ""
+  // },
+  {
+    id: 1,
+    text: "Due to acceptable ADL, efficacy & tolerance the C.S. dosing was unchanged (or no additional C.S.)."
+  },
+  {
+    id: 2,
+    text: "Due to decreased ADL & efficacy and increased tolerance the C.S. dosing was changed accordingly."
+  },
+  {
+    id: 3,
+    text: "Due to non-compliance with C.S. or illegal drug use, the patient is now on a NNCP (See U-Tox Log for justification)."
+  },
+  {
+    id: 4,
+    text: "No medications"
+  },{
+    id:5,
+    text: "______ Page # Point # ______"
+  }
 ];
+
+
+
+
 
 const defaultMedication = {
   name: "",
   relief: "",
   days: "",
   status: "Continue",
-  frequency: ""
+  frequency:""
 };
 
 const MedicationManagement = ({ setMedicationListData = () => {} }) => {
   const [selectedReason, setSelectedReason] = useState(null);
   const [medications, setMedications] = useState([defaultMedication]);
-
-  const {
-    medicationSelected,
-    flatMedications,
-    setMedicationSelected
-  } = useContext(MedicationContext);
 
   const handleReasonChange = (e) => {
     const value = e.target.value;
@@ -93,7 +109,9 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
     setMedications(updated);
 
     const isLast = index === medications.length - 1;
-    const isFilled = Object.values(updated[index]).some((v) => v?.toString().trim() !== "");
+    const isFilled = Object.values(updated[index]).some(
+      (v) => v?.toString().trim() !== ""
+    );
     if (isLast && isFilled) {
       setMedications([...updated, defaultMedication]);
     }
@@ -105,26 +123,16 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
   };
 
   useEffect(() => {
-    if (medicationSelected.size > 0) {
-      const newMeds = Array.from(medicationSelected).map((key) => ({
-        ...defaultMedication,
-        name: flatMedications[key] || key
-      }));
-      setMedications((prev) => {
-        const filtered = prev.filter((med) => med.name.trim() !== "");
-        return [...filtered, ...newMeds, defaultMedication];
-      });
-      setMedicationSelected(new Set());
-    }
-  }, [medicationSelected, flatMedications, setMedicationSelected]);
+    const reasonText =
+      medicationReasons.find((r) => r.id === selectedReason)?.text || "";
 
-  useEffect(() => {
-    const reasonText = medicationReasons.find((r) => r.id === selectedReason)?.text || "";
     const medicationLines = medications
       .filter((med) => med.name.trim())
       .map((med, idx) => {
         const prefix = med.status ? `${med.status} ` : "";
-        const relief = med.relief ? `(${med.relief}% pain relief obtained)` : "";
+        const relief = med.relief
+          ? `(${med.relief}% pain relief obtained)`
+          : "";
         const days = med.days ? `#${med.days}` : "";
         const extra = [days, relief].filter(Boolean).join(" ");
         return `${idx + 1}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
@@ -133,7 +141,9 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
     const hasInput = reasonText || medicationLines.length > 0;
 
     const formattedText = hasInput
-      ? ["MEDICATION MANAGEMENT:", `1. ${reasonText}`, ...medicationLines].join("\n")
+      ? ["MEDICATION MANAGEMENT:", `1. ${reasonText}`, ...medicationLines].join(
+          "\n"
+        )
       : "";
 
     setMedicationListData(formattedText);
@@ -163,7 +173,9 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
           <div key={index} style={styles.medicationRow}>
             <select
               value={med.status}
-              onChange={(e) => handleMedicationChange(index, "status", e.target.value)}
+              onChange={(e) =>
+                handleMedicationChange(index, "status", e.target.value)
+              }
               style={{ ...styles.select, minWidth: 120 }}
             >
               <option value="">-- Select --</option>
@@ -180,21 +192,27 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
               type="text"
               placeholder="Medication name"
               value={med.name}
-              onChange={(e) => handleMedicationChange(index, "name", e.target.value)}
+              onChange={(e) =>
+                handleMedicationChange(index, "name", e.target.value)
+              }
               style={{ ...styles.input, ...styles.inputLarge }}
             />
             <input
               type="text"
               placeholder="# Days"
               value={med.days}
-              onChange={(e) => handleMedicationChange(index, "days", e.target.value)}
+              onChange={(e) =>
+                handleMedicationChange(index, "days", e.target.value)
+              }
               style={{ ...styles.input, ...styles.inputSmall }}
             />
             <input
               type="text"
               placeholder="% Relief"
               value={med.relief}
-              onChange={(e) => handleMedicationChange(index, "relief", e.target.value)}
+              onChange={(e) =>
+                handleMedicationChange(index, "relief", e.target.value)
+              }
               style={{ ...styles.input, ...styles.inputSmall }}
             />
             {medications.length > 1 && index !== medications.length - 1 && (
@@ -209,11 +227,6 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
           </div>
         ))}
       </div>
-
-      <div style={{ padding: "16px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h2 style={{ marginBottom: "12px" }}>💊 Medication Management</h2>
-      <ShortcutMedicationSection />
-    </div>
     </div>
   );
 };
