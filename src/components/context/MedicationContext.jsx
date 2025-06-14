@@ -19,7 +19,9 @@ export const MedicationProvider = ({ children }) => {
       Start: "Start",
       Change: "Change",
       Later: "Later",
-      "StartNVisit": "Start next visit"
+      "StartNVisit": "Start next visit",
+      "D/C": "D/C",
+      hold: "hold",
     },
 
     "List 1": {
@@ -97,7 +99,9 @@ export const MedicationProvider = ({ children }) => {
        "t.i.d": "t.i.d",
       "q.i.d": "q.i.d",
       "q.h.s": "q.h.s",
-      "p.r.n": "p.r.n"
+      "p.r.n": "p.r.n",
+      "1-2 tabs":"1-2 tabs",
+      "q.d":"q.d",
     },
     // "Abbrev-2": {
     //   tid: "t.i.d",

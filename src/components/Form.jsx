@@ -14,7 +14,6 @@ import SignatureLine from "./SignatureLine";
 import InjectionsList from "./InjectionsList";
 import EarlierFollowups from "./EarlierFollowups";
 // import CustomAutoComplete from "./components/CustomAutoComplete";
-import CustomAutoComplete from "./CustomAutoComplete2";
 import ShortcutSection from "./ShortcutSection";
 import { MedicationProvider } from "./context/MedicationContext";
 
