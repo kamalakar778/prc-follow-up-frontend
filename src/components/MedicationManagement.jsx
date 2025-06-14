@@ -1,4 +1,3 @@
-// MedicationManagement.jsx
 import React, { useState, useEffect, useContext } from "react";
 import ShortcutMedicationSection from "../components/ShortcutMedicationSection";
 import { MedicationContext } from "../components/context/MedicationContext";
@@ -102,11 +101,6 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
     setAddMedication
   } = useContext(MedicationContext);
 
-  const handleReasonChange = (e) => {
-    const value = e.target.value;
-    setSelectedReason(value ? parseInt(value) : null);
-  };
-
   const handleMedicationChange = (index, field, value) => {
     const updated = [...medications];
     updated[index] = { ...updated[index], [field]: value };
@@ -155,7 +149,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
         const relief = med.relief ? `(${med.relief}% pain relief obtained)` : "";
         const days = med.days ? `#${med.days}` : "";
         const extra = [days, relief].filter(Boolean).join(" ");
-        return `${idx + 1}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`;
+        return `${idx + 2}. ${prefix}${med.name}${extra ? `. ${extra}` : "."}`; // <-- Start numbering from 2
       });
 
     const hasInput = reasonText || medicationLines.length > 0;
@@ -178,24 +172,27 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
 
   return (
     <div style={styles.container}>
-      <div>
-        <label style={styles.label}>Select Reason:</label>
-        <select
-          value={selectedReason || ""}
-          onChange={handleReasonChange}
-          style={styles.select}
-        >
-          <option value="">-- Select a reason --</option>
-          {medicationReasons.map((reason) => (
-            <option key={reason.id} value={reason.id}>
-              {reason.text}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div style={{ marginTop: 16 }}>
         <label style={styles.label}>Medications:</label>
+
+        {/* Reason Select */}
+        <div style={styles.medicationRow}>
+          <label style={styles.label}>Select Reason:</label>
+          <select
+            value={selectedReason || ""}
+            onChange={(e) => setSelectedReason(e.target.value ? parseInt(e.target.value) : null)}
+            style={styles.select}
+          >
+            <option value="">-- Select a reason --</option>
+            {medicationReasons.map((reason) => (
+              <option key={reason.id} value={reason.id}>
+                {reason.text}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Medication Inputs */}
         {medications.map((med, index) => {
           const medKey = med.name.split(" ")[0]?.toLowerCase();
           const dosages = predefinedDosages[medKey] || [];

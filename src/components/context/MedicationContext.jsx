@@ -33,6 +33,7 @@ export const MedicationProvider = ({ children }) => {
     },
     "List 2": {
       gabapentin: "Gabapentin",
+      mobic:"Mobic",
       ibuprofen: "Ibuprofen",
       diclofenac: "Diclofenac",
       flexeril: "Flexeril",
@@ -75,7 +76,6 @@ export const MedicationProvider = ({ children }) => {
       fentanyl: "Fentanyl",
       temazepam: "Temazepam",
       zolpidem: "Zolpidem",
-      methocarbamol: "Robaxin",
       aspirin: "Aspirin",
       Zolpidem: "Zolpidem",
       Alprazolam: "Alprazolam",
@@ -110,9 +110,12 @@ export const MedicationProvider = ({ children }) => {
 
 
   const predefinedDosages = {
-    gabapentin: ["300 mg", "300 mg", "600 mg"],
+    gabapentin: ["100 mg", "300 mg", "600 mg", "800 mg"],
+    mobic:["15 mg",],
+    norco: ["7.5 mg",],
+    robaxin: ["500 mg", "800 mg"],
+
     lyrica: ["75 mg", "150 mg"],
-    norco: ["5/325 mg", "5/325 mg"],
     diclofenac: ["50 mg", "75 mg"],
     naproxen: ["250 mg", "500 mg"],
     ibuprofen: ["200 mg", "400 mg", "600 mg"],
@@ -121,7 +124,6 @@ export const MedicationProvider = ({ children }) => {
     aspirin: ["81 mg", "325 mg"],
     tramadol: ["50 mg", "100 mg"],
     flexeril: ["5 mg", "10 mg"],
-    robaxin: ["500 mg", "750 mg"],
     skelaxin: ["400 mg", "800 mg"],
     zanaflex: ["2 mg", "4 mg"],
     soma: ["250 mg", "350 mg"],
