@@ -56,12 +56,13 @@ const styles = {
     whiteSpace: "nowrap",
     transition: "all 0.2s ease-in-out",
     margin: "0px -10px",
+    color: "#2c3e50",
   },
   medButtonActive: {
-    background: "#3498db",
-    color: "#fff",
+    background: "#2980b9",
+    color: "#ffffff",
     fontWeight: "600",
-    border: "1px solid #2980b9",
+    border: "1px solid #1c5980",
   },
   dosageContainer: {
     display: "flex",
@@ -81,11 +82,12 @@ const styles = {
     boxShadow: "0 1px 1px rgba(0,0,0,0.03)",
     margin: "0",
     transition: "background 0.2s ease",
+    color: "#2c3e50",
   },
   dosageButtonActive: {
-    background: "#2ecc71",
-    color: "#fff",
-    border: "1px solid #27ae60",
+    background: "#27ae60",
+    color: "#ffffff",
+    border: "1px solid #1f8a4d",
   },
   actionPanel: {
     display: "flex",
@@ -157,8 +159,8 @@ const ShortcutMedicationSection = () => {
     if (text) {
       navigator.clipboard.writeText(text);
       setCopied(true);
-      setSelectedMeds(new Set());         // Reset meds
-      setSelectedDosages({});             // Reset dosages
+      setSelectedMeds(new Set());
+      setSelectedDosages({});
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -196,6 +198,11 @@ const ShortcutMedicationSection = () => {
     setCopied(false);
     setAdded(false);
   };
+
+  // Detect if any selected medication has visible dosage options
+  const dosageVisible = [...selectedMeds].some(
+    (abbr) => predefinedDosages?.[abbr]?.length > 0
+  );
 
   return (
     <div style={styles.wrapper}>
@@ -240,7 +247,12 @@ const ShortcutMedicationSection = () => {
         ))}
       </div>
 
-      <div style={styles.actionPanel}>
+      <div
+        style={{
+          ...styles.actionPanel,
+          marginLeft: dosageVisible ? "24px" : styles.actionPanel.marginLeft,
+        }}
+      >
         <button
           style={{ ...styles.actionButton, ...styles.copy }}
           onClick={handleCopy}

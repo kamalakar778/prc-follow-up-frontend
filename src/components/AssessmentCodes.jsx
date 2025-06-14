@@ -1,5 +1,54 @@
 import React, { useState, useEffect, useRef } from "react";
 
+const styles = {
+  container: { flex: 1 },
+  inputWrapper: { marginBottom: "1rem" },
+  input: {
+    width: "40%",
+    padding: "6px",
+    marginBottom: "4px",
+    fontFamily: "Calibri",
+    fontSize: "14px"
+  },
+  addButton: {
+    fontFamily: "Calibri",
+    fontSize: "14px"
+  },
+  customList: { listStyleType: "none", padding: 0 },
+  customListItem: {
+    marginBottom: "4px",
+    border: "1px solid #ccc",
+    padding: "4px"
+  },
+  customCodeLabel: (selectedItem) => ({
+    cursor: "pointer",
+    color: selectedItem ? "red" : "black",
+    fontWeight: selectedItem ? "bold" : "normal",
+    marginRight: "8px"
+  }),
+  removeButton: {
+    fontFamily: "Calibri",
+    fontSize: "13px"
+  },
+  codeSection: {
+    display: "flex",
+    gap: "20px",
+    fontFamily: "Calibri",
+    fontSize: "14px"
+  },
+  codeGroup: { flex: 1 },
+  codeCategory: { marginBottom: "1rem" },
+  codeList: { listStyleType: "none", padding: 0 },
+  codeListItem: (selectedItem) => ({
+    cursor: "pointer",
+    color: selectedItem ? "red" : "black",
+    fontWeight: selectedItem ? "bold" : "normal",
+    border: "1px solid #ccc",
+    padding: "4px",
+    margin: "2px 0"
+  })
+};
+
 const AssessmentCodes = ({ selected, setSelected }) => {
   const inputRef = useRef(null);
   const [customCodes, setCustomCodes] = useState([]);
@@ -137,9 +186,8 @@ const AssessmentCodes = ({ selected, setSelected }) => {
 
   const codes = [code1, code2, code3];
 
-  const isSelected = (label) => {
-    return selected.some((item) => item.label === label);
-  };
+  const isSelected = (label) =>
+    selected.some((item) => item.label === label);
 
   const toggleItem = (label) => {
     if (isSelected(label)) {
@@ -165,14 +213,13 @@ const AssessmentCodes = ({ selected, setSelected }) => {
 
   useEffect(() => {
     inputRef.current;
-    // inputRef.current?.focus();
   }, [customCodes]);
 
   return (
     <>
-    <div style={{ flex: 1 }}>
+      <div style={styles.container}>
         <strong>Custom Codes</strong>
-        <div style={{ marginBottom: "1rem" }}>
+        <div style={styles.inputWrapper}>
           <input
             ref={inputRef}
             type="text"
@@ -180,48 +227,27 @@ const AssessmentCodes = ({ selected, setSelected }) => {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addCustomCode()}
             placeholder="Enter custom code"
-            style={{
-              width: "40%",
-              padding: "6px",
-              marginBottom: "4px",
-              fontFamily: "Calibri",
-              fontSize: "14px"
-            }}
+            style={styles.input}
           />
-          <button
-            style={{ fontFamily: "Calibri", fontSize: "14px" }}
-            onClick={addCustomCode}
-          >
+          <button style={styles.addButton} onClick={addCustomCode}>
             Add
           </button>
         </div>
-        <ul style={{ listStyleType: "none", padding: 0 }}>
+        <ul style={styles.customList}>
           {customCodes.map((code, idx) => {
             const selectedItem = selected.find((item) => item.label === code);
             return (
-              <li
-                key={idx}
-                style={{
-                  marginBottom: "4px",
-                  border: "1px solid #ccc",
-                  padding: "4px"
-                }}
-              >
+              <li key={idx} style={styles.customListItem}>
                 <span
                   onClick={() => toggleItem(code)}
-                  style={{
-                    cursor: "pointer",
-                    color: selectedItem ? "red" : "black",
-                    fontWeight: selectedItem ? "bold" : "normal",
-                    marginRight: "8px"
-                  }}
+                  style={styles.customCodeLabel(selectedItem)}
                 >
                   {selectedItem ? `#${selectedItem.index}. ` : ""}
                   {code}
                 </span>
                 <button
                   onClick={() => removeCustomCode(code)}
-                  style={{ fontFamily: "Calibri", fontSize: "13px" }}
+                  style={styles.removeButton}
                 >
                   Remove
                 </button>
@@ -230,20 +256,14 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           })}
         </ul>
       </div>
-      <div
-        style={{
-          display: "flex",
-          gap: "20px",
-          fontFamily: "Calibri",
-          fontSize: "14px"
-        }}
-      >
+
+      <div style={styles.codeSection}>
         {codes.map((group, i) => (
-          <div key={i} style={{ flex: 1 }}>
+          <div key={i} style={styles.codeGroup}>
             {Object.entries(group).map(([category, items]) => (
-              <div key={category} style={{ marginBottom: "1rem" }}>
+              <div key={category} style={styles.codeCategory}>
                 <strong>{category}</strong>
-                <ul style={{ listStyleType: "none", padding: 0 }}>
+                <ul style={styles.codeList}>
                   {items.map((item, idx) => {
                     const selectedItem = selected.find(
                       (entry) => entry.label === item
@@ -252,14 +272,7 @@ const AssessmentCodes = ({ selected, setSelected }) => {
                       <li
                         key={idx}
                         onClick={() => toggleItem(item)}
-                        style={{
-                          cursor: "pointer",
-                          color: selectedItem ? "red" : "black",
-                          fontWeight: selectedItem ? "bold" : "normal",
-                          border: "1px solid #ccc",
-                          padding: "4px",
-                          margin: "2px 0"
-                        }}
+                        style={styles.codeListItem(selectedItem)}
                         title={
                           selectedItem
                             ? `#${selectedItem.index} — Click to remove`
@@ -277,7 +290,6 @@ const AssessmentCodes = ({ selected, setSelected }) => {
           </div>
         ))}
       </div>
-      
     </>
   );
 };

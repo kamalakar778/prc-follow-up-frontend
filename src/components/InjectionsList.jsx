@@ -118,7 +118,7 @@ const styles = {
   }
 };
 
-const InjectionsList = ({ onInjectionChange }) => {
+const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
   const [injections, setInjections] = useState(getInitialInjections);
   const [addCounter, setAddCounter] = useState(0);
 
@@ -185,6 +185,9 @@ const InjectionsList = ({ onInjectionChange }) => {
                 inj.addedOrder = addCounter;
                 setAddCounter((prev) => prev + 1);
               }
+            }
+            if (value === "Now schedule" && onAutoSetFollowUp) {
+              onAutoSetFollowUp("Several weeks after procedure");
             }
           }
         } else if (value === "Now schedule") {
