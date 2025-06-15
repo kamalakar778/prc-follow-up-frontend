@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 
-const SignatureLine = ({ onChange }) => {
+const SignatureLine = ({ onChange, dateOfEvaluation }) => {
+
+  // 🆕 Get weekday from MM/DD/YYYY
+  const getWeekdayFromDate = (dateString) => {
+    if (!dateString) return "";
+    const [month, day, year] = dateString.split("/");
+    const date = new Date(`${year}-${month}-${day}`);
+    if (isNaN(date)) return "";
+    return date.toLocaleDateString("en-US", { weekday: "long" });
+  };
+
+  const dayOfWeek = getWeekdayFromDate(dateOfEvaluation); // 🆕
+
+
   const buttonTexts = useMemo(
     () => ({
       "Dr. Klickovich": `personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter. A clinic physician had previously performed the initial service evaluation of the patient while Dr. Robert Klickovich currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.`,
@@ -193,6 +206,39 @@ const SignatureLine = ({ onChange }) => {
       display: "block",
       marginBottom: 8
     },
+    signatureLineWrapper: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      flexWrap: "wrap",
+      gap: "16px"
+    },
+    signatureButtons: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "8px",
+      flex: 1
+    },
+    evaluationContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      padding: "8px",
+      marginTop:"-30px",
+      marginRight:"30%",
+      border: "1px dashed #ccc",
+      borderRadius: "6px",
+      backgroundColor: "#fdfdfd",
+      minWidth: "160px"
+    },
+    rotatedText: {
+      writingMode: "vertical-rl",
+      transform: "rotate(180deg)",
+      color: "#555",
+      fontSize: "14px",
+      marginTop: "4px"
+    },
+
     optionBtn: (selected) => ({
       flexDirection: "column",
       cursor: "pointer",
@@ -258,6 +304,7 @@ const SignatureLine = ({ onChange }) => {
       paddingBottom: 4
     }
   };
+
 
   return (
     <div>
@@ -364,19 +411,31 @@ const SignatureLine = ({ onChange }) => {
 
       <div style={styles.section}>
         <label style={styles.label}>Physician Signature Line:</label>
-        {Object.keys(buttonTexts).map((name) => (
-          <button
-            key={name}
-            onClick={() => setSelectedButton(name)}
-            style={styles.physicianBtn(name, selectedButton === name)}
-          >
-            {name}
-          </button>
-        ))}
+        <div style={styles.signatureLineWrapper}>
+          <div style={styles.signatureButtons}>
+            {Object.keys(buttonTexts).map((name) => (
+              <button
+                key={name}
+                onClick={() => setSelectedButton(name)}
+                style={styles.physicianBtn(name, selectedButton === name)}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+
+          <div style={styles.evaluationContainer}>
+            <label style={{ ...styles.label, marginBottom: 4 }}>Evaluation Date:</label>
+            <div style={{ fontSize: 16 }}>{dateOfEvaluation || "N/A"}</div>
+            {dayOfWeek && <div style={{ fontSize: 16 }}>{dayOfWeek}</div>}
+          </div>
+        </div>
       </div>
+
 
       <div style={styles.section}>
         <label style={styles.label}>Date Transcribed:</label>
+
         <input
           type="date"
           value={dateTranscribed}
@@ -389,6 +448,8 @@ const SignatureLine = ({ onChange }) => {
             maxWidth: 150
           }}
         />
+
+
       </div>
     </div>
   );

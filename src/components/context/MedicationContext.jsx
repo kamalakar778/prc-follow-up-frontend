@@ -25,10 +25,10 @@ export const MedicationProvider = ({ children }) => {
     },
 
     "List 1": {
-      Baclofen: "Baclofen",
+      baclofen: "Baclofen",
       celebrex: "Celebrex",
       clonazepam: "Clonazepam",
-      cymbalta: "Duloxetine",
+      cymbalta: "cymbalta",
       dilaudid: "Hydromorphone",
       diazepam: "Diazepam",
       
@@ -40,20 +40,21 @@ export const MedicationProvider = ({ children }) => {
       diclofenac: "Diclofenac",
       flexeril: "Flexeril",
       lorazepam: "Lorazepam",
+      hydroxyzine:"hydroxyzine",
       },
       "List 3": {
       lyrica: "Lyrica",
-      Meloxicam: "Meloxicam",
-      Morphine: "Morphine",
+      meloxicam: "Meloxicam",
+      morphine: "Morphine",
       methadone: "Methadone",
       naproxen: "Naproxen",
-      Norco: "Norco",
+      norco: "Norco",
     },
     "List 4":{
       oxycodone: "Oxycodone",
       "lido Patch": "Lidoderm Patch",
-      Ultram: "Ultram",
-      Zanaflex: "Zanaflex",
+      ultram: "Ultram",
+      zanaflex: "Zanaflex",
       oxazepam: "Oxazepam",
       oxycontin: "Oxycontin",
           },
@@ -61,30 +62,22 @@ export const MedicationProvider = ({ children }) => {
 
       quetiapine: "Quetiapine",
       robaxin: "Robaxin",
+      tizanidine:"Tizanidine",
       tramadol: "Tramadol",
       trazodone: "Trazodone",
       suboxone: "Suboxone",
       prednisone: "Prednisone",
           },
     "List 6": {
-
+      "vynase":"Vynase",
       "medrol-dose": "Medrol-Dose Pak",
       skelaxin: "Skelaxin",
       soma: "Soma",
       "voltaren Gel": "Voltaren Gel",
 
     },
-    "List 7": {
-      fentanyl: "Fentanyl",
-      temazepam: "Temazepam",
-      zolpidem: "Zolpidem",
-      aspirin: "Aspirin",
-      Zolpidem: "Zolpidem",
-      Alprazolam: "Alprazolam",
-      codeine: "Codeine",
-    },
-    "List 8":{
-        Amitriptyline: "Amitriptyline",
+    "List 7":{
+      Amitriptyline: "Amitriptyline",
       eszopiclone: "Eszopiclone",
       flurazepam: "Flurazepam",
       opana: "Oxymorphone",
@@ -93,9 +86,21 @@ export const MedicationProvider = ({ children }) => {
       nucynta: "Tapentadol",
       darvocet: "Darvocet",
     },
+    "List 8": {
+      "Compound Cream":"Compound Cream",
+      aspirin: "Aspirin",
+      Alprazolam: "Alprazolam",
+      codeine: "Codeine",
+      fentanyl: "Fentanyl",
+      temazepam: "Temazepam",
+      xanax:"xanax",
+      zolpidem: "Zolpidem",
+      Zolpidem: "Zolpidem",
+    },
     "Abbrev-1": {
       "No NSAIDs": "No NSAIDs",
       "GERD": "GERD",
+      "b.i.d":"b.i.d",
        "t.i.d": "t.i.d",
       "q.i.d": "q.i.d",
       "q.h.s": "q.h.s",
@@ -114,11 +119,14 @@ export const MedicationProvider = ({ children }) => {
 
 
   const predefinedDosages = {
-    gabapentin: ["100 mg", "300 mg", "600 mg", "800 mg"],
+    gabapentin: ["100 mg", "300 mg", "400 mg","600 mg", "800 mg"],
     mobic:["15 mg",],
-    norco: ["7.5 mg",],
+    norco: ["5 mg","7.5 mg","10 mg"],
     robaxin: ["500 mg", "800 mg"],
-
+    vynase:[""],
+    hydroxyzine:[""],
+    tizanidine:["4 mg"],
+    
     lyrica: ["75 mg", "150 mg"],
     diclofenac: ["50 mg", "75 mg"],
     naproxen: ["250 mg", "500 mg"],

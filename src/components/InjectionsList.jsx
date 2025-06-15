@@ -37,7 +37,7 @@ const injectionSet2 = [
   { label: "subacromial shoulder injection at", levels: [], direction: true, directionAfter: true },
   { label: "shoulder injection (intra-articularly) at", levels: [], direction: true, directionAfter: true },
   { label: "SCS trial lumbar at", levels: [], direction: false },
-  { label: "SCS implantation lumbar at", levels: [], direction: false },
+  { label: "SCS implantation lumbar", levels: [], direction: false },
   { label: "trigger point injection at", levels: [], direction: false }
 ];
 
@@ -67,6 +67,8 @@ const styles = {
   },
   injectionRowEditable: {
     display: "flex",
+    marginBottom:"8px",
+
     flexWrap: "wrap",
     alignItems: "center",
     gap: 4,
@@ -86,7 +88,7 @@ const styles = {
   },
   select: {
     fontSize: 14,
-    padding: "5px 10px",
+    padding: "5px 8px",
     minWidth: 60,
     maxWidth: 130,
     margin: "auto"
@@ -94,7 +96,7 @@ const styles = {
   notesInput: {
     flex: 1,
     minWidth: "5%",
-    padding: "4px 6px",
+    padding: "6px 6px",
     fontSize: 14,
     borderRadius: 3,
     border: "1px solid #d1d5db"

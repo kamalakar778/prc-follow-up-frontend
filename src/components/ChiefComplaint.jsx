@@ -181,7 +181,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
 
     let text = `The patients worst pain complaint today is located in their ${inputs.input1}`;
     if (inputs.input2?.trim()) {
-      text += `, in addition to their other ${inputs.input2} pain complaints`;
+      text += ` in addition to their other ${inputs.input2} pain complaints`;
     }
     text += ` and presents today to the clinic today for a routine f/u of their usual pain complaints and/or medication refill`;
 

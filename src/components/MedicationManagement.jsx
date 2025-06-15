@@ -5,7 +5,7 @@ import { MedicationContext } from "../components/context/MedicationContext";
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
-    maxWidth: 1400,
+    maxWidth: 1500,
     margin: "0 auto",
     padding: 16,
     backgroundColor: "#f9f9f9",

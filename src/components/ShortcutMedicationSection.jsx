@@ -23,7 +23,7 @@ const styles = {
     alignItems: "flex-start",
   },
   group: {
-    minWidth: "100px",
+    minWidth: "6rem",
     display: "flex",
     flexDirection: "column",
     gap: "4px",

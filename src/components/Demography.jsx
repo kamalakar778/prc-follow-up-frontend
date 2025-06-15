@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-// Responsive CSS injected directly
 const responsiveStyles = `
 @media (max-width: 768px) {
   .responsive-grid {
@@ -23,16 +22,13 @@ const responsiveStyles = `
 }
 `;
 
-// Styles object
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
     maxWidth: 1200,
     margin: "10px auto",
     padding: "0.5rem",
-    // backgroundColor: "#fff",
-    backgroundColor: "1px solid rgb(0, 0, 0)",
-
+    backgroundColor: "#fff",
     borderRadius: "4px",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)"
   },
@@ -50,7 +46,6 @@ const styles = {
     gap: "0.5rem"
   },
   label: {
-    backgroundColor: "1px solid rgb(0, 0, 0)",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -79,19 +74,12 @@ const styles = {
   select: {
     width: "150px",
     flex: 1,
-    marginTop: "10px",
     margin: "5px",
     padding: "0.4rem",
     borderRadius: "4px",
     border: "1px solid #ccc",
     fontSize: "14px",
     backgroundColor: "#fff"
-  },
-  buttonRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "0.5rem",
-    marginTop: "0.5rem"
   },
   button: {
     padding: "0.6rem 0.8rem",
@@ -122,7 +110,6 @@ const styles = {
   })
 };
 
-// Option lists
 const insuranceOptions = [
   "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP",
   "Medicare", "Medicare B", "Medicaid", "TriCare", "Trieast", "WellCare",
@@ -135,7 +122,7 @@ const providerOptions = [
   { "Cortney Lacefield": "Cortney Lacefield, APRN" },
   { "Lauren Ellis": "Lauren Ellis, APRN" },
   { "Taja Elder": "Taja Elder, APRN" },
-  { "Dr. Klickovich": "Robert Klickovich, M.D" },
+  { "Dr. Klickovich": "Robert Klickovich, M.D" }
 ];
 
 const cmaOptions = [
@@ -143,17 +130,42 @@ const cmaOptions = [
   "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Other"
 ];
 
-// Yup validation schema
 const validationSchema = Yup.object().shape({
   provider: Yup.string().required("Provider is required"),
   patientName: Yup.string().required("Patient Name is required"),
-  dob: Yup.date()
-    .typeError("Date of Birth must be a valid date")
-    .required("Date of Birth is required"),
-  dateOfEvaluation: Yup.date()
-    .typeError("Date of Evaluation must be a valid date")
-    .required("Date of Evaluation is required"),
+  dob: Yup.string()
+    .required("Date of Birth is required")
+    .matches(
+      /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/,
+      "Date must be in MM/DD/YYYY format"
+    ),
+  dateOfEvaluation: Yup.string()
+    .required("Date of Evaluation is required")
+    .matches(
+      /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/,
+      "Date must be in MM/DD/YYYY format"
+    ),
+  location: Yup.string().test(
+    "et-location-check",
+    "Location must be E-town if (ET) is in the file name",
+    function (value) {
+      const { fileName } = this.options.context || {};
+      if (/\(ET\)/i.test(fileName)) {
+        return value === "E-town";
+      }
+      return true;
+    }
+  )
 });
+
+const getWeekday = (dateStr) => {
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return "";
+  const [mm, dd, yyyy] = dateStr.split("/");
+  const date = new Date(`${yyyy}-${mm}-${dd}`);
+  return isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-US", { weekday: "long" });
+};
 
 const Demography = ({
   fileName,
@@ -162,18 +174,23 @@ const Demography = ({
   onChange,
   onReset,
   onSubmit,
-  setFormData
+  setFormData,
+  setDateOfEvaluation // pass this prop to send value to SignatureLine.jsx
 }) => {
   const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
 
+  useEffect(() => {
+    if (/\(ET\)/i.test(fileName)) {
+      setFormData((prev) => ({ ...prev, location: "E-town" }));
+    }
+  }, [fileName]);
+
   const handlePatientNameChange = (e, setFieldValue) => {
     const rawValue = e.target.value;
-    const formattedValue = rawValue
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-    setLocalPatientName(formattedValue);
-    setFieldValue("patientName", formattedValue);
-    onChange({ target: { name: "patientName", value: formattedValue } });
+    const formatted = rawValue.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+    setLocalPatientName(formatted);
+    setFieldValue("patientName", formatted);
+    onChange({ target: { name: "patientName", value: formatted } });
   };
 
   const transformPatientName = (setFieldValue) => {
@@ -197,7 +214,8 @@ const Demography = ({
       initialValues={formData}
       validationSchema={validationSchema}
       enableReinitialize
-      onSubmit={(values) => onSubmit(values)}
+      context={{ fileName }}
+      onSubmit={onSubmit}
     >
       {({ values, errors, touched, setFieldValue, handleSubmit }) => (
         <form onSubmit={handleSubmit} style={styles.container}>
@@ -218,7 +236,8 @@ const Demography = ({
 
           <div style={styles.section}>
             <div className="responsive-grid" style={styles.grid}>
-              {[{ label: "Patient Name", name: "patientName", type: "input" },
+              {[
+                { label: "Patient Name", name: "patientName", type: "input" },
                 { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
                 { label: "Date of Birth", name: "dob", type: "input" },
                 { label: "Referring Physician", name: "referringPhysician", type: "input" },
@@ -227,32 +246,11 @@ const Demography = ({
                 { label: "Insurance 1", name: "insurance1", type: "insurance" },
                 { label: "CMA", name: "CMA", type: "cma" },
                 { label: "Insurance 2", name: "insurance2", type: "insurance" },
-                { label: "Room #", name: "roomNumber", type: "input" }].map(({ label, name, type, options }) => {
+                { label: "Room #", name: "roomNumber", type: "input" }
+              ].map(({ label, name, type, options }) => {
                 const error = touched[name] && errors[name];
 
                 if (type === "input") {
-                  if (name === "patientName") {
-                    return (
-                      <div key={name} className="responsive-label" style={styles.label}>
-                        <span>{label}:</span>
-                        <input
-                          name={name}
-                          className="responsive-input"
-                          style={styles.input}
-                          value={localPatientName}
-                          onChange={(e) => handlePatientNameChange(e, setFieldValue)}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => transformPatientName(setFieldValue)}
-                          style={{ ...styles.button, marginLeft: "0.3rem", padding: "0.2rem 0.5rem" }}
-                        >
-                          Transform
-                        </button>
-                        {error && <div className="error" style={{ color: "red" }}>{error}</div>}
-                      </div>
-                    );
-                  }
                   return (
                     <div key={name} className="responsive-label" style={styles.label}>
                       <span>{label}:</span>
@@ -260,13 +258,35 @@ const Demography = ({
                         name={name}
                         className="responsive-input"
                         style={styles.input}
-                        value={values[name] || ""}
+                        value={name === "patientName" ? localPatientName : values[name] || ""}
                         onChange={(e) => {
-                          onChange(e);
-                          setFieldValue(name, e.target.value);
+                          const val = e.target.value;
+                          if (name === "patientName") {
+                            handlePatientNameChange(e, setFieldValue);
+                          } else {
+                            setFieldValue(name, val);
+                            onChange(e);
+                            if (name === "dateOfEvaluation" && setDateOfEvaluation) {
+                              setDateOfEvaluation(val); // <-- sync to parent
+                            }
+                          }
                         }}
                       />
-                      {error && <div className="error" style={{ color: "red" }}>{error}</div>}
+                      {name === "patientName" && (
+                        <button
+                          type="button"
+                          onClick={() => transformPatientName(setFieldValue)}
+                          style={{ ...styles.button, marginLeft: "0.3rem", padding: "0.2rem 0.5rem" }}
+                        >
+                          Transform
+                        </button>
+                      )}
+                      {name === "dateOfEvaluation" && values.dateOfEvaluation && (
+                        <span style={{ marginLeft: "8px", fontStyle: "italic", color: "#666" }}>
+                          {getWeekday(values.dateOfEvaluation)}
+                        </span>
+                      )}
+                      {error && <div style={{ color: "red" }}>{error}</div>}
                     </div>
                   );
                 }
@@ -277,8 +297,8 @@ const Demography = ({
                       <span>{label}:</span>
                       <div>
                         {options.map((opt) => {
-                          const value = typeof opt === "object" ? Object.values(opt)[0] : opt;
                           const key = typeof opt === "object" ? Object.keys(opt)[0] : opt;
+                          const value = typeof opt === "object" ? Object.values(opt)[0] : opt;
                           const isSelected = values[name] === value;
                           return (
                             <span
@@ -293,13 +313,14 @@ const Demography = ({
                           );
                         })}
                       </div>
-                      {error && <div className="error" style={{ color: "red" }}>{error}</div>}
+                      {error && <div style={{ color: "red" }}>{error}</div>}
                     </div>
                   );
                 }
 
-                if (type === "insurance") {
-                  const inputName = `${name}Input`;
+                if (type === "insurance" || type === "cma") {
+                  const optionsList = type === "insurance" ? insuranceOptions : cmaOptions;
+                  const inputKey = `${name}Input`;
                   return (
                     <div key={name} className="responsive-label" style={styles.label}>
                       <span>{label}:</span>
@@ -311,62 +332,24 @@ const Demography = ({
                         onChange={(e) => {
                           onChange(e);
                           setFieldValue(name, e.target.value);
-                          setFieldValue(inputName, "");
+                          setFieldValue(inputKey, "");
                         }}
                       >
                         <option value="">-- Select {label} --</option>
-                        {insuranceOptions.map((opt) => (
+                        {optionsList.map((opt) => (
                           <option key={opt} value={opt}>{opt}</option>
                         ))}
                       </select>
                       <input
-                        name={inputName}
+                        name={inputKey}
+                        className="responsive-input"
+                        style={styles.input}
                         placeholder={`Or type ${label}`}
-                        className="responsive-input"
-                        style={styles.input}
-                        value={values[inputName] || ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          onChange(e);
-                          setFieldValue(inputName, val);
-                          setFieldValue(name, val.trim() ? "Other" : "");
-                        }}
-                      />
-                    </div>
-                  );
-                }
-
-                if (type === "cma") {
-                  return (
-                    <div key={name} className="responsive-label" style={styles.label}>
-                      <span>CMA:</span>
-                      <select
-                        name="CMA"
-                        className="responsive-select"
-                        style={styles.select}
-                        value={values.CMA || ""}
+                        value={values[inputKey] || ""}
                         onChange={(e) => {
                           onChange(e);
-                          setFieldValue("CMA", e.target.value);
-                          setFieldValue("CMAInput", "");
-                        }}
-                      >
-                        <option value="">-- Select CMA --</option>
-                        {cmaOptions.map((cma) => (
-                          <option key={cma} value={cma}>{cma}</option>
-                        ))}
-                      </select>
-                      <input
-                        name="CMAInput"
-                        placeholder="Or type CMA"
-                        className="responsive-input"
-                        style={styles.input}
-                        value={values.CMAInput || ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          onChange(e);
-                          setFieldValue("CMAInput", val);
-                          setFieldValue("CMA", val.trim() ? "Other" : "");
+                          setFieldValue(inputKey, e.target.value);
+                          setFieldValue(name, e.target.value.trim() ? "Other" : "");
                         }}
                       />
                     </div>

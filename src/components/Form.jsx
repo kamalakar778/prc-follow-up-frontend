@@ -25,6 +25,7 @@ const Form = () => {
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
   const [signatureData, setSignatureData] = useState("");
   const [selectedCodes, setSelectedCodes] = useState([]); // Must be an array
+  const [dateOfEvaluation, setDateOfEvaluation] = useState("");
   const [autoCompleteData, setAutoCompleteData] = useState({
     item1: "",
     item2: ""
@@ -497,6 +498,7 @@ const Form = () => {
           onChange={handleChange}
           onSubmit={handleSubmit}
           onReset={handleReset}
+          setDateOfEvaluation={setDateOfEvaluation}
         />
       </div>
 
@@ -601,7 +603,10 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Signature Line</h2>
-        <SignatureLine onChange={handleSignatureChange} />
+        <SignatureLine 
+        onChange={handleSignatureChange}
+        dateOfEvaluation={dateOfEvaluation}
+         />
       </div>
     </>
   );
