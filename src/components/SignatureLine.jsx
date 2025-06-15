@@ -248,9 +248,9 @@ const SignatureLine = ({ onChange, dateOfEvaluation }) => {
       borderColor: selected ? "green" : "#999",
       backgroundColor: selected ? "#e0f6e9" : "#f0f0f0",
       color: selected ? "green" : "#333",
-      marginRight: 0,
-      marginLeft: 0,
-      fontSize: 14,
+      marginRight: 3,
+      marginLeft: 3,
+      fontSize: 16,
       fontWeight: selected ? "bold" : "normal"
     }),
     addRemoveBtn: (selected) => ({
