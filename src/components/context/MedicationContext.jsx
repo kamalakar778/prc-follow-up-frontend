@@ -127,7 +127,7 @@ export const MedicationProvider = ({ children }) => {
     hydroxyzine:[""],
     tizanidine:["4 mg"],
     
-    lyrica: ["75 mg", "150 mg"],
+    lyrica: ["75 mg", "100 mg", "150 mg"],
     diclofenac: ["50 mg", "75 mg"],
     naproxen: ["250 mg", "500 mg"],
     ibuprofen: ["200 mg", "400 mg", "600 mg"],
@@ -169,8 +169,8 @@ export const MedicationProvider = ({ children }) => {
     nucynta: ["50 mg", "100 mg"],
     codeine: ["15 mg", "30 mg"],
     darvocet: ["65 mg"],
+    cymbalta: ["30 mg", "60 mg"],
     ultram: ["50 mg", "100 mg"],
-    cymbalta: ["30 mg", "60 mg"]
   };
 
 
