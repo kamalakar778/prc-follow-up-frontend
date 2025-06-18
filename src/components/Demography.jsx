@@ -111,9 +111,9 @@ const styles = {
 };
 
 const insuranceOptions = [
-  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP",
+  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP", "MCR",
   "Medicare", "Medicare B", "Medicaid", "TriCare", "Trieast", "WellCare",
-  "Work. Comp", "UHC", "Other"
+  "Work. Comp", "UHC", "Other","Self pay",
 ];
 
 const locationOptions = ["Louisville", "E-town"];

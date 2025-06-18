@@ -97,7 +97,7 @@ const styles = {
     marginLeft: "8px",
   },
   actionButton: {
-    padding: "6px 8px",
+    padding: "10px 10px",
     borderRadius: "6px",
     border: "none",
     cursor: "pointer",
