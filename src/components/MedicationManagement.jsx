@@ -203,7 +203,7 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
                 <select
                   value={med.status}
                   onChange={(e) => handleMedicationChange(index, "status", e.target.value)}
-                  style={{ ...styles.select, minWidth: 10 }}
+                  style={{ ...styles.select, minWidth: 4 }}
                 >
                   <option value="">-- Select --</option>
                   <option value="Continue">Continue</option>

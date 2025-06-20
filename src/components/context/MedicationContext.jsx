@@ -129,8 +129,8 @@ export const MedicationProvider = ({ children }) => {
     cymbalta: ["30 mg", "60 mg"],
     Elavil:["10 mg"],
     Relistor:["150 mg"],
-
     diclofenac: ["gel", "50 mg", "75 mg"],
+
     ibuprofen: ["200 mg", "400 mg", "600 mg"],
     celebrex: ["100 mg", "200 mg"],
     tramadol: ["50 mg", "100 mg"],

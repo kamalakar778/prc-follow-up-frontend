@@ -2,6 +2,23 @@ import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
+// Physician list for live search
+const physicianOptions = [
+  "Acevedo", "Albertis", "Amin", "Arnold", "Bannes", "Baptist", "Bencovice", "Bercovici", "Bjerke", "Blair", "Bocklem", "Boggus", 
+  "Bossus", "Boyles", "Briones", "Brockman", "Broderick", "Brown", "Bryson", "Burke", "Bushel", "Byers", "Caballoro", "Campus Health", 
+  "Carmer", "Carner", "Carver", "Casnelle", "Catlett", "Champion", "Coleman", "Cola Sante", "Cook", "Cox", "Craig", "Crutchfield", 
+  "Decarvello", "Dennison", "Desai", "Donohue", "Dripchak", "Dripcheck", "Dulle", "Duncan", "Dunagan", "Edward", "Edwards", 
+  "Ehrhard", "Eldemire", "Elikotil", "Ennis", "Evans", "Fannin", "Farris", "Fernandez", "Ferguson", "Fields", "FHC", "Fireman", 
+  "Fosel", "Foss", "Ft. Knox", "Gardner", "George", "Gibson", "Giles", "Glassman", "Guest", "Habbard", "Harper", "Harris", "Hasan", 
+  "Hitterocope", "Hoffman", "Houk", "Humphrey", "Ireland", "Jackson", "JenCare", "Jencare", "Johnson", "Kalyn Churchil", "Kahatari", 
+  "Kapp", "Kippe", "Laughlin", "Leatherman", "Mans Field", "Marion", "Marshall", "Martinez", "McCauley", "McConda", "Mccoy", 
+  "Mitchell", "Morgan", "Morrison", "Morsq", "Morsy", "Morris", "Moulana", "Nair", "Nash", "Nedye", "Nelson", "Nguyn", "Norton", 
+  "O'Daniel", "O’Daniels", "Olly Fox", "Ortez", "Oswary", "Pastel", "Patton", "Payne", "Pearl Medical", "Quadri", "Rajan Amin", 
+  "Raybon", "Recktenwald", "Rhoads", "Rice", "Roberts", "Robinson", "Saleem", "Savago", "Saxon", "Sccor", "Shan", "Shaw", "Singham", 
+  "Singletary", "Sizemore", "Smith", "Summers", "Suratt", "Swincher", "Taylor", "Thomas", "Thompson", "UofL", "ULP", "Vermachineni", 
+  "Volpert", "Wang", "Warner", "Watzig", "Wheaton", "Wheeler", "White", "Wilson", "Wolf", "Woodson", "Zeherder"
+];
+
 const responsiveStyles = `
 @media (max-width: 768px) {
   .responsive-grid {
@@ -34,7 +51,7 @@ const styles = {
   },
   section: {
     padding: "0.75rem",
-    border: "1px solid rgb(0, 0, 0)",
+    border: "1px solid #000",
     borderRadius: "4px",
     backgroundColor: "#f9f9f9",
     marginTop: "1rem"
@@ -113,7 +130,7 @@ const styles = {
 const insuranceOptions = [
   "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP", "MCR",
   "Medicare", "Medicare B", "Medicaid", "TriCare", "Trieast", "WellCare",
-  "Work. Comp", "UHC", "Other","Self pay",
+  "Work. Comp", "UHC", "Other", "Self pay"
 ];
 
 const locationOptions = ["Louisville", "E-town"];
@@ -122,12 +139,12 @@ const providerOptions = [
   { "Cortney Lacefield": "Cortney Lacefield, APRN" },
   { "Klickovich": "Robert Klickovich, M.D" },
   { "Lauren Ellis": "Lauren Ellis, APRN" },
-  { "Taja Elder": "Taja Elder, APRN" },
+  { "Taja Elder": "Taja Elder, APRN" }
 ];
 
 const cmaOptions = [
   "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie", "MS", "Nick",
-  "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Tammy","Other"
+  "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Tammy", "Other"
 ];
 
 const validationSchema = Yup.object().shape({
@@ -135,16 +152,10 @@ const validationSchema = Yup.object().shape({
   patientName: Yup.string().required("Patient Name is required"),
   dob: Yup.string()
     .required("Date of Birth is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/,
-      "Date must be in MM/DD/YYYY format"
-    ),
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/, "Date must be in MM/DD/YYYY format"),
   dateOfEvaluation: Yup.string()
     .required("Date of Evaluation is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/,
-      "Date must be in MM/DD/YYYY format"
-    ),
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/, "Date must be in MM/DD/YYYY format"),
   location: Yup.string().test(
     "et-location-check",
     "Location must be E-town if (ET) is in the file name",
@@ -162,9 +173,7 @@ const getWeekday = (dateStr) => {
   if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return "";
   const [mm, dd, yyyy] = dateStr.split("/");
   const date = new Date(`${yyyy}-${mm}-${dd}`);
-  return isNaN(date.getTime())
-    ? ""
-    : date.toLocaleDateString("en-US", { weekday: "long" });
+  return isNaN(date.getTime()) ? "" : date.toLocaleDateString("en-US", { weekday: "long" });
 };
 
 const Demography = ({
@@ -175,9 +184,12 @@ const Demography = ({
   onReset,
   onSubmit,
   setFormData,
-  setDateOfEvaluation // pass this prop to send value to SignatureLine.jsx
+  setDateOfEvaluation
 }) => {
   const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
+  const [referringInput, setReferringInput] = useState(formData.referringPhysician || "");
+  const [filteredPhysicians, setFilteredPhysicians] = useState([]);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   useEffect(() => {
     if (/\(ET\)/i.test(fileName)) {
@@ -240,7 +252,7 @@ const Demography = ({
                 { label: "Patient Name", name: "patientName", type: "input" },
                 { label: "Date of Evaluation", name: "dateOfEvaluation", type: "input" },
                 { label: "Date of Birth", name: "dob", type: "input" },
-                { label: "Referring Physician", name: "referringPhysician", type: "input" },
+                { label: "Referring Physician", name: "referringPhysician", type: "referring" },
                 { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
                 { label: "Location", name: "location", type: "toggle", options: locationOptions },
                 { label: "Insurance 1", name: "insurance1", type: "insurance" },
@@ -267,7 +279,7 @@ const Demography = ({
                             setFieldValue(name, val);
                             onChange(e);
                             if (name === "dateOfEvaluation" && setDateOfEvaluation) {
-                              setDateOfEvaluation(val); // <-- sync to parent
+                              setDateOfEvaluation(val);
                             }
                           }
                         }}
@@ -287,6 +299,54 @@ const Demography = ({
                         </span>
                       )}
                       {error && <div style={{ color: "red" }}>{error}</div>}
+                    </div>
+                  );
+                }
+
+                if (type === "referring") {
+                  return (
+                    <div key={name} className="responsive-label" style={styles.label}>
+                      <span>{label}:</span>
+                      <div style={{ position: "relative", width: "100%" }}>
+                        <input
+                          name={name}
+                          className="responsive-input"
+                          style={styles.input}
+                          value={referringInput}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setReferringInput(val);
+                            const matches = physicianOptions.filter((doc) =>
+                              doc.toLowerCase().includes(val.toLowerCase())
+                            );
+                            setFilteredPhysicians(matches);
+                            setFieldValue(name, val);
+                            onChange({ target: { name, value: val } });
+                          }}
+                        />
+                        {filteredPhysicians.length > 0 && referringInput.trim() !== "" && (
+                          <ul style={{
+                            position: "absolute", top: "100%", left: 0, right: 0,
+                            backgroundColor: "#fff", border: "1px solid #ccc", borderRadius: "4px",
+                            maxHeight: "150px", overflowY: "auto", zIndex: 10, margin: 0, padding: 0
+                          }}>
+                            {filteredPhysicians.map((doc) => (
+                              <li key={doc}
+                                style={{ padding: "8px", cursor: "pointer", borderBottom: "1px solid #eee" }}
+                                onClick={() => {
+                                  setReferringInput(doc);
+                                  setFilteredPhysicians([]);
+                                  setFieldValue(name, doc);
+                                  onChange({ target: { name, value: doc } });
+                                }}
+                              >
+                                {doc}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {error && <div style={{ color: "red" }}>{error}</div>}
+                      </div>
                     </div>
                   );
                 }
