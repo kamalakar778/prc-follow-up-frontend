@@ -97,7 +97,7 @@ const SignatureLine = ({
 
   useEffect(() => {
     const defaultVal = hasNowSchedule ? followUpOptions[6] : followUpOptions[3];
-    if (!selectedFollowUpOptions.includes(defaultVal)) {
+    if (!selectedFollowUpOptions.includes(defaultVal) && !customFollowUpInput) {
       setSelectedFollowUpOptions([defaultVal]);
     }
   }, [hasNowSchedule, followUpOptions]);
@@ -157,12 +157,6 @@ const SignatureLine = ({
     setIncludedLines((prev) => ({ ...prev, [lineIndex]: !prev[lineIndex] }));
   };
 
-  const toggleFollowUpOption = (opt) => {
-    setSelectedFollowUpOptions((prev) =>
-      prev.includes(opt) ? prev.filter((item) => item !== opt) : [...prev, opt]
-    );
-  };
-
   const styles = {
     section: { border: "1px solid #ccc", padding: 12, marginBottom: 16, borderRadius: 6, backgroundColor: "#fafafa" },
     label: { fontWeight: "bold", fontSize: 16, display: "block", marginBottom: 8 },
@@ -198,9 +192,9 @@ const SignatureLine = ({
       };
     },
     inputText: {
-      width: "100%", padding: "10px 12px", fontSize: 15, borderRadius: 8,
-      border: "1px solid #d1d5db", backgroundColor: "#fff",
-      fontFamily: "inherit", lineHeight: 1.5,
+      width: "80%", padding: "5px 12px", fontSize: 15, borderRadius: 8, margin:"0px 0px",
+      border: "1px solid #d1d5db", backgroundColor: "#f3fafc", margin: "4px 0",
+      fontFamily: "inherit", lineHeight: 1,
       transition: "box-shadow 0.2s, border-color 0.2s",
       boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)"
     },
@@ -212,8 +206,8 @@ const SignatureLine = ({
       <div style={styles.section}>
         <label style={styles.label}>Other Plans / Instructions:</label>
         {otherPlans.map((line, idx) => (
-          <div key={idx} style={{ display: "flex", alignItems: "flex-start", marginBottom: 8 }}>
-            <label style={{ marginRight: 8, marginTop: 4 }}>{idx + 1}.</label>
+          <div key={idx} style={{ display: "flex", alignItems: "flex-start", marginBottom: 0 }}>
+            <label style={{ marginRight: 8, marginTop: 10 }}>{idx + 1}.</label>
             <input
               type="text"
               value={line}
@@ -269,18 +263,31 @@ const SignatureLine = ({
       </div>
 
       <div style={styles.section}>
-        <label style={styles.label}>Follow-Up Appointment (Multi-Select):</label>
+        <label style={styles.label}>Follow-Up Appointment:</label>
         <div>
           {followUpOptions.map((opt) => (
             <button
               key={opt}
-              onClick={() => toggleFollowUpOption(opt)}
+              onClick={() => {
+                setSelectedFollowUpOptions([opt]);
+                setCustomFollowUpInput("");
+              }}
               style={styles.optionBtn(selectedFollowUpOptions.includes(opt))}
             >
               {opt}
             </button>
           ))}
         </div>
+        <input
+          type="text"
+          placeholder="Custom follow-up"
+          value={customFollowUpInput}
+          onChange={(e) => {
+            setCustomFollowUpInput(e.target.value);
+            setSelectedFollowUpOptions([]);
+          }}
+          style={styles.inputText}
+        />
       </div>
 
       <div style={styles.section}>
