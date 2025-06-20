@@ -19,22 +19,25 @@ export const ShortcutProvider = ({ children }) => {
         neck: "neck",
         leg: "leg",
         hip: "hip",
-
-    },
-    spine: {
-      lumbar: "lumbar",
-      cervical: "cervical",
-      thoracic: "thoracic ",
-    },
-    joints: {
+        
+      },
+      spine: {
+        lumbar: "lumbar",
+        cervical: "cervical",
+        thoracic: "thoracic ",
+      },
+      joints: {
       knee: "knee",
       shoulder: "shoulder",
       hand: "hand",
       wrist: "wrist",
     },
     other: {
-      abdomen: "abdomen",
+      Abdomen:"Abdomen",
       arm:"arm",
+      foot:"foot",
+      ankle:"ankle",
+      elbow:"elbow",
     },
 
      abbreviations: {

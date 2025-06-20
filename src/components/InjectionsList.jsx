@@ -245,7 +245,7 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp, onHasNowSchedule
       const isSet1 = set1Labels.includes(inj.label);
       const parts = isSet1
         ? [
-            inj.timing + " ",
+            inj.timing + "",
             inj.directionAfter ? null : inj.directionSelected || "",
             inj.label,
             inj.directionAfter ? inj.directionSelected || "" : null,

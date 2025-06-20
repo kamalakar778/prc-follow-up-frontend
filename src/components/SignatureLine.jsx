@@ -54,11 +54,13 @@ const SignatureLine = ({
   }), []);
 
   const buttonTexts = useMemo(() => ({
-    "Dr. Olivia Kelley": `personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) ...`,
-    "Dr. Klickovich": `personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich ...`,
-    APRN: `personally performed todays follow-up evaluation and treatment plan of the patient.`,
-    "Signature Line Missing": "__________ Page # Point # __________ "
+         "Dr. Olivia Kelley": `personally performed todays follow-up evaluation and treatment plan of the patient, while Olivia Kelley, M.D. (locum tenens) (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter. A clinic physician had previously performed the initial service evaluation of the patient while Dr. Kelley currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.`,
+      "Dr. Klickovich": `personally performed todays follow-up evaluation and treatment plan of the patient, while Dr. Robert Klickovich (or different Physician noted/documented above) provided direct supervision of the APRN and was immediately available to assist if needed during todays follow-up patient encounter. A clinic physician had previously performed the initial service evaluation of the patient while Dr. Robert Klickovich currently remains actively involved in the patient's progress and treatment plan including approving changes in medication type, strength, or dosing interval or any other aspect of their care plan.`,
+      APRN: `personally performed todays follow-up evaluation and treatment plan of the patient.`,
+      "Signature Line Missing": "__________ Page # Point # __________ "
   }), []);
+
+
 
   const formatDateToMMDDYYYY = (dateStr) => {
     const date = new Date(dateStr);
@@ -191,6 +193,8 @@ const SignatureLine = ({
         cursor: "pointer", border: "none"
       };
     },
+
+    
     inputText: {
       width: "80%", padding: "5px 12px", fontSize: 15, borderRadius: 8, margin:"0px 0px",
       border: "1px solid #d1d5db", backgroundColor: "#f3fafc", margin: "4px 0",
