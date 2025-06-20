@@ -120,14 +120,14 @@ const locationOptions = ["Louisville", "E-town"];
 
 const providerOptions = [
   { "Cortney Lacefield": "Cortney Lacefield, APRN" },
+  { "Klickovich": "Robert Klickovich, M.D" },
   { "Lauren Ellis": "Lauren Ellis, APRN" },
   { "Taja Elder": "Taja Elder, APRN" },
-  { "Dr. Klickovich": "Robert Klickovich, M.D" }
 ];
 
 const cmaOptions = [
   "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie", "MS", "Nick",
-  "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Other"
+  "PP", "SC", "Steph", "Tony", "Tina", "DJ", "Tammy","Other"
 ];
 
 const validationSchema = Yup.object().shape({

@@ -67,8 +67,7 @@ const styles = {
   },
   injectionRowEditable: {
     display: "flex",
-    marginBottom:"8px",
-
+    marginBottom: "8px",
     flexWrap: "wrap",
     alignItems: "center",
     gap: 4,
@@ -120,9 +119,16 @@ const styles = {
   }
 };
 
-const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
+const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp, onHasNowSchedule }) => {
   const [injections, setInjections] = useState(getInitialInjections);
   const [addCounter, setAddCounter] = useState(0);
+  const [hasNowSchedule, setHasNowSchedule] = useState(false);
+
+  useEffect(() => {
+    const anyNowScheduled = injections.some(inj => inj.timing === "Now schedule");
+    setHasNowSchedule(anyNowScheduled);
+    onHasNowSchedule?.(anyNowScheduled);
+  }, [injections, onHasNowSchedule]);
 
   const ensureEmptyInjectionAtEnd = (list) => {
     const last = list[list.length - 1];
@@ -131,7 +137,6 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
       last?.directionSelected?.trim() ||
       last?.selectedLevel?.trim() ||
       last?.notes?.trim();
-
     if (isFilled) {
       return [
         ...list,
@@ -153,13 +158,10 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
 
   const reorderIncluded = (result) => {
     if (!result.destination) return;
-
     const includedInjections = injections.filter((inj) => inj.included);
     const notIncluded = injections.filter((inj) => !inj.included);
-
     const [moved] = includedInjections.splice(result.source.index, 1);
     includedInjections.splice(result.destination.index, 0, moved);
-
     setInjections([...includedInjections, ...notIncluded]);
   };
 
@@ -174,7 +176,14 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
 
   const handleChange = (index, field, value) => {
     const updated = [...injections];
-    updated[index][field] = field === "notes" ? value : value || "";
+    if (field === "notes") {
+      updated[index].notes = value;
+      if (value.trim()) {
+        updated[index].selectedLevel = "";
+      }
+    } else {
+      updated[index][field] = value || "";
+    }
 
     if (field === "timing") {
       updated.forEach((inj, i) => {
@@ -225,7 +234,6 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
 
   useEffect(() => {
     const included = injections.filter((inj) => inj.included);
-
     const orderedIncluded = [...included].sort((a, b) => {
       if (a.timing === "Now schedule" && b.timing !== "Now schedule") return -1;
       if (b.timing === "Now schedule" && a.timing !== "Now schedule") return 1;
@@ -241,27 +249,25 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
             inj.directionAfter ? null : inj.directionSelected || "",
             inj.label,
             inj.directionAfter ? inj.directionSelected || "" : null,
-            inj.selectedLevel || inj.levels?.join(", ") || ""
+            inj.selectedLevel || ""
           ]
         : [
             inj.timing + "",
             inj.label,
             inj.directionAfter ? null : inj.directionSelected || "",
-            inj.selectedLevel || inj.levels?.join(", ") || "",
+            inj.selectedLevel || "",
             inj.directionAfter ? inj.directionSelected || "" : null
           ];
 
       const line = parts.filter(Boolean).join(" ").trim();
       const notesPart = inj.notes ? ` ${inj.notes}` : "";
-      return `\t${idx + 1}. ${line} ${notesPart}`;
+      return `\t${idx + 1}. ${line}${notesPart}`;
     });
 
     if (onInjectionChange) {
       onInjectionChange({
         injections: lines.join("\n"),
-        INJECTION_SUMMARY: lines.length
-          ? `INJECTIONS:\n${lines.join("\n  ")}`
-          : ""
+        INJECTION_SUMMARY: lines.length ? `INJECTIONS:\n${lines.join("\n  ")}` : ""
       });
     }
   }, [injections, onInjectionChange]);
@@ -288,27 +294,14 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      style={{
-                        ...styles.injectionRow,
-                        ...provided.draggableProps.style
-                      }}
+                      style={{ ...styles.injectionRow, ...provided.draggableProps.style }}
                     >
                       {`${idx + 1}. `}
                       <strong>{inj.timing}</strong>&nbsp;
-                      {inj.direction &&
-                        !inj.directionAfter &&
-                        inj.directionSelected &&
-                        ` ${inj.directionSelected}`}{" "}
-                      {inj.label} {inj.selectedLevel}
-                      {inj.direction &&
-                        inj.directionAfter &&
-                        inj.directionSelected &&
-                        ` ${inj.directionSelected}`}
+                      {inj.direction && !inj.directionAfter && inj.directionSelected && ` ${inj.directionSelected}`} {inj.label} {inj.selectedLevel}
+                      {inj.direction && inj.directionAfter && inj.directionSelected && ` ${inj.directionSelected}`}
                       {inj.notes && ` ${inj.notes}`}&nbsp;&nbsp;
-                      <button
-                        onClick={() => removeFromPreview(injections.indexOf(inj))}
-                        style={styles.removeButton}
-                      >
+                      <button onClick={() => removeFromPreview(injections.indexOf(inj))} style={styles.removeButton}>
                         Remove
                       </button>
                     </div>
@@ -321,9 +314,7 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
         </Droppable>
       </DragDropContext>
 
-      <h3 style={{ fontSize: 14, marginTop: 24, marginBottom: 8 }}>
-        All Injections (Edit / Include)
-      </h3>
+      <h3 style={{ fontSize: 14, marginTop: 24, marginBottom: 8 }}>All Injections (Edit / Include)</h3>
       {injections.map((inj, index) => (
         <div key={index} style={styles.injectionRowEditable}>
           <button
@@ -342,32 +333,19 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
           <button
             style={{
               ...styles.button,
-              backgroundColor:
-                inj.timing === "Now schedule" ? "#2563eb" : "#6b7280",
+              backgroundColor: inj.timing === "Now schedule" ? "#2563eb" : "#6b7280",
               color: "white"
             }}
-            onClick={() =>
-              handleChange(
-                index,
-                "timing",
-                inj.timing === "Now schedule" ? "Later schedule" : "Now schedule"
-              )
-            }
+            onClick={() => handleChange(index, "timing", inj.timing === "Now schedule" ? "Later schedule" : "Now schedule")}
           >
             {inj.timing}
           </button>
 
           {inj.direction && !inj.directionAfter && (
-            <select
-              style={styles.select}
-              value={inj.directionSelected}
-              onChange={(e) => handleChange(index, "directionSelected", e.target.value)}
-            >
+            <select style={styles.select} value={inj.directionSelected} onChange={(e) => handleChange(index, "directionSelected", e.target.value)}>
               <option value="">-- Select --</option>
               {directionOptions.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
+                <option key={d} value={d}>{d}</option>
               ))}
             </select>
           )}
@@ -375,30 +353,18 @@ const InjectionsList = ({ onInjectionChange, onAutoSetFollowUp }) => {
           <span style={{ fontWeight: 500 }}>{inj.label}</span>
 
           {inj.levels.length > 0 && (
-            <select
-              style={styles.select}
-              value={inj.selectedLevel}
-              onChange={(e) => handleChange(index, "selectedLevel", e.target.value)}
-            >
+            <select style={styles.select} value={inj.selectedLevel} onChange={(e) => handleChange(index, "selectedLevel", e.target.value)}>
               {inj.levels.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
+                <option key={level} value={level}>{level}</option>
               ))}
             </select>
           )}
 
           {inj.direction && inj.directionAfter && (
-            <select
-              style={styles.select}
-              value={inj.directionSelected}
-              onChange={(e) => handleChange(index, "directionSelected", e.target.value)}
-            >
+            <select style={styles.select} value={inj.directionSelected} onChange={(e) => handleChange(index, "directionSelected", e.target.value)}>
               <option value="">Direction</option>
               {directionOptions.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
+                <option key={d} value={d}>{d}</option>
               ))}
             </select>
           )}

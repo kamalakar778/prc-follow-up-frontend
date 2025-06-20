@@ -24,7 +24,7 @@ export const ShortcutProvider = ({ children }) => {
     spine: {
       lumbar: "lumbar",
       cervical: "cervical",
-      thoracic: "thoracic",
+      thoracic: "thoracic ",
     },
     joints: {
       knee: "knee",

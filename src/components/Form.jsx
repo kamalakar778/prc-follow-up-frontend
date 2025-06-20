@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Demography from "./Demography";
 import ReviewOfSystems from "./ReviewOfSystems";
 import HistoryOfPresentIllness from "./HistoryOfPresentIllness";
@@ -19,7 +19,7 @@ import { MedicationProvider } from "./context/MedicationContext";
 
 import "./Form.css";
 
-const Form = () => {
+const Form = ({onChange}) => {
   const [fileName, setFileName] = useState("");
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
@@ -33,6 +33,22 @@ const Form = () => {
 
   const [painSelected, setPainSelected] = useState(new Set());
   const [abbrSelected, setAbbrSelected] = useState(new Set());
+  const [hasNowSchedule, setHasNowSchedule] = useState(false);
+  const [followUpValue, setFollowUpValue] = useState("Four weeks");
+
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      followUpAppointment: "Four weeks"
+    }));
+  }, []);
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      followUpAppointment: followUpValue
+    }));
+  }, [followUpValue]);
 
   const painLocation = {
     burning: "Burning",
@@ -165,6 +181,17 @@ const Form = () => {
     setFormData((prev) => ({ ...prev, ...data }));
     setSignatureData(data);
   };
+// const handleSignatureLineChange = () => {
+//   onChange?.({
+//     otherPlans: formattedOtherPlans.length
+//       ? `Other Plans:\n${formattedOtherPlans.join("\n")}`
+//       : "",
+//     formattedLines: `\n${formatProcessedLines()}`,
+//     followUpAppointment: followUpValue,
+//     signatureLine: buttonTexts[selectedButton] || "",
+//     dateTranscribed: formatDateToMMDDYYYY(dateTranscribed),
+//   });
+// };
 
   const handlePhysicalExamChange = (examData) => {
     setFormData((prev) => ({
@@ -195,10 +222,22 @@ const Form = () => {
     setFormData((prev) => ({ ...prev, ...updatedFields }));
   };
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  // };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // If called with event object (normal HTML input)
+    if (e?.target) {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    } else {
+      // If called with object directly (like from SignatureLine)
+      setFormData((prev) => ({ ...prev, ...e }));
+    }
   };
+
 
   const handlePainUpdate = (updatedPainSection) => {
     setFormData((prev) => ({
@@ -598,15 +637,38 @@ const Form = () => {
 
       <div className="form-section">
         <h2 className="section-title">Injections List</h2>
-        <InjectionsList onInjectionChange={handleInjectionChange} />
+        {/* <InjectionsList onInjectionChange={handleInjectionChange} /> */}
+        <InjectionsList
+          onInjectionChange={handleInjectionChange}
+          onAutoSetFollowUp={setFollowUpValue}
+          setHasNowSchedule={setHasNowSchedule}
+          onHasNowSchedule={setHasNowSchedule}
+        />
+
       </div>
 
       <div className="form-section">
         <h2 className="section-title">Signature Line</h2>
-        <SignatureLine 
-        onChange={handleSignatureChange}
-        dateOfEvaluation={dateOfEvaluation}
-         />
+        {/* <SignatureLine
+          onChange={handleSignatureChange}
+          dateOfEvaluation={dateOfEvaluation}
+        /> */}
+        {/* <SignatureLine
+          onChange={handleSignatureChange}
+          dateOfEvaluation={dateOfEvaluation}
+          followUpValue={followUpValue}
+          setFollowUpValue={setFollowUpValue}
+        /> */}
+        <SignatureLine
+          hasNowSchedule={hasNowSchedule}
+          followUpValue={followUpValue}
+          setFollowUpValue={setFollowUpValue}
+          onChange={handleSignatureChange}
+          // onChange={handleSignatureLineChange}
+          dateOfEvaluation={dateOfEvaluation}
+        />
+
+
       </div>
     </>
   );

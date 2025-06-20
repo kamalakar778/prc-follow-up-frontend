@@ -10,11 +10,9 @@ const SignatureLine = ({
 }) => {
   const getTodayISO = () => new Date().toISOString().split("T")[0];
 
-  const [otherPlans, setOtherPlans] = useState([""]);
+  const [otherPlans, setOtherPlans] = useState("");
   const [includedLines, setIncludedLines] = useState({ 1: false, 2: false });
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [selectedFollowUpOptions, setSelectedFollowUpOptions] = useState([]);
-  const [customFollowUpInput, setCustomFollowUpInput] = useState("");
   const [selectedButton, setSelectedButton] = useState("Dr. Klickovich");
   const [dateTranscribed, setDateTranscribed] = useState(getTodayISO());
   const [hasManuallySelectedButton, setHasManuallySelectedButton] = useState(false);
@@ -96,11 +94,12 @@ const SignatureLine = ({
   }, [dayOfWeek, hasManuallySelectedButton]);
 
   useEffect(() => {
-    const defaultVal = hasNowSchedule ? followUpOptions[6] : followUpOptions[3];
-    if (!selectedFollowUpOptions.includes(defaultVal)) {
-      setSelectedFollowUpOptions([defaultVal]);
+    if (!hasNowSchedule && followUpValue !== followUpOptions[3]) {
+      setFollowUpValue(followUpOptions[3]);
+    } else if (hasNowSchedule && followUpValue !== followUpOptions[6]) {
+      setFollowUpValue(followUpOptions[6]);
     }
-  }, [hasNowSchedule, followUpOptions]);
+  }, [hasNowSchedule, followUpOptions, followUpValue, setFollowUpValue]);
 
   const formatProcessedLines = useCallback(() => {
     const hasIncluded = includedLines[1] || includedLines[2];
@@ -125,24 +124,31 @@ const SignatureLine = ({
   }, [selectedOptions, includedLines, initialLines]);
 
   const formattedOtherPlans = useMemo(() => {
-    const filtered = otherPlans.filter((line, idx, arr) => idx < arr.length - 1 || line.trim());
-    return filtered.map((line, idx) => `\t${idx + 1}. ${line.trim()}`);
+    if (!otherPlans.trim()) return [];
+    return otherPlans.split("\n").map((line, idx) => `\t${idx + 1}. ${line.trim()}`);
   }, [otherPlans]);
 
+  // 🔄 Automatically push updated data to parent
   useEffect(() => {
-    const combinedFollowUps = [...selectedFollowUpOptions];
-    if (customFollowUpInput.trim()) combinedFollowUps.push(customFollowUpInput.trim());
-    const followUpSummary = combinedFollowUps.join(", ");
-
-    setFollowUpValue(followUpSummary);
     onChange?.({
       otherPlans: formattedOtherPlans.length ? `Other Plans:\n${formattedOtherPlans.join("\n")}` : "",
       formattedLines: `\n${formatProcessedLines()}`,
-      followUpAppointment: followUpSummary,
+      followUpAppointment: followUpValue,
       signatureLine: buttonTexts[selectedButton] || "",
       dateTranscribed: formatDateToMMDDYYYY(dateTranscribed)
     });
-  }, [selectedOptions, otherPlans, selectedFollowUpOptions, customFollowUpInput, selectedButton, dateTranscribed, formatProcessedLines, formattedOtherPlans, includedLines, buttonTexts, onChange]);
+  }, [
+    selectedOptions,
+    otherPlans,
+    followUpValue,
+    selectedButton,
+    dateTranscribed,
+    formatProcessedLines,
+    formattedOtherPlans,
+    includedLines,
+    buttonTexts,
+    onChange
+  ]);
 
   const toggleOption = (lineIndex, option) => {
     setSelectedOptions((prev) => {
@@ -157,11 +163,8 @@ const SignatureLine = ({
     setIncludedLines((prev) => ({ ...prev, [lineIndex]: !prev[lineIndex] }));
   };
 
-  const toggleFollowUpOption = (opt) => {
-    setSelectedFollowUpOptions((prev) =>
-      prev.includes(opt) ? prev.filter((item) => item !== opt) : [...prev, opt]
-    );
-  };
+  const handleOtherPlansChange = (e) => setOtherPlans(e.target.value);
+  const handleFollowUpChange = (val) => setFollowUpValue(val);
 
   const styles = {
     section: { border: "1px solid #ccc", padding: 12, marginBottom: 16, borderRadius: 6, backgroundColor: "#fafafa" },
@@ -174,6 +177,7 @@ const SignatureLine = ({
       border: "1px dashed #ccc", borderRadius: "6px",
       backgroundColor: "#fdfdfd", minWidth: "160px"
     },
+    rotatedText: { writingMode: "vertical-rl", transform: "rotate(180deg)", color: "#555", fontSize: "14px", marginTop: "4px" },
     optionBtn: (selected) => ({
       flexDirection: "column", cursor: "pointer", padding: "5px 8px",
       borderRadius: "6px", border: "1px solid", borderColor: selected ? "green" : "#999",
@@ -182,7 +186,7 @@ const SignatureLine = ({
     }),
     addRemoveBtn: (selected) => ({
       border: "none", padding: "2px 5px", borderRadius: "4px", cursor: "pointer",
-      fontSize: "14px", minWidth: "40px", whiteSpace: "nowrap",
+      fontSize: "14px", lineHeight: 1.2, minWidth: "40px", whiteSpace: "nowrap",
       backgroundColor: selected ? "#dc2626" : "#16a34a", color: "white"
     }),
     physicianBtn: (name, selected) => {
@@ -197,45 +201,26 @@ const SignatureLine = ({
         cursor: "pointer", border: "none"
       };
     },
-    inputText: {
-      width: "100%", padding: "10px 12px", fontSize: 15, borderRadius: 8,
-      border: "1px solid #d1d5db", backgroundColor: "#fff",
-      fontFamily: "inherit", lineHeight: 1.5,
-      transition: "box-shadow 0.2s, border-color 0.2s",
-      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)"
-    },
-    lineWrap: { marginBottom: 4, display: "flex", borderBottom: "2px solid #ccc", paddingBottom: 4 }
+    inputText: { minWidth: "80%", padding: "5px 7px", fontSize: 14, borderRadius: 6, border: "1px solid rgb(209,213,219)" },
+    followUpIinputText: { minWidth: "20%", padding: "6px 6px", fontSize: 14, borderRadius: 8, border: "1px solid rgb(209,213,219)" },
+    lineWrap: { marginBottom: 4, display: "flex", borderBottom: "2px solid #ccc", paddingBottom: 4 },
+    textarea: {
+      width: "100%", minHeight: 60, padding: 6,
+      fontSize: 14, borderRadius: 4, border: "1px solid #ccc",
+      marginBottom: 12, fontFamily: "inherit"
+    }
   };
 
   return (
     <div>
       <div style={styles.section}>
         <label style={styles.label}>Other Plans / Instructions:</label>
-        {otherPlans.map((line, idx) => (
-          <div key={idx} style={{ display: "flex", alignItems: "flex-start", marginBottom: 8 }}>
-            <label style={{ marginRight: 8, marginTop: 4 }}>{idx + 1}.</label>
-            <input
-              type="text"
-              value={line}
-              onChange={(e) => {
-                const updated = [...otherPlans];
-                updated[idx] = e.target.value;
-
-                if (idx === updated.length - 1 && e.target.value.trim() !== "") {
-                  updated.push("");
-                }
-
-                const cleaned = updated.filter((val, i) =>
-                  i === updated.length - 1 || val.trim() !== ""
-                );
-
-                setOtherPlans(cleaned);
-              }}
-              style={styles.inputText}
-              placeholder="Enter other plan"
-            />
-          </div>
-        ))}
+        <textarea
+          style={styles.textarea}
+          value={otherPlans}
+          placeholder="Enter additional plans or notes here..."
+          onChange={handleOtherPlansChange}
+        />
       </div>
 
       <div style={styles.section}>
@@ -269,13 +254,13 @@ const SignatureLine = ({
       </div>
 
       <div style={styles.section}>
-        <label style={styles.label}>Follow-Up Appointment (Multi-Select):</label>
+        <label style={styles.label}>Follow-Up Appointment:</label>
         <div>
           {followUpOptions.map((opt) => (
             <button
               key={opt}
-              onClick={() => toggleFollowUpOption(opt)}
-              style={styles.optionBtn(selectedFollowUpOptions.includes(opt))}
+              onClick={() => handleFollowUpChange(opt)}
+              style={styles.optionBtn(followUpValue === opt)}
             >
               {opt}
             </button>

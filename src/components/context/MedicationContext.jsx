@@ -92,6 +92,7 @@ export const MedicationProvider = ({ children }) => {
       Anticoagulants:"Anticoagulants",
       PCP:"PCP",
       "1-2 tabs":"1-2 tabs",
+      "12 hours on/off":"12 hours on/off",
     },
 
     "Abbrev-2": {
@@ -115,7 +116,7 @@ export const MedicationProvider = ({ children }) => {
 
   const predefinedDosages = {
     gabapentin: ["100 mg", "300 mg", "400 mg","600 mg", "800 mg"],
-    mobic:["15 mg",],
+    mobic:["7.5 mg","15 mg",],
     norco: ["5 mg","7.5 mg","10 mg"],
     robaxin: ["500 mg", "800 mg"],
     vynase:[""],
@@ -123,8 +124,8 @@ export const MedicationProvider = ({ children }) => {
     tizanidine:["4 mg"],
     percocet:["5 mg"],
 
-    lyrica: ["75 mg", "100 mg", "150 mg"],
-    diclofenac: ["50 mg", "75 mg"],
+    lyrica: ["50 mg","75 mg", "100 mg", "150 mg"],
+    diclofenac: ["gel", "50 mg", "75 mg"],
     ibuprofen: ["200 mg", "400 mg", "600 mg"],
     celebrex: ["100 mg", "200 mg"],
     tramadol: ["50 mg", "100 mg"],
