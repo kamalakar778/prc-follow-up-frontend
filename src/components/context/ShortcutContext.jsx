@@ -25,28 +25,31 @@ export const ShortcutProvider = ({ children }) => {
         lumbar: "lumbar",
         cervical: "cervical",
         thoracic: "thoracic ",
+        shoulder: "shoulder",
       },
       joints: {
+        arm:"arm",
+        hand: "hand",
+        elbow:"elbow",
+        wrist: "wrist",
+      },
+      other: {
       knee: "knee",
-      shoulder: "shoulder",
-      hand: "hand",
-      wrist: "wrist",
-    },
-    other: {
-      Abdomen:"Abdomen",
-      arm:"arm",
       foot:"foot",
       ankle:"ankle",
-      elbow:"elbow",
+      Abdomen:"Abdomen",
     },
-
-     abbreviations: {
+    "Abbrev-1": {
    "MBB":"Medial Branch Blocks",
     "RFA":"Radio Frequency ablation",
     "ESI":"Epidural Steroid Injection",
     "f/u": "Follow-up",
-  }
-  };
+  },
+  "Abbrev-2": {
+    "variable":"variable",
+    "caudal":"caudal",
+      },
+    };
 
   // Optional flattened version (if needed elsewhere)
   const painLocation = useMemo(() => {

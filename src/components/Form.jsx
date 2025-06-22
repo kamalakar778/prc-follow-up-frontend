@@ -16,10 +16,11 @@ import EarlierFollowups from "./EarlierFollowups";
 // import CustomAutoComplete from "./components/CustomAutoComplete";
 import ShortcutSection from "./ShortcutSection";
 import { MedicationProvider } from "./context/MedicationContext";
+import SidebarNav from "./Home/SidebarNav";
 
 import "./Form.css";
 
-const Form = ({onChange}) => {
+const Form = ({ onChange }) => {
   const [fileName, setFileName] = useState("");
   const [selected, setSelected] = useState(new Set());
   const [earlierFollowupsText, setEarlierFollowupsText] = useState("");
@@ -35,7 +36,7 @@ const Form = ({onChange}) => {
   const [abbrSelected, setAbbrSelected] = useState(new Set());
   const [hasNowSchedule, setHasNowSchedule] = useState(false);
   const [followUpValue, setFollowUpValue] = useState("Four weeks");
-
+  const [dateInputISO, setDateInputISO] = useState("");
 
   useEffect(() => {
     setFormData(prev => ({
@@ -65,11 +66,11 @@ const Form = ({onChange}) => {
   const [formData, setFormData] = useState({
     patientName: "________________",
     dob: "________________",
-    dateOfEvaluation: "________________",
+    dateOfEvaluation: "",
     dateOfDictation: "________________",
     physician: "Robert Klickovich, M.D",
     provider: "________________",
-    referringPhysician: "________________",
+    referringPhysician: "",
     insurance1Input: "",
     insurance1Other: "",
     insurance2Input: "",
@@ -77,6 +78,10 @@ const Form = ({onChange}) => {
     location: "Louisville",
     CMA: "",
     CMAInput: "",
+    insuranceList: [],
+CMA: [],
+insuranceListCustomInput: "",  // for input field
+CMACustomInput: "",  
     roomNumber: "",
     allergic_symptom_1: "No",
     allergic_symptom_2: "No",
@@ -181,17 +186,6 @@ const Form = ({onChange}) => {
     setFormData((prev) => ({ ...prev, ...data }));
     setSignatureData(data);
   };
-// const handleSignatureLineChange = () => {
-//   onChange?.({
-//     otherPlans: formattedOtherPlans.length
-//       ? `Other Plans:\n${formattedOtherPlans.join("\n")}`
-//       : "",
-//     formattedLines: `\n${formatProcessedLines()}`,
-//     followUpAppointment: followUpValue,
-//     signatureLine: buttonTexts[selectedButton] || "",
-//     dateTranscribed: formatDateToMMDDYYYY(dateTranscribed),
-//   });
-// };
 
   const handlePhysicalExamChange = (examData) => {
     setFormData((prev) => ({
@@ -237,7 +231,9 @@ const Form = ({onChange}) => {
       setFormData((prev) => ({ ...prev, ...e }));
     }
   };
+  const handleDemographySubmit = async (values, actions) => {
 
+  };
 
   const handlePainUpdate = (updatedPainSection) => {
     setFormData((prev) => ({
@@ -267,105 +263,36 @@ const Form = ({onChange}) => {
     }));
   };
 
-  // const handleSetMedicationListData = (text) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     medication_management: text
-  //   }));
-  // };
-
-  const handleReset = () => {
-    setFileName("");
-    setSelected(new Set());
-    setChiefComplaint({ finalText: "", inputValues: {}, addedLines: [] });
-    setFormData((prev) => ({
-      ...prev,
-      patientName: "",
-      dob: "",
-      dateOfEvaluation: "",
-      dateOfDictation: "",
-      provider: "",
-      referringPhysician: "",
-      insurance1: "",
-      insurance1Other: "",
-      insurance2: "",
-      insurance2Other: "",
-      location: "",
-      CMA: "",
-      CMAInput: "",
-      roomNumber: "",
-      pain: {
-        temporally: "",
-        numericScaleFormatted: "",
-        workingStatus: "",
-        comments: ""
-      },
-
-      // qualitatively: "",
-      complianceComments: "",
-      establishedComplaints: [],
-      vitals: "",
-      generalAppearance: "",
-      orientation: "",
-      moodAffect: "",
-      gait: "",
-      stationStance: "",
-      cardiovascular: "",
-      lymphadenopathy: "",
-      coordinationBalance: "",
-      motorFunction: "",
-      followUpPlan: "",
-      medicationOutput: [],
-      complaintsData: {
-        cervical: { enabled: true, side: "bilaterally" },
-        thoracic: { enabled: true, side: "bilaterally" },
-        lumbar: { enabled: true, side: "bilaterally" },
-        hip: { enabled: true, side: "bilaterally" },
-        patella: { enabled: true, side: "bilaterally" }
-      },
-      nonComplianceSeverity: "",
-      actionTaken: "",
-      udtStatus: "",
-      willOrderUDT: "",
-      unexpectedUTox: "",
-      pillCount: false,
-      ptEval: "",
-      imaging: "",
-      xrayOf: "",
-      behavioralFocus: "",
-      referral: "",
-      injections: "",
-      INJECTION_SUMMARY: "",
-      otherPlans: "",
-      formattedLines: "",
-      followUpAppointment: "",
-      signatureLine: "",
-      dateTranscribed: ""
-    }));
-  };
-
   const formattedAssessmentCodes = selectedCodes
     .sort((a, b) => a.index - b.index) // Ensure correct order
     .map((item) => `\t${item.index}. ${item.label}`)
     .join("\n");
+
+  if (!formData.dateOfEvaluation?.trim() && dateInputISO) {
+    const [yyyy, mm, dd] = dateInputISO.split("-");
+    const fallbackFormatted = `${mm}/${dd}/${yyyy}`;
+    formData.dateOfEvaluation = fallbackFormatted;
+    setFormData((prev) => ({ ...prev, dateOfEvaluation: fallbackFormatted }));
+  }
 
   const handleSubmit = async () => {
     // if (!fileName.trim() || !formData.patientName?.trim()) {
     //   alert("File name and patient name are required.");
     //   return;
     // }
+    let finalDateOfEval = formData.dateOfEvaluation;
 
-    const insuranceFinal1 =
-      formData.insurance1Input?.trim() ||
-      formData.insurance1 ||
-      formData.insurance1Other ||
-      "";
-    const insuranceFinal2 =
-      formData.insurance2Input?.trim() ||
-      formData.insurance2 ||
-      formData.insurance2Other ||
-      "";
-    const finalCMA = formData.CMAInput?.trim() || formData.CMA || "";
+    // const insuranceFinal1 =
+    //   formData.insurance1Input?.trim() ||
+    //   formData.insurance1 ||
+    //   formData.insurance1Other ||
+    //   "";
+    // const insuranceFinal2 =
+    //   formData.insurance2Input?.trim() ||
+    //   formData.insurance2 ||
+    //   formData.insurance2Other ||
+    //   "";
+    // const finalCMA = formData.CMAInput?.trim() || formData.CMA || "";
 
     const complaintsSummary = getComplaintsSummary();
     // const assessmentCodesFinalList = Array.from(selected || []).join("\n");
@@ -375,47 +302,178 @@ const Form = ({onChange}) => {
     // console.log("Form Data Before Payload:", formData);
     console.log("Form Data Before Payload:", formData);
     const getOrNoValue = (val) => val?.trim() || "No Value";
+
+    const isPlaceholder = (val) =>
+      !val || val.trim() === "" || /^[_/]+$/.test(val);
+
+    if (isPlaceholder(formData.dateOfEvaluation) && dateInputISO) {
+      const [yyyy, mm, dd] = dateInputISO.split("-");
+      const fallbackFormatted = `${mm}/${dd}/${yyyy}`;
+      setFormData((prev) => ({
+        ...prev,
+        dateOfEvaluation: fallbackFormatted,
+      }));
+    }
+
+
+
+    // const payload = {
+    //   ...formData,
+    //   fileName: cleanString(fileName),
+    //   patientName: cleanString(formData.patientName),
+    //   dob: cleanString(formData.dob),
+    //   dateOfEvaluation: cleanString(finalDateOfEval),
+    //   // dateOfEvaluation: cleanString(formData.dateOfEvaluation),
+    //   provider: cleanString(formData.provider),
+    //   referringPhysician: cleanString(formData.referringPhysician) || capitalizedPhysician,
+    //   insurance1: insuranceFinal1,
+    //   insurance2: insuranceFinal2,
+    //   location: cleanString(formData.location),
+    //   CMA: finalCMA,
+    //   roomNumber: cleanString(formData.roomNumber),
+    //   chiefComplaint: cleanString(chiefComplaint?.finalText),
+    //   complaintsSummary,
+
+    //   pain_illnessLevel: getOrNoValue(
+    //     formData.historyOfPresentIllness.pain_illnessLevel
+    //   ),
+    //   activity_illnessLevel: getOrNoValue(
+    //     formData.historyOfPresentIllness.activity_illnessLevel
+    //   ),
+    //   social_illnessLevel: getOrNoValue(
+    //     formData.historyOfPresentIllness.social_illnessLevel
+    //   ),
+    //   job_illnessLevel: getOrNoValue(
+    //     formData.historyOfPresentIllness.job_illnessLevel
+    //   ),
+    //   sleep_illnessLevel: getOrNoValue(
+    //     formData.historyOfPresentIllness.sleep_illnessLevel
+    //   ),
+
+    //   // Characteristics of Pain Include
+    //   temporally: formData.pain?.temporally || "",
+    //   qualitativePain: formData.pain?.qualitativePain || "",
+    //   // numericScaleFormatted: pain.numericScaleFormatted,
+    //   numericScaleFormatted: formData.pain.numericScaleFormatted,
+    //   workingStatus: formData.pain?.workingStatus || "",
+    //   comments: formData.pain?.comments || "",
+
+    //   // REVIEW OF SYSTEMS:
+    //   allergic_symptom_1: formData.formatted_allergic_1,
+    //   allergic_symptom_2: formData.formatted_allergic_2,
+    //   allergic_symptom_3: formData.formatted_allergic_3,
+    //   allergic_symptom_4: formData.formatted_allergic_4,
+    //   allergic_symptom_5: formData.formatted_allergic_5,
+    //   neurological_symptom_1: formData.formatted_neuro_1,
+    //   neurological_symptom_2: formData.formatted_neuro_2,
+    //   neurological_symptom_3: formData.formatted_neuro_3,
+    //   neurological_symptom_4: formData.formatted_neuro_4,
+    //   neurological_symptom_5: formData.formatted_neuro_5,
+
+    //   // Compliance with Treatment Plan
+    //   complianceComments: formData.complianceComments,
+    //   intervalComments: formData.intervalComments,
+    //   // complianceComments: formData.complianceComments,
+
+    //   // Physical Examination Default Data
+    //   vitals: formData.vitals,
+    //   generalAppearance: formData.generalAppearance,
+    //   orientation: formData.orientation,
+    //   moodAffect: formData.moodAffect,
+    //   gait: formData.gait,
+    //   stationStance: formData.stationStance,
+    //   cardiovascular: formData.cardiovascular,
+    //   lymphadenopathy: formData.lymphadenopathy,
+    //   coordinationBalance: formData.coordinationBalance,
+    //   motorFunction: formData.motorFunction,
+
+    //   earlier_followups: cleanString(earlierFollowupsText || ""),
+
+    //   establishedComplaints: formData.establishedComplaints,
+
+    //   assessment_codes: formattedAssessmentCodes,
+    //   // assessment_codes: assessmentCodesFinalList,
+
+    //   // followUpPlan: cleanString(formData.followUpPlan),
+    //   nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
+    //   actionTaken: formData.actionTaken,
+    //   udtStatus: formData.udtStatus,
+    //   // willNotOrderUDT: !!formData.willNotOrderUDT,
+    //   // udtStatus: formData.udtStatusFormatted,
+    //   unexpectedUTox: formData.formattedUnexpectedUTox,
+    //   pillCount: formData.formattedPillCount,
+    //   ptEval: formData.formattedPtEval,
+    //   imaging: formData.formattedImaging,
+    //   xrayOf: formData.formattedXrayOf,
+    //   behavioralFocus: formData.formattedBehavioralFocus,
+    //   referral: formData.formattedReferral,
+
+    //   medication_management: formData.medication_management,
+
+    //   INJECTION_SUMMARY: formData?.INJECTION_SUMMARY
+    //     ? `\n\n${formData?.INJECTION_SUMMARY}`
+    //     : "",
+    //   // medicationOutput: Array.isArray(formData.medicationOutput)
+    //   //   ? formData.medicationOutput.join("\n")
+    //   //   : cleanString(formData.medicationOutput),
+    //   signature: {
+    //     ...signatureData,
+    //     otherPlans: signatureData.otherPlans
+    //       ? `\n\n${signatureData.otherPlans}`
+    //       : "",
+    //     // otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
+    //     formattedLines: signatureData?.formattedLines
+    //       ? `\n${signatureData?.formattedLines}`
+    //       : "",
+    //     followUpAppointment: signatureData?.followUpAppointment || "",
+    //     signatureLine: signatureData?.signatureLine || "",
+    //     dateTranscribed: formData?.dateTranscribed || "",
+
+    //     autocompleteItem1: autoCompleteData.item1,
+    //     autocompleteItem2: autoCompleteData.item2
+    //   }
+    // };
+    const selectedInsurances = formData.insuranceList || [];
+    const selectedCMA = formData.CMA || [];
+
+    const insuranceFinal1 = selectedInsurances[0] || "";
+    const insuranceFinal2 = selectedInsurances[1] || "";
+    const finalCMA = selectedCMA.join(", "); // Or keep as array if needed elsewhere
+
     const payload = {
       ...formData,
       fileName: cleanString(fileName),
       patientName: cleanString(formData.patientName),
       dob: cleanString(formData.dob),
-      dateOfEvaluation: cleanString(formData.dateOfEvaluation),
+      dateOfEvaluation: cleanString(finalDateOfEval),
       provider: cleanString(formData.provider),
-      referringPhysician: cleanString(formData.referringPhysician),
+      referringPhysician: cleanString(formData.referringPhysician) || capitalizedPhysician,
+
+      // ✅ Updated multi-select mapping
       insurance1: insuranceFinal1,
       insurance2: insuranceFinal2,
+      insuranceList: selectedInsurances, // keep full list if backend uses it
+
       location: cleanString(formData.location),
-      CMA: finalCMA,
+      CMA: finalCMA, // can be array or string based on backend format
+
       roomNumber: cleanString(formData.roomNumber),
       chiefComplaint: cleanString(chiefComplaint?.finalText),
       complaintsSummary,
 
-      pain_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.pain_illnessLevel
-      ),
-      activity_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.activity_illnessLevel
-      ),
-      social_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.social_illnessLevel
-      ),
-      job_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.job_illnessLevel
-      ),
-      sleep_illnessLevel: getOrNoValue(
-        formData.historyOfPresentIllness.sleep_illnessLevel
-      ),
+      // ⏩ Keep rest unchanged...
+      pain_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.pain_illnessLevel),
+      activity_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.activity_illnessLevel),
+      social_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.social_illnessLevel),
+      job_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.job_illnessLevel),
+      sleep_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.sleep_illnessLevel),
 
-      // Characteristics of Pain Include
       temporally: formData.pain?.temporally || "",
       qualitativePain: formData.pain?.qualitativePain || "",
-      // numericScaleFormatted: pain.numericScaleFormatted,
       numericScaleFormatted: formData.pain.numericScaleFormatted,
       workingStatus: formData.pain?.workingStatus || "",
       comments: formData.pain?.comments || "",
 
-      // REVIEW OF SYSTEMS:
       allergic_symptom_1: formData.formatted_allergic_1,
       allergic_symptom_2: formData.formatted_allergic_2,
       allergic_symptom_3: formData.formatted_allergic_3,
@@ -427,12 +485,9 @@ const Form = ({onChange}) => {
       neurological_symptom_4: formData.formatted_neuro_4,
       neurological_symptom_5: formData.formatted_neuro_5,
 
-      // Compliance with Treatment Plan
       complianceComments: formData.complianceComments,
       intervalComments: formData.intervalComments,
-      // complianceComments: formData.complianceComments,
 
-      // Physical Examination Default Data
       vitals: formData.vitals,
       generalAppearance: formData.generalAppearance,
       orientation: formData.orientation,
@@ -445,18 +500,12 @@ const Form = ({onChange}) => {
       motorFunction: formData.motorFunction,
 
       earlier_followups: cleanString(earlierFollowupsText || ""),
-
       establishedComplaints: formData.establishedComplaints,
 
       assessment_codes: formattedAssessmentCodes,
-      // assessment_codes: assessmentCodesFinalList,
-
-      // followUpPlan: cleanString(formData.followUpPlan),
       nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
       actionTaken: formData.actionTaken,
       udtStatus: formData.udtStatus,
-      // willNotOrderUDT: !!formData.willNotOrderUDT,
-      // udtStatus: formData.udtStatusFormatted,
       unexpectedUTox: formData.formattedUnexpectedUTox,
       pillCount: formData.formattedPillCount,
       ptEval: formData.formattedPtEval,
@@ -467,21 +516,12 @@ const Form = ({onChange}) => {
 
       medication_management: formData.medication_management,
 
-      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY
-        ? `\n\n${formData?.INJECTION_SUMMARY}`
-        : "",
-      // medicationOutput: Array.isArray(formData.medicationOutput)
-      //   ? formData.medicationOutput.join("\n")
-      //   : cleanString(formData.medicationOutput),
+      INJECTION_SUMMARY: formData?.INJECTION_SUMMARY ? `\n\n${formData?.INJECTION_SUMMARY}` : "",
+
       signature: {
         ...signatureData,
-        otherPlans: signatureData.otherPlans
-          ? `\n\n${signatureData.otherPlans}`
-          : "",
-        // otherPlans: (signatureData.otherPlans?.lines || []).join("\n"),
-        formattedLines: signatureData?.formattedLines
-          ? `\n${signatureData?.formattedLines}`
-          : "",
+        otherPlans: signatureData.otherPlans ? `\n\n${signatureData.otherPlans}` : "",
+        formattedLines: signatureData?.formattedLines ? `\n${signatureData?.formattedLines}` : "",
         followUpAppointment: signatureData?.followUpAppointment || "",
         signatureLine: signatureData?.signatureLine || "",
         dateTranscribed: formData?.dateTranscribed || "",
@@ -524,10 +564,21 @@ const Form = ({onChange}) => {
     }
   };
 
+   useEffect(() => {
+    const scrollToId = localStorage.getItem("scrollToId");
+    if (scrollToId) {
+      const el = document.getElementById(scrollToId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      localStorage.removeItem("scrollToId"); // Clear it after use
+    }
+  }, []);
   return (
     <>
-      <div className="form-section">
+      <div className="form-section"  id="demography">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
+
 
         <Demography
           fileName={fileName}
@@ -536,12 +587,17 @@ const Form = ({onChange}) => {
           setFormData={setFormData}
           onChange={handleChange}
           onSubmit={handleSubmit}
-          onReset={handleReset}
-          setDateOfEvaluation={setDateOfEvaluation}
+          dateInputISO={dateInputISO}
+          setDateInputISO={setDateInputISO}
+          setDateOfEvaluation={(val) => {
+            // Keep formData.dateOfEvaluation in sync if needed
+            setFormData((prev) => ({ ...prev, dateOfEvaluation: val }));
+          }}
         />
+
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="chief-complaint">
         <h2 className="section-title">Chief Complaint</h2>
         <ChiefComplaint initialValues={{}} onChange={setChiefComplaint}
           painSelected={painSelected}
@@ -553,7 +609,7 @@ const Form = ({onChange}) => {
         />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="history-of-present-illness">
         <h2 className="section-title">History Of Present Illness</h2>
         <HistoryOfPresentIllness
           formData={formData.historyOfPresentIllness}
@@ -569,7 +625,7 @@ const Form = ({onChange}) => {
         />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="characteristics-of-pain">
         <h2 className="section-title">Characteristics Of Pain Include:</h2>
         <CharacteristicsOfPain
           formData={formData.pain}
@@ -577,7 +633,7 @@ const Form = ({onChange}) => {
         />
       </div>
 
-      <div className="form-section">
+      <div className="form-section"  id="review-of-systems">
         <h2 className="section-title">Review Of Systems</h2>
         <ReviewOfSystems
           formData={formData}
@@ -586,7 +642,7 @@ const Form = ({onChange}) => {
         />
         {/* <ReviewOfSystems formData={formData} setFormData={setFormData} /> */}
       </div>
-      <div className="form-section">
+      <div className="form-section" id="compliance">
         <h2 className="section-title">
           Patient Compliance with Treatment Plan
         </h2>
@@ -595,22 +651,22 @@ const Form = ({onChange}) => {
           setFormData={setFormData}
         />
       </div>
-      <div className="form-section">
+      <div className="form-section" id="physical-examination">
         <h2 className="section-title">Physical Examination</h2>
         <PhysicalExamination onChange={handlePhysicalExamChange} />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="earlier-followups">
         <h2 className="section-title">Earlier Followups</h2>
         <EarlierFollowups onDataChange={setEarlierFollowupsText} />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="established-complaints">
         <h2 className="section-title">Established Complaints</h2>
         <EstablishedComplaints onChange={handleEstablishedComplaintsChange} />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="assessment-codes">
         <h2 className="section-title">Assessment Codes</h2>
         {/* <AssessmentCodes selected={selected} setSelected={setSelected} /> */}
         <AssessmentCodes
@@ -619,12 +675,12 @@ const Form = ({onChange}) => {
         />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="follow-up-plan">
         <h2 className="section-title">Follow-Up Plan</h2>
         <FollowupPlan setFormData={setFormData} />
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="medication-management">
         <h2 className="section-title">Medication Management</h2>
         <MedicationProvider>
           <MedicationManagement
@@ -635,7 +691,7 @@ const Form = ({onChange}) => {
         </MedicationProvider>
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="injections-list">
         <h2 className="section-title">Injections List</h2>
         {/* <InjectionsList onInjectionChange={handleInjectionChange} /> */}
         <InjectionsList
@@ -647,7 +703,7 @@ const Form = ({onChange}) => {
 
       </div>
 
-      <div className="form-section">
+      <div className="form-section" id="signature-line">
         <h2 className="section-title">Signature Line</h2>
         {/* <SignatureLine
           onChange={handleSignatureChange}
@@ -665,7 +721,8 @@ const Form = ({onChange}) => {
           setFollowUpValue={setFollowUpValue}
           onChange={handleSignatureChange}
           // onChange={handleSignatureLineChange}
-          dateOfEvaluation={dateOfEvaluation}
+          // dateOfEvaluation={dateOfEvaluation}
+          dateOfEvaluation={formData.dateOfEvaluation}
         />
 
 

@@ -49,7 +49,7 @@ const styles = {
     background: "#ecf0f1",
     border: "1px solid #ccc",
     borderRadius: "6px",
-    padding: "2px 4px",
+    padding: "2px 8px",
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: 500,

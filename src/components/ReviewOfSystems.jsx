@@ -96,7 +96,9 @@ const styles = {
   }
 };
 
-const ReviewOfSystems = ({ formData = {}, setFormData, onReviewChange }) => {
+// const ReviewOfSystems = ({ formData = {}, setFormData, onReviewChange }) => {
+  const ReviewOfSystems = ({ formData = {}, setFormData = () => {}, onReviewChange }) => {
+
   const defaultNoValue = options.find((opt) => opt === "No") || options[0];
 
   const [allergicFormatted, setAllergicFormatted] = useState([]);

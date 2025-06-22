@@ -6,34 +6,12 @@ import axios from "axios";
 const BACKEND_URL = "http://localhost:8000";
 const responsiveStyles = `
 @media (max-width: 768px) {
-  .responsive-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .responsive-label {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .responsive-input,
-  .responsive-select {
-    width: 100% !important;
-  }
-
-  .button-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .responsive-wrap {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 0.3rem !important;
-    max-width: 100%;
-  }
+  .responsive-grid { grid-template-columns: 1fr !important; }
+  .responsive-label { flex-direction: column !important; align-items: flex-start !important; }
+  .responsive-input, .responsive-select { width: 100% !important; }
+  .button-row { flex-direction: column !important; align-items: stretch !important; }
 }
 `;
-
 const styles = {
   container: {
     fontFamily: "Arial, sans-serif",
@@ -61,7 +39,7 @@ const styles = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    fontSize: "16px",
+    fontSize: "14px",
     color: "#333",
     gap: "0.3rem",
     marginBottom: "-0.2rem",
@@ -69,33 +47,27 @@ const styles = {
   fileNameinput: {
     margin: "auto",
     flex: 1,
-    padding: "8px",
+    padding: "6px",
     borderRadius: "4px",
     border: "1px solid #ccc",
     fontSize: "15px",
   },
   input: {
-    display: "flex",
-    maxWidth:"40%",
-    flexDirection: "row",
-    minWidth: "180px",
+    width: "140px",
     flex: 1,
     padding: "6px",
     borderRadius: "4px",
     border: "1px solid #ccc",
-    fontSize: "15px",
+    fontSize: "16px",
     margin: "6px",
   },
   dateInputContainer: {
     display: "flex",
-    maxWidth:"10%",
     alignItems: "center",
     gap: "0.25rem",
   },
   dateInput: {
     padding: "6px",
-    // marginTop:"0px",
-    margin:"0px 0px",
     borderRadius: "4px",
     border: "1px solid #ccc",
     fontSize: "16px",
@@ -103,8 +75,6 @@ const styles = {
   },
   buttonSmall: {
     padding: "4px 8px",
-    // marginTop:"0px",
-    margin:"0px 0px",
     borderRadius: "4px",
     border: "none",
     backgroundColor: "#3498db",
@@ -134,55 +104,20 @@ const styles = {
     color: "#fff",
   },
   optionButton: (isSelected) => ({
-    margin: 1,
-    padding: "6px 6px",
-    borderRadius: "8px",
+    marginRight: 4,
+    marginTop: 4,
+    padding: "8px",
+    borderRadius: "6px",
     border: "1px solid",
-    borderColor: isSelected ? "green" : "#999",
-    backgroundColor: isSelected ? "#e0f7e9" : "#f0f0f0",
-    color: isSelected ? "green" : "#333",
+    borderColor: isSelected ? "green" : "gray",
+    backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5",
+    color: isSelected ? "green" : "gray",
     fontWeight: isSelected ? "bold" : "normal",
     cursor: "pointer",
+    display: "inline-block",
     fontSize: "15px",
-    lineHeight: "1.4",
-    whiteSpace: "nowrap",
-    display: "inline-block"
   }),
-  optionButton2: (isSelected) => ({
-    margin: 0,
-    marginTop: "4px",
-    padding: "4px 4px",
-    borderRadius: "8px",
-    border: "1px solid",
-    borderColor: isSelected ? "green" : "#999",
-    backgroundColor: isSelected ? "#e0f7e9" : "#f0f0f0",
-    color: isSelected ? "green" : "#333",
-    fontWeight: isSelected ? "bold" : "normal",
-    cursor: "pointer",
-    fontSize: "15px",
-    lineHeight: "1.4",
-    whiteSpace: "nowrap",
-    display: "inline-block"
-  }),
-  selectedTag: {
-    backgroundColor: "#e0f7fa",
-    border: "1px solid #00acc1",
-    borderRadius: "20px",
-    padding: "0.25rem 0.75rem",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-  },
-  removeTagButton: {
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    color: "#007c91",
-    fontSize: "1rem",
-    lineHeight: "1",
-  }
 };
-
 
 const providerOptions = [
   { "Cortney Lacefield": "Cortney Lacefield, APRN" },
@@ -192,14 +127,14 @@ const providerOptions = [
 ];
 const locationOptions = ["Louisville", "E-town"];
 const insuranceOptions = [
-  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana",
-  "Medicare", "Medicare B","MCR", "TriCare", "Trieast",
-  "WellCare", "PP", "UHC", "Work. Comp", "Self pay", "Medicaid",
+  "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "PP",
+  "MCR", "Medicare", "Medicare B", "Medicaid", "TriCare", "Trieast",
+  "WellCare", "Work. Comp", "UHC", "Other", "Self pay"
 ];
 const cmaOptions = [
   "Alyson", "Brenda", "Erika", "Janelle", "Laurie", "Melanie",
   "MS", "Nick", "PP", "SC", "Steph", "Tony", "Tina",
-  "DJ", "Tammy"
+  "DJ", "Tammy", "Other"
 ];
 
 // Date helpers
@@ -226,27 +161,13 @@ const isValidDate = (v) => {
 
 const validationSchema = Yup.object({
   provider: Yup.string().required("Provider is required"),
-  patientName: Yup.string()
-    .required("Patient Name is required")
-    .min(3, "Patient Name must be at least 3 characters"),
-  referringPhysician: Yup.string()
-    .required("Referring Physician is required")
-    .min(3, "Must be at least 3 characters"),
-  dob: Yup.string()
-    .required("Date of Birth is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
-      "DOB must be in MM/DD/YYYY format"
-    )
-    .test("valid-date", "Invalid date", isValidDate),
-  dateOfEvaluation: Yup.string()
-    .required("Date of Evaluation is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
-      "Date must be in MM/DD/YYYY format"
-    )
-    .test("valid", "Invalid date", isValidDate),
-
+  patientName: Yup.string().required("Patient Name is required"),
+  // dob: Yup.string().required("Date of Birth is required")
+  //   .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/, "MM/DD/YYYY format")
+  //   .test("valid", "Invalid date", isValidDate),
+  // dateOfEvaluation: Yup.string().required("Date of Evaluation is required")
+  //   .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/, "MM/DD/YYYY format")
+  //   .test("valid", "Invalid date", isValidDate),
   location: Yup.string().test(
     "et-check",
     "Location must be E-town if (ET) is in the file name",
@@ -257,9 +178,8 @@ const validationSchema = Yup.object({
   ),
 });
 
-
 const Demography = ({
-  fileName, formData, onFileNameChange, onChange,
+  fileName, formData, onFileNameChange, onChange, 
   onSubmit: onSubmitExternal, setFormData, setDateOfEvaluation
 }) => {
   const [dateISO, setDateISO] = useState(() => {
@@ -375,14 +295,14 @@ const Demography = ({
   };
 
   const toggleArrayOption = (field, value, setFieldValue) => {
-    const current = formData[field] || [];
-    const isSelected = current.includes(value);
-    const updated = isSelected
-      ? current.filter((v) => v !== value)
-      : [...current, value];
-    setFormData((prev) => ({ ...prev, [field]: updated }));
-    setFieldValue(field, updated);
-  };
+  const current = formData[field] || [];
+  const isSelected = current.includes(value);
+  const updated = isSelected
+    ? current.filter((v) => v !== value)
+    : [...current, value];
+  setFormData((prev) => ({ ...prev, [field]: updated }));
+  setFieldValue(field, updated);
+};
 
 
   const fields = [
@@ -392,8 +312,8 @@ const Demography = ({
     { label: "Referring Physician", name: "referringPhysician", type: "referring" },
     { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
     { label: "Location", name: "location", type: "toggle", options: locationOptions },
-    { label: "Insurance", name: "insuranceList", type: "insurance" },
-    { label: "CMA", name: "CMA", type: "cma" },
+   { label: "Insurance", name: "insuranceList", type: "insurance" },
+  { label: "CMA", name: "CMA", type: "cma" },
     { label: "Room #", name: "roomNumber", type: "input" },
   ];
 
@@ -465,120 +385,118 @@ const Demography = ({
                   case "inputWithDate":
                     return (
                       <div key={f.name} style={styles.label} className="responsive-label">
-                        <span>{f.label}:
-                          <div style={styles.dateInputContainer}>
-                            <input
-                              name={`${f.name}-text`}
-                              className="responsive-input"
-                              style={{ ...styles.input, width: "120px" }}
-                              placeholder="MM/DD/YYYY"
-                              value={values[f.name] || ""}
-                              onChange={(e) => {
-                                const val = e.target.value.trim();
-                                setFieldValue(f.name, val);
-                                if (val) setDateISO("");
-                                setDateOfEvaluation?.(val);
-                                onChange({ target: { name: f.name, value: val } });
-                              }}
-                              onBlur={() => {
-                                if (!values[f.name]) {
-                                  const [yy, mm, dd] = dateISO.split("-");
-                                  const fallback = `${mm}/${dd}/${yy}`;
-                                  setFieldValue(f.name, fallback);
-                                  setDateOfEvaluation?.(fallback);
-                                  onChange({ target: { name: f.name, value: fallback } });
-                                }
-                              }}
-                            />
-                            <button
-                              type="button"
-                              style={styles.buttonSmall}
-                              onClick={() => changeDate(-1, setFieldValue)}
-                            >
-                              ◀
-                            </button>
-                            <input
-                              type="date"
-                              value={dateISO}
-                              style={styles.dateInput}
-                              onChange={(e) => {
-                                const iso = e.target.value;
-                                if (!iso) return;
-                                const [yy, mm, dd] = iso.split("-");
-                                const mmdd = `${mm}/${dd}/${yy}`;
-                                setDateISO(iso);
-                                setFieldValue(f.name, mmdd);
-                                setDateOfEvaluation?.(mmdd);
-                                onChange({ target: { name: f.name, value: mmdd } });
-                              }}
-                            />
-                            <button
-                              type="button"
-                              style={styles.buttonSmall}
-                              onClick={() => changeDate(1, setFieldValue)}
-                            >
-                              ▶
-                            </button>
-                            {values[f.name] && (
-                              <span style={{ marginLeft: "8px", fontStyle: "italic", color: "#666" }}>
-                                {getWeekday(values[f.name])}
-                              </span>
-                            )}
-                            {err && <div style={{ color: "red" }}>{err}</div>}
-                          </div>
-                        </span>
+                        <span>{f.label}:</span>
+                        <input
+                          name={`${f.name}-text`}
+                          className="responsive-input"
+                          style={{ ...styles.input, width: "140px" }}
+                          placeholder="MM/DD/YYYY"
+                          value={values[f.name] || ""}
+                          onChange={(e) => {
+                            const val = e.target.value.trim();
+                            setFieldValue(f.name, val);
+                            if (val) setDateISO("");
+                            setDateOfEvaluation?.(val);
+                            onChange({ target: { name: f.name, value: val } });
+                          }}
+                          onBlur={() => {
+                            if (!values[f.name]) {
+                              const [yy, mm, dd] = dateISO.split("-");
+                              const fallback = `${mm}/${dd}/${yy}`;
+                              setFieldValue(f.name, fallback);
+                              setDateOfEvaluation?.(fallback);
+                              onChange({ target: { name: f.name, value: fallback } });
+                            }
+                          }}
+                        />
+                        <div style={styles.dateInputContainer}>
+                          <button
+                            type="button"
+                            style={styles.buttonSmall}
+                            onClick={() => changeDate(-1, setFieldValue)}
+                          >
+                            ◀
+                          </button>
+                          <input
+                            type="date"
+                            value={dateISO}
+                            style={styles.dateInput}
+                            onChange={(e) => {
+                              const iso = e.target.value;
+                              if (!iso) return;
+                              const [yy, mm, dd] = iso.split("-");
+                              const mmdd = `${mm}/${dd}/${yy}`;
+                              setDateISO(iso);
+                              setFieldValue(f.name, mmdd);
+                              setDateOfEvaluation?.(mmdd);
+                              onChange({ target: { name: f.name, value: mmdd } });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            style={styles.buttonSmall}
+                            onClick={() => changeDate(1, setFieldValue)}
+                          >
+                            ▶
+                          </button>
+                        </div>
+                        {values[f.name] && (
+                          <span style={{ marginLeft: "8px", fontStyle: "italic", color: "#666" }}>
+                            {getWeekday(values[f.name])}
+                          </span>
+                        )}
+                        {err && <div style={{ color: "red" }}>{err}</div>}
                       </div>
                     );
                   case "referring":
                     return (
                       <div key={f.name} style={styles.label} className="responsive-label">
                         <span>{f.label}:</span>
-                          <div style={{ position: "relative", width: "20%" }}>
-                            <input
-                              name={f.name}
-                              value={referringInput}
-                              className="responsive-input"
-                              style={styles.input}
-                              onChange={(e) => handleReferringChange(e, setFieldValue)}
-                              autoComplete="off"
-                            />
-                            {filteredPhysicians.length > 0 && referringInput.trim() !== "" && (
-                              <ul style={{
-                                position: "absolute",
-                                left: 0,
-                                right: 0,
-                                margin: 0,
-                                padding: 0,
-                                listStyle: "none",
-                                maxHeight: 150,
-                                overflowY: "auto",
-                                zIndex: 10,
-                                backgroundColor: "#fff",
-                                border: "1px solid #ccc",
-                              }}>
-                                {filteredPhysicians.map((doc) => (
-                                  <li
-                                    key={doc}
-                                    style={{
-                                      padding: 8,
-                                      cursor: "pointer",
-                                      borderBottom: "1px solid #eee",
-                                    }}
-                                    onClick={() => {
-                                      setReferringInput(doc);
-                                      setFilteredPhysicians([]);
-                                      setFieldValue(f.name, doc);
-                                      onChange({ target: { name: f.name, value: doc } });
-                                    }}
-                                  >
-                                    {doc}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                            
-                          </div>
-                            {err && <div style={{ color: "red" }}>{err}</div>}
+                        <div style={{ position: "relative", width: "100%" }}>
+                          <input
+                            name={f.name}
+                            value={referringInput}
+                            className="responsive-input"
+                            style={styles.input}
+                            onChange={(e) => handleReferringChange(e, setFieldValue)}
+                            autoComplete="off"
+                          />
+                          {filteredPhysicians.length > 0 && referringInput.trim() !== "" && (
+                            <ul style={{
+                              position: "absolute",
+                              left: 0,
+                              right: 0,
+                              margin: 0,
+                              padding: 0,
+                              listStyle: "none",
+                              maxHeight: 150,
+                              overflowY: "auto",
+                              zIndex: 10,
+                              backgroundColor: "#fff",
+                              border: "1px solid #ccc",
+                            }}>
+                              {filteredPhysicians.map((doc) => (
+                                <li
+                                  key={doc}
+                                  style={{
+                                    padding: 8,
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                  onClick={() => {
+                                    setReferringInput(doc);
+                                    setFilteredPhysicians([]);
+                                    setFieldValue(f.name, doc);
+                                    onChange({ target: { name: f.name, value: doc } });
+                                  }}
+                                >
+                                  {doc}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {err && <div style={{ color: "red" }}>{err}</div>}
+                        </div>
                       </div>
                     );
                   case "toggle":
@@ -605,86 +523,50 @@ const Demography = ({
                       </div>
                     );
                   case "insurance":
-                  case "cma": {
-                    const isInsurance = f.type === "insurance";
-                    const list = isInsurance ? insuranceOptions : cmaOptions;
-                    const selected = values[f.name] || [];
-
+                  case "cma":
+                    const list = f.type === "insurance" ? insuranceOptions : cmaOptions;
                     return (
                       <div key={f.name} style={styles.label} className="responsive-label">
-                        <span>{f.label}:
-
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", marginBottom: "0.5rem" }}>
-                          {list.map((option) => {
-                            const isSelected = selected.includes(option);
-                            return (
-                              <span
-                                key={option}
-                                style={styles.optionButton2(isSelected)}
-                                onClick={() => {
-                                  const newSelected = isSelected
-                                    ? selected.filter((item) => item !== option)
-                                    : [...selected, option];
-                                  setFieldValue(f.name, newSelected);
-                                  setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
-                                }}
-                              >
-                                {option}
-                              </span>
-                            );
-                          })}
-                          <input
-                            name={f.name}
-                            value={""}
-                            placeholder={`Enter ${f.label}`}
-                            className="responsive-input"
-                            style={styles.input}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && e.target.value.trim() !== "") {
-                                e.preventDefault();
-                                const val = e.target.value.trim();
-                                if (!selected.includes(val)) {
-                                  const newSelected = [...selected, val];
-                                  setFieldValue(f.name, newSelected);
-                                  setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
-                                }
-                                e.target.value = "";
-                              }
-                            }}
-                          />
-                        </div>
-                        </span>
-
-                        {/* Optionally show selected tags */}
-                        {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-                          {selected.map((val) => (
-                            <span key={val} style={styles.selectedTag}>
-                              {val}
-                              <button
-                                style={styles.removeTagButton}
-                                onClick={() => {
-                                  const newSelected = selected.filter((item) => item !== val);
-                                  setFieldValue(f.name, newSelected);
-                                  setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
-                                }}
-                              >
-                                ✕
-                              </button>
-                            </span>
+                        <span>{f.label}:</span>
+                        <select
+                          name={f.name}
+                          value={values[f.name] || ""}
+                          className="responsive-select"
+                          style={styles.select}
+                          onChange={(e) => {
+                            onChange(e);
+                            setFieldValue(f.name, e.target.value);
+                            setFieldValue(`${f.name}Input`, "");
+                          }}
+                        >
+                          <option value="">-- Select {f.label} --</option>
+                          {list.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
                           ))}
-                        </div> */}
+                        </select>
+                        <input
+                          name={`${f.name}Input`}
+                          placeholder={`Or type ${f.label}`}
+                          className="responsive-input"
+                          style={styles.input}
+                          value={values[`${f.name}Input`] || ""}
+                          onChange={(e) => {
+                            onChange(e);
+                            setFieldValue(`${f.name}Input`, e.target.value);
+                            setFieldValue(f.name, e.target.value.trim() ? "Other" : "");
+                          }}
+                        />
                       </div>
                     );
-                  }
-
+                  default:
+                    return null;
                 }
               })}
             </div>
           </div>
         </form>
-      )
-      }
-    </Formik >
+      )}
+    </Formik>
   );
 };
 

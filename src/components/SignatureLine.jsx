@@ -21,8 +21,8 @@ const SignatureLine = ({
 
   const followUpOptions = useMemo(() => [
     "One week", "Two weeks", "Three weeks", "Four weeks",
-    "Six weeks", "Two months", "Several weeks after procedure",
-    "PRN (as needed)", "No further follow-up", "To be determined"
+    "Six weeks", "Twelve weeks", "Several weeks after procedure",
+    "PRN (as needed)", "No further follow-up", "Yet to be determined"
   ], []);
 
   const initialLines = useMemo(() => [

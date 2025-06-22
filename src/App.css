@@ -1,4 +1,44 @@
 body {
-    font-Family: "Arial, sans-serif", !important
+  font-family: "Arial", sans-serif !important; /* Corrected syntax */
   /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+}
+
+.App {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Main container to split sidebar and form */
+.main-container {
+  display: flex;
+  width: 100%;
+}
+
+/* Sidebar styling (20% width) */
+.sidebar {
+  width: 10%;
+  background-color: #f4f4f4; /* Light background for sidebar */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Form container styling (80% width) */
+.form-container {
+  width: 90%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #fff; /* White background for the form */
+  overflow-y: auto; /* Ensure scrolling if the form content overflows */
+}
+
+/* Optional: Make the sidebar and form components responsive for smaller screens */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column; /* Stack them vertically on small screens */
+  }
+  
+  .sidebar, .form-container {
+    width: 100%; /* Make both take up full width */
+  }
 }
