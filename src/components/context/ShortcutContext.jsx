@@ -38,6 +38,7 @@ export const ShortcutProvider = ({ children }) => {
       foot:"foot",
       ankle:"ankle",
       Abdomen:"Abdomen",
+      feet:"feet",
     },
     "Abbrev-1": {
    "MBB":"Medial Branch Blocks",

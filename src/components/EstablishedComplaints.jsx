@@ -173,7 +173,7 @@ const levels = {
 const LocationOptions = [
   { left: "on left" },
   { right: "on right" },
-  { bilateral: "on bilaterally" }
+  { bilateral: "bilaterally" }
 ];
 
 const OptionSelector = ({ options, selectedValue, onSelect }) => (

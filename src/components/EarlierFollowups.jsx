@@ -46,8 +46,8 @@ const styles = {
   },
   section: {
 
-    minWidth: "150px",
-    maxWidth: "280px",
+    minWidth: "180px",
+    maxWidth: "310px",
     border: "1px solid #d1d5db",
     padding: "18px 10px",
     borderRadius: "10px",
