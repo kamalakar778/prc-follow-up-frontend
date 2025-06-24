@@ -452,7 +452,7 @@ CMACustomInput: "",
       // ✅ Updated multi-select mapping
       insurance1: insuranceFinal1,
       insurance2: insuranceFinal2,
-      insuranceList: selectedInsurances, // keep full list if backend uses it
+      insuranceList: cleanString(selectedInsurances.join(", ")), // keep full list if backend uses it
 
       location: cleanString(formData.location),
       CMA: finalCMA, // can be array or string based on backend format

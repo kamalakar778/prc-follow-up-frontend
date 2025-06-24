@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -76,7 +76,7 @@ const styles = {
   },
   input: {
     display: "flex",
-    maxWidth:"40%",
+    maxWidth: "40%",
     flexDirection: "row",
     minWidth: "180px",
     flex: 1,
@@ -88,14 +88,14 @@ const styles = {
   },
   dateInputContainer: {
     display: "flex",
-    maxWidth:"10%",
+    maxWidth: "10%",
     alignItems: "center",
     gap: "0.25rem",
   },
   dateInput: {
     padding: "6px",
     // marginTop:"0px",
-    margin:"0px 0px",
+    margin: "0px 0px",
     borderRadius: "4px",
     border: "1px solid #ccc",
     fontSize: "16px",
@@ -104,7 +104,7 @@ const styles = {
   buttonSmall: {
     padding: "4px 8px",
     // marginTop:"0px",
-    margin:"0px 0px",
+    margin: "0px 0px",
     borderRadius: "4px",
     border: "none",
     backgroundColor: "#3498db",
@@ -193,7 +193,7 @@ const providerOptions = [
 const locationOptions = ["Louisville", "E-town"];
 const insuranceOptions = [
   "Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana",
-  "Medicare", "Medicare B","MCR", "TriCare", "Trieast",
+  "Medicare", "Medicare B", "MCR", "TriCare", "Trieast",
   "WellCare", "PP", "UHC", "Work. Comp", "Self pay", "Medicaid",
 ];
 const cmaOptions = [
@@ -274,6 +274,9 @@ const Demography = ({
   const [referringInput, setReferringInput] = useState(formData.referringPhysician || "");
   const [filteredPhysicians, setFilteredPhysicians] = useState([]);
   const [allPhysicians, setAllPhysicians] = useState([]);
+  const insuranceInputRef = useRef(null);
+  const cmaInputRef = useRef(null);
+
 
   // Initialize default date and fetch physicians
   useEffect(() => {
@@ -352,6 +355,26 @@ const Demography = ({
   };
 
   const onSubmit = async (values, actions) => {
+    // Append input field value to array fields if not already added
+    const insuranceVal = insuranceInputRef.current?.value.trim();
+    const cmaVal = cmaInputRef.current?.value.trim();
+
+    if (insuranceVal && !values.insuranceList.includes(insuranceVal)) {
+      values.insuranceList.push(insuranceVal);
+      setFormData(prev => ({
+        ...prev,
+        insuranceList: [...(prev.insuranceList || []), insuranceVal],
+      }));
+    }
+
+    if (cmaVal && !values.CMA.includes(cmaVal)) {
+      values.CMA.push(cmaVal);
+      setFormData(prev => ({
+        ...prev,
+        CMA: [...(prev.CMA || []), cmaVal],
+      }));
+    }
+
     if (!values.dateOfEvaluation && dateISO) {
       const [yy, mm, dd] = dateISO.split("-");
       const mmdd = `${mm}/${dd}/${yy}`;
@@ -373,6 +396,7 @@ const Demography = ({
 
     await onSubmitExternal({ ...values, referringPhysician: cap }, actions);
   };
+
 
   const toggleArrayOption = (field, value, setFieldValue) => {
     const current = formData[field] || [];
@@ -533,52 +557,52 @@ const Demography = ({
                     return (
                       <div key={f.name} style={styles.label} className="responsive-label">
                         <span>{f.label}:</span>
-                          <div style={{ position: "relative", width: "20%" }}>
-                            <input
-                              name={f.name}
-                              value={referringInput}
-                              className="responsive-input"
-                              style={styles.input}
-                              onChange={(e) => handleReferringChange(e, setFieldValue)}
-                              autoComplete="off"
-                            />
-                            {filteredPhysicians.length > 0 && referringInput.trim() !== "" && (
-                              <ul style={{
-                                position: "absolute",
-                                left: 0,
-                                right: 0,
-                                margin: 0,
-                                padding: 0,
-                                listStyle: "none",
-                                maxHeight: 150,
-                                overflowY: "auto",
-                                zIndex: 10,
-                                backgroundColor: "#fff",
-                                border: "1px solid #ccc",
-                              }}>
-                                {filteredPhysicians.map((doc) => (
-                                  <li
-                                    key={doc}
-                                    style={{
-                                      padding: 8,
-                                      cursor: "pointer",
-                                      borderBottom: "1px solid #eee",
-                                    }}
-                                    onClick={() => {
-                                      setReferringInput(doc);
-                                      setFilteredPhysicians([]);
-                                      setFieldValue(f.name, doc);
-                                      onChange({ target: { name: f.name, value: doc } });
-                                    }}
-                                  >
-                                    {doc}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                            
-                          </div>
-                            {err && <div style={{ color: "red" }}>{err}</div>}
+                        <div style={{ position: "relative", width: "20%" }}>
+                          <input
+                            name={f.name}
+                            value={referringInput}
+                            className="responsive-input"
+                            style={styles.input}
+                            onChange={(e) => handleReferringChange(e, setFieldValue)}
+                            autoComplete="off"
+                          />
+                          {filteredPhysicians.length > 0 && referringInput.trim() !== "" && (
+                            <ul style={{
+                              position: "absolute",
+                              left: 0,
+                              right: 0,
+                              margin: 0,
+                              padding: 0,
+                              listStyle: "none",
+                              maxHeight: 150,
+                              overflowY: "auto",
+                              zIndex: 10,
+                              backgroundColor: "#fff",
+                              border: "1px solid #ccc",
+                            }}>
+                              {filteredPhysicians.map((doc) => (
+                                <li
+                                  key={doc}
+                                  style={{
+                                    padding: 8,
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                  onClick={() => {
+                                    setReferringInput(doc);
+                                    setFilteredPhysicians([]);
+                                    setFieldValue(f.name, doc);
+                                    onChange({ target: { name: f.name, value: doc } });
+                                  }}
+                                >
+                                  {doc}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+
+                        </div>
+                        {err && <div style={{ color: "red" }}>{err}</div>}
                       </div>
                     );
                   case "toggle":
@@ -614,45 +638,46 @@ const Demography = ({
                       <div key={f.name} style={styles.label} className="responsive-label">
                         <span>{f.label}:
 
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", marginBottom: "0.5rem" }}>
-                          {list.map((option) => {
-                            const isSelected = selected.includes(option);
-                            return (
-                              <span
-                                key={option}
-                                style={styles.optionButton2(isSelected)}
-                                onClick={() => {
-                                  const newSelected = isSelected
-                                    ? selected.filter((item) => item !== option)
-                                    : [...selected, option];
-                                  setFieldValue(f.name, newSelected);
-                                  setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
-                                }}
-                              >
-                                {option}
-                              </span>
-                            );
-                          })}
-                          <input
-                            name={f.name}
-                            value={""}
-                            placeholder={`Enter ${f.label}`}
-                            className="responsive-input"
-                            style={styles.input}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && e.target.value.trim() !== "") {
-                                e.preventDefault();
-                                const val = e.target.value.trim();
-                                if (!selected.includes(val)) {
-                                  const newSelected = [...selected, val];
-                                  setFieldValue(f.name, newSelected);
-                                  setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", marginBottom: "0.5rem" }}>
+                            {list.map((option) => {
+                              const isSelected = selected.includes(option);
+                              return (
+                                <span
+                                  key={option}
+                                  style={styles.optionButton2(isSelected)}
+                                  onClick={() => {
+                                    const newSelected = isSelected
+                                      ? selected.filter((item) => item !== option)
+                                      : [...selected, option];
+                                    setFieldValue(f.name, newSelected);
+                                    setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
+                                  }}
+                                >
+                                  {option}
+                                </span>
+                              );
+                            })}
+                            <input
+                              name={f.name}
+                              // value={""}
+                              ref={isInsurance ? insuranceInputRef : cmaInputRef}
+                              placeholder={`Enter ${f.label}`}
+                              className="responsive-input"
+                              style={styles.input}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && e.target.value.trim() !== "") {
+                                  e.preventDefault();
+                                  const val = e.target.value.trim();
+                                  if (!selected.includes(val)) {
+                                    const newSelected = [...selected, val];
+                                    setFieldValue(f.name, newSelected);
+                                    setFormData((prev) => ({ ...prev, [f.name]: newSelected }));
+                                  }
+                                  e.target.value = "";
                                 }
-                                e.target.value = "";
-                              }
-                            }}
-                          />
-                        </div>
+                              }}
+                            />
+                          </div>
                         </span>
 
                         {/* Optionally show selected tags */}
