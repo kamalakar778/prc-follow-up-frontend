@@ -189,6 +189,7 @@ const providerOptions = [
   { "Klickovich": "Robert Klickovich, M.D" },
   { "Lauren Ellis": "Lauren Ellis, APRN" },
   { "Taja Elder": "Taja Elder, APRN" },
+  { "_______": "_________________" },
 ];
 const locationOptions = ["Louisville", "E-town"];
 const insuranceOptions = [
@@ -224,38 +225,50 @@ const isValidDate = (v) => {
   return d && d.getMonth() + 1 === +mm && d.getDate() === +dd && d.getFullYear() === +yyyy;
 };
 
-const validationSchema = Yup.object({
-  provider: Yup.string().required("Provider is required"),
-  patientName: Yup.string()
-    .required("Patient Name is required")
-    .min(3, "Patient Name must be at least 3 characters"),
-  referringPhysician: Yup.string()
-    .required("Referring Physician is required")
-    .min(3, "Must be at least 3 characters"),
-  dob: Yup.string()
-    .required("Date of Birth is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
-      "DOB must be in MM/DD/YYYY format"
-    )
-    .test("valid-date", "Invalid date", isValidDate),
-  dateOfEvaluation: Yup.string()
-    .required("Date of Evaluation is required")
-    .matches(
-      /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
-      "Date must be in MM/DD/YYYY format"
-    )
-    .test("valid", "Invalid date", isValidDate),
+// Dynamic schema function that accepts providerOptions
+const getValidationSchema = (providerOptions = []) => {
+  const providerValues = providerOptions.map(opt => Object.values(opt)[0]);
 
-  location: Yup.string().test(
-    "et-check",
-    "Location must be E-town if (ET) is in the file name",
-    function (v) {
-      const fn = this.options.context.fileName || "";
-      return /\(ET\)/i.test(fn) ? v === "E-town" : true;
-    }
-  ),
-});
+  return Yup.object({
+    provider: Yup.string()
+      .required("Provider is required")
+      .oneOf(providerValues, "Invalid provider selection"),
+
+    patientName: Yup.string()
+      .required("Patient Name is required")
+      .min(3, "Patient Name must be at least 3 characters"),
+
+    referringPhysician: Yup.string()
+      .required("Referring Physician is required")
+      .min(3, "Must be at least 3 characters"),
+
+    dob: Yup.string()
+      .required("Date of Birth is required")
+      .matches(
+        /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
+        "DOB must be in MM/DD/YYYY format"
+      )
+      .test("valid-date", "Invalid date", isValidDate),
+
+    dateOfEvaluation: Yup.string()
+      .required("Date of Evaluation is required")
+      .matches(
+        /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(19|20)\d{2}$/,
+        "Date must be in MM/DD/YYYY format"
+      )
+      .test("valid", "Invalid date", isValidDate),
+
+    location: Yup.string().test(
+      "et-check",
+      "Location must be E-town if (ET) is in the file name",
+      function (v) {
+        const fn = this.options.context?.fileName || "";
+        return /\(ET\)/i.test(fn) ? v === "E-town" : true;
+      }
+    ),
+  });
+};
+
 
 
 const Demography = ({
@@ -424,7 +437,8 @@ const Demography = ({
   return (
     <Formik
       initialValues={formData}
-      validationSchema={validationSchema}
+      // validationSchema={validationSchema}
+       validationSchema={getValidationSchema(providerOptions)}
       enableReinitialize
       context={{ fileName }}
       onSubmit={onSubmit}

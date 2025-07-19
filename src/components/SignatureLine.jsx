@@ -95,7 +95,7 @@ const SignatureLine = ({
           break;
       }
     }
-  }, [dayOfWeek, hasManuallySelectedButton]);
+  }, [dayOfWeek, hasManuallySelectedButton, dateOfEvaluation]);
 
   useEffect(() => {
     const defaultVal = hasNowSchedule ? followUpOptions[6] : followUpOptions[3];

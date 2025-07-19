@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 
 const styles = {
   container: { maxWidth: 1200, margin: "auto", padding: 0 },
@@ -80,7 +80,7 @@ const styles = {
   optionButton: (selected) => ({
     marginLeft: "0px",
     cursor: "pointer",
-    padding: "4px 3px",
+    padding: "6px 4px",
     borderRadius: 4,
     border: "1px solid",
     borderColor: selected ? "green" : "#999",
@@ -98,7 +98,7 @@ const styles = {
   textarea: {
     width: "100%",
     padding: 6,
-    fontSize: 13,
+    fontSize: 16,
     borderRadius: 4,
     border: "1px solid #d1d5db",
     resize: "both",
@@ -247,6 +247,8 @@ const EstablishedComplaints = ({ onChange }) => {
   const [showPredefined, setShowPredefined] = useState(true);
   const [customText, setCustomText] = useState("");
 
+  const textareaRef = useRef(null); // NEW
+
   const sectionOffsets = useMemo(() => {
     const offsets = [];
     let sum = 0;
@@ -297,6 +299,18 @@ const EstablishedComplaints = ({ onChange }) => {
     if (onChange) onChange(linesArr.join("\n"));
   }, [selectedOptions, userInputs, selectedLines, customText, onChange]);
 
+  useEffect(() => {
+    autoResize(); // auto-resize on mount
+  }, []);
+
+  const autoResize = () => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  };
+
   const toggleLine = (idx) => {
     setSelectedLines((prev) => {
       const next = new Set(prev);
@@ -323,6 +337,12 @@ const EstablishedComplaints = ({ onChange }) => {
       cleaned +
       customText.slice(cursorPosition);
     setCustomText(newText);
+    setTimeout(autoResize, 0); // wait for DOM update
+  };
+
+  const handleChange = (e) => {
+    setCustomText(e.target.value);
+    autoResize();
   };
 
   return (
@@ -346,10 +366,11 @@ const EstablishedComplaints = ({ onChange }) => {
 
       {!showPredefined && (
         <textarea
+          ref={textareaRef}
           rows={10}
           placeholder="Enter custom findings text here..."
           value={customText}
-          onChange={(e) => setCustomText(e.target.value)}
+          onChange={handleChange}
           onPaste={handlePaste}
           style={styles.textarea}
           spellCheck={false}
@@ -412,8 +433,8 @@ const EstablishedComplaints = ({ onChange }) => {
                               style={{
                                 ...styles.otherNotesInput,
                                 marginLeft: 8,
-                                minWidth:"175%",
-                                maxWidth:"150%"
+                                minWidth: "175%",
+                                maxWidth: "150%"
                               }}
                             />
                           )}

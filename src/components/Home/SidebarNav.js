@@ -65,7 +65,7 @@ const styles = {
 
 const SidebarNav = () => {
   const [activeSection, setActiveSection] = useState(null);
-  const [trackingEnabled, setTrackingEnabled] = useState(false); // Default OFF
+  const [trackingEnabled, setTrackingEnabled] = useState(true); // ✅ Default ON now
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);

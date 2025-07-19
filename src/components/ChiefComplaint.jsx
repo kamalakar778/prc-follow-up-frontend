@@ -258,7 +258,7 @@ const ChiefComplaint = ({ initialValues = {}, onChange }) => {
       </div>
 
       <div style={styles.section}>
-        Flare up in
+        Flare up of known pain complaints(s), especially pain in the:
         <input
           type="text"
           name="input3"

@@ -13,6 +13,7 @@ export const ShortcutProvider = ({ children }) => {
       left: "left",
       right: "right",
       bilateral: "bilateral",
+      spine:"spine",
     },
     "frequent pain":{
         "low back": "low back",
@@ -36,20 +37,23 @@ export const ShortcutProvider = ({ children }) => {
       other: {
       knee: "knee",
       foot:"foot",
+      feet:"feet",
       ankle:"ankle",
       Abdomen:"Abdomen",
-      feet:"feet",
     },
     "Abbrev-1": {
+      "Facet":"Facet",
+      "variable":"variable",
+      "caudal":"caudal",
+      "Carpal Tunnel":"Carpal Tunnel",
+        },
+    "Abbrev-2": {
    "MBB":"Medial Branch Blocks",
-    "RFA":"Radio Frequency ablation",
-    "ESI":"Epidural Steroid Injection",
-    "f/u": "Follow-up",
+    "RFA":"radio frequency ablation",
+    "ESI":"epidural steroid injection",
+    "TESI":"transforaminal epidural steroid injection",
+    "TPI":"TPI",
   },
-  "Abbrev-2": {
-    "variable":"variable",
-    "caudal":"caudal",
-      },
     };
 
   // Optional flattened version (if needed elsewhere)
