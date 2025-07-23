@@ -53,12 +53,9 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
   const [dateISO, setDateISO] = useState(() => formData.dateOfEvaluation && /^\d{2}\/\d{2}\/\d{4}$/.test(formData.dateOfEvaluation) ? formatDateToISO(parseMMDDYYYYtoDate(formData.dateOfEvaluation)) : formatDateToISO(new Date(Date.now() - 86400000)));
   const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
   const [referringInput, setReferringInput] = useState(formData.referringPhysician || "");
-  const [filteredPhysicians, setFilteredPhysicians] = useState([]);
-  const [allPhysicians, setAllPhysicians] = useState([]);
+  const [filteredPhysicians, setFilteredPhysicians] = useState([]), [allPhysicians, setAllPhysicians] = useState([]);
   const insuranceRef = useRef(), cmaRef = useRef();
   const [uploading, setUploading] = useState(false);
-  const [copiedType, setCopiedType] = useState(null);
-
 
 
   useEffect(() => {
@@ -78,92 +75,12 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
 
   useEffect(() => { if (/\(ET\)/i.test(fileName)) setFormData(p => ({ ...p, location: "E-town" })); }, [fileName]);
 
-  // const handleFieldChange = async (e, setFieldValue) => {
-  //   const { name, value } = e.target;
-
-  //   if (name === "patientName") {
-  //     const formatted = value.trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  //     setLocalPatientName(formatted);
-  //     setFieldValue(name, formatted);
-  //     onChange({ target: { name, value: formatted } });
-  //   } else {
-  //     setFieldValue(name, value);
-  //     onChange(e);
-
-  //     if (name === "referringPhysician") {
-  //       await addPhysicianIfMissing(value.trim(), allPhysicians);
-  //     }
-  //   }
-  // };
-
-  // Inside your component:
-
-  useEffect(() => {
-    axios.get("http://localhost:8000/get-physicians")
-      .then(res => setAllPhysicians(res.data))
-      .catch(err => console.error("Failed to fetch physicians:", err));
-  }, []);
-
-  const addPhysician = async (name) => {
-    try {
-      const res = await axios.post("http://localhost:8000/add-physician", { name });
-      console.log("📌 Physician added:", res.data.message);
-    } catch (err) {
-      console.error("❌ Error adding physician:", err);
-    }
-  };
-
-  // 🔧 PLACE THIS HELPER WITHIN THE COMPONENT TOO:
-  // const addPhysicianIfMissing = async (name) => {
-  //   const trimmed = name.trim();
-  //   const exists = allPhysicians.some(
-  //     (p) => typeof p?.name === "string" && p.name.toLowerCase() === trimmed.toLowerCase()
-  //   );
-  //   if (!exists && trimmed !== "") {
-  //     await addPhysician(trimmed);
-  //   }
-  // };
-  const addPhysicianIfMissing = async (name) => {
-    const trimmed = name.trim();
-    const exists = allPhysicians.some(
-      (p) =>
-        typeof p?.name === "string" &&
-        p.name.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (!exists && trimmed !== "") {
-      await addPhysician(trimmed);
-    }
-  };
-
-
-  // ✍️ Field change handler example (used with Formik)
   const handleFieldChange = (e, setFieldValue) => {
     const { name, value } = e.target;
-
-    if (name === "patientName") {
-      const formatted = value.trim().replace(/\b\w/g, (c) => c.toUpperCase());
-      setLocalPatientName(formatted);
-      setFieldValue(name, value);
-      // setFieldValue(name, formatted);
-      onChange({ target: { name, value: formatted } });
-    } else if (name === "referringPhysician") {
-      // setReferringInput(value);
-      // setFieldValue(name, value);
-      // onChange({ target: { name, value } });
-      // const physicianNames = allPhysicians.map(p => p?.name || "");
-      // setFilteredPhysicians(
-      //   value
-      //     ? physicianNames.filter((n) => n.toLowerCase().includes(value.toLowerCase()))
-      //     : []
-      // );
-      addPhysicianIfMissing(value);
-    } else {
-      setFieldValue(name, value);
-      onChange({ target: { name, value } });
-    }
+    const val = name === "patientName" ? value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : value;
+    if (name === "patientName") setLocalPatientName(val);
+    setFieldValue(name, val); onChange({ target: { name, value: val } });
   };
-
-
 
   const handleUploadPDFs = async (formData) => {
     if (!fileName || !formData?.dateOfEvaluation) {
@@ -203,31 +120,11 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
   };
 
 
-  // const handleReferringChange = (e, setFieldValue) => {
-  //   const v = e.target.value;
-  //   setReferringInput(v); setFieldValue("referringPhysician", v);
-  //   onChange({ target: { name: "referringPhysician", value: v } });
-  //   const physicianNames = allPhysicians.map(d => d.name || "");
-  //   setFilteredPhysicians(v ? physicianNames.filter(name => name.toLowerCase().includes(v.toLowerCase())) : []);
-
-  // };
   const handleReferringChange = (e, setFieldValue) => {
     const v = e.target.value;
-    setReferringInput(v);
-    setFieldValue("referringPhysician", v);
+    setReferringInput(v); setFieldValue("referringPhysician", v);
     onChange({ target: { name: "referringPhysician", value: v } });
-
-    const physicianNames = allPhysicians
-      .filter(p => typeof p?.name === "string")
-      .map(p => p.name);
-
-    setFilteredPhysicians(
-      v
-        ? physicianNames.filter(name =>
-          name.toLowerCase().includes(v.toLowerCase())
-        )
-        : []
-    );
+    setFilteredPhysicians(v ? allPhysicians.filter(d => d.toLowerCase().includes(v.toLowerCase())) : []);
   };
 
   const changeDate = (days, setFieldValue) => {
@@ -247,12 +144,6 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
     setFormData(p => ({ ...p, [field]: updated })); setFieldValue(field, updated);
   };
 
-  const handleCopy = (type, note) => {
-    navigator.clipboard.writeText(note);
-    setCopiedType(type);
-    setTimeout(() => setCopiedType(null), 1500);
-  };
-
   const onSubmit = async (values, actions) => {
     const insVal = insuranceRef.current?.value.trim(), cmaVal = cmaRef.current?.value.trim();
     if (insVal && !values.insuranceList.includes(insVal)) {
@@ -266,20 +157,9 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
       values.dateOfEvaluation = mmdd; setFormData(p => ({ ...p, dateOfEvaluation: mmdd })); setDateOfEvaluation?.(mmdd);
     }
     const ref = values.referringPhysician.trim(), cap = ref.charAt(0).toUpperCase() + ref.slice(1);
-    if (
-      cap &&
-      !allPhysicians.some(
-        p => typeof p?.name === "string" && p.name.toLowerCase() === cap.toLowerCase()
-      )
-    ) {
-      try {
-        await axios.post(`${BACKEND_URL}/physicians`, { name: cap });
-        setAllPhysicians(prev => [...prev, { name: cap }]);
-      } catch (e) {
-        console.error(e);
-      }
+    if (cap && !allPhysicians.some(p => p.toLowerCase() === cap.toLowerCase())) {
+      try { await axios.post(`${BACKEND_URL}/physicians`, { name: cap }); setAllPhysicians(p => [...p, cap]); } catch (e) { console.error(e); }
     }
-
     await onSubmitExternal({ ...values, referringPhysician: cap }, actions);
   };
 
@@ -289,101 +169,50 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
         <form onSubmit={handleSubmit} style={styles.container}>
           {/* Modern Notes Copy Section (1 row) */}
           {/* Modern Notes Copy Section (1 row) */}
-          {/* ✅ Modern Notes Copy Section */}
           <div style={styles.noteCopyRow}>
             {["RAW", "Transcribed"].map((type) => {
               const note = `${type} Data Follow up visit notes on ${formData.dateOfEvaluation || "____"}`;
-              const copied = copiedType === type;
+              const [copied, setCopied] = useState(false);
 
               return (
                 <div key={type} style={styles.noteItem}>
-                  <button
-                    type="button"
-                    onClick={() => handleCopyNote(type, note)}
-                    style={{
-                      ...styles.button,
-                      minWidth: 120,
-                      backgroundColor: copied ? "#27ae60" : "#3498db",
-                      transition: "background-color 0.3s ease",
-                      flexShrink: 0,
+                  <label
+                    onClick={() => {
+                      navigator.clipboard.writeText(note);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
                     }}
+                    style={styles.noteLabel(copied)}
                   >
-                    {copied ? "Copied!" : `${type} Notes`}
-                  </button>
-                  <input
-                    readOnly
-                    value={note}
-                    style={{
-                      ...styles.noteInput,
-                      width: "100%",
-                      overflowX: "auto",
-                      whiteSpace: "nowrap",
-                    }}
-                  />
+                    {copied ? "Copied!" : `${type} Notes:`}
+                  </label>
+                  <input readOnly value={note} style={styles.noteInput} />
                 </div>
               );
             })}
           </div>
-
-          {/* ✅ File Name Row - Fully Responsive */}
-          <div style={{ ...styles.label, flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ minWidth: 80 }}>File Name:</span>
-
-            <input
-              type="text"
-              value={fileName}
-              onChange={(e) => onFileNameChange(e.target.value)}
-              style={{
-                ...styles.input,
-                flex: 1,
-                minWidth: 200,
-                maxWidth: "100%",
-                whiteSpace: "nowrap",
-                overflow: "visible",
-                textOverflow: "initial",
-              }}
-            />
-
-            <input
-              type="file"
-              id="fileInput"
-              accept=".pdf,.docx,.txt"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const baseName = file.name.replace(/\.[^/.]+$/, "");
-                  onFileNameChange(baseName);
-                }
-              }}
-            />
-
-            <label
-              htmlFor="fileInput"
-              style={{
-                ...styles.button,
-                backgroundColor: "#95a5a6",
-                whiteSpace: "nowrap",
-              }}
+          
+          <div style={styles.label}>
+            <span>File Name:</span>
+            <input type="text" value={fileName} onChange={(e) => onFileNameChange(e.target.value)} style={styles.input} />
+            <button type="submit" style={styles.button}>Generate Document</button>
+            <button
+              type="button"
+              style={styles.button}
+              // className="bg-blue-500 text-white px-4 py-2"
+              onClick={() => handleUploadPDFs(values)} // ✅ now passes values correctly
             >
-              Choose File
-            </label>
+              Upload PDFs
+            </button>
 
-            <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-              <button type="submit" style={styles.button}>Generate Document</button>
-              <button type="button" style={styles.button} onClick={() => handleUploadPDFs(values)}>
-                Upload PDFs
-              </button>
-            </div>
+
           </div>
-
-
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
             { label: "Date of Evaluation", name: "dateOfEvaluation", type: "inputWithDate" },
-            { label: "Referring Physician", name: "referringPhysician", type: "referring" },
             { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
+            { label: "Referring Physician", name: "referringPhysician", type: "referring" },
             { label: "Insurance", name: "insuranceList", type: "multi", options: insuranceOptions, ref: insuranceRef },
             { label: "CMA", name: "CMA", type: "multi", options: cmaOptions, ref: cmaRef },
             { label: "Room #", name: "roomNumber", type: "input" },

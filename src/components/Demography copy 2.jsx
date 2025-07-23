@@ -5,24 +5,13 @@ import axios from "axios";
 
 const BACKEND_URL = "http://localhost:8000";
 const styles = {
-  container: { fontFamily: "Arial, sans-serif", maxWidth: 1200, margin: "10px auto", padding: "0.5rem", backgroundColor: "#f9f9f9", borderRadius: 4, boxShadow: "0 2px 6px rgba(0,0,0,0.1)" },
+  container: { fontFamily: "Arial, sans-serif", maxWidth: 1200, margin: "10px auto", padding: "0.5rem", backgroundColor: "#fff", borderRadius: 4, boxShadow: "0 2px 6px rgba(0,0,0,0.1)" },
   label: { display: "flex", flexDirection: "row", alignItems: "center", fontSize: 16, color: "#333", gap: "0.3rem", marginBottom: "-0.2rem" },
-  input: { display: "flex", maxWidth: "40%", minWidth: 180, flex: 1, padding: 8, borderRadius: 8, border: "1px solid #ccc", fontSize: 16, margin: 6 },
-  button: { padding: "0.5rem 0.8rem", margin: "0.5rem", borderRadius: 8, border: "none", fontWeight: "bold", fontSize: 16, cursor: "pointer", backgroundColor: "#3498db", color: "#fff" },
-  dateInput: { padding: 6, borderRadius: 4, border: "1px solid #ccc", fontSize: 17, width: 160, marginTop: 15, marginLeft: -16 },
-  optionButton: (sel) => ({ alignItems: "center", margin: "5px 2px", padding: "8px 12px", borderRadius: "8px", border: "1px solid", borderColor: sel ? "green" : "#999", backgroundColor: sel ? "#e0f7e9" : "#f0f0f0", color: sel ? "green" : "#333", fontWeight: sel ? "bold" : "normal", cursor: "pointer", fontSize: 15, display: "inline-block" }),
-  // optionButton: (isChecked) => ({ alignItems: "center", border: `1px solid ${isChecked ? "#3498db" : "#ccc"}`, backgroundColor: isChecked ? "#e1f5fe" : "#fff", cursor: "pointer", transition: "all 0.3s ease" }),
-  checkboxContainer: { display: "flex", flexWrap: "wrap", marginBottom: 15 },
-
-  noteCopyRow: { display: "flex", gap: "0.1rem", margin: "0.5rem 0", flexWrap: "wrap" },
-  noteItem: { display: "flex", alignItems: "center", flex: 1, minWidth: 450, gap: "0.5rem" },
-  noteLabel: (copied) => ({ cursor: "pointer", fontWeight: "bold", minWidth: 120, color: copied ? "#27ae60" : "#333", userSelect: "none" }),
-  noteInput: { flex: 1, padding: 8, borderRadius: 8, border: "1px solid #ccc", fontSize: 16, backgroundColor: "#fdfdfd" },
-
+  input: { display: "flex", maxWidth: "40%", minWidth: 180, flex: 1, padding: 6, borderRadius: 4, border: "1px solid #ccc", fontSize: 15, margin: 6 },
+  button: { padding: "0.5rem 0.8rem", margin: "0.5rem", borderRadius: 4, border: "none", fontWeight: "bold", fontSize: 16, cursor: "pointer", backgroundColor: "#3498db", color: "#fff" },
+  dateInput: { padding: 6, borderRadius: 4, border: "1px solid #ccc", fontSize: 16, width: 160, marginTop: 15, marginLeft: -16 },
+  optionButton: (sel) => ({ margin: 1, padding: "6px 6px", borderRadius: 6, border: "1px solid", borderColor: sel ? "green" : "#999", backgroundColor: sel ? "#e0f7e9" : "#f0f0f0", color: sel ? "green" : "#333", fontWeight: sel ? "bold" : "normal", cursor: "pointer", fontSize: 15, display: "inline-block" }),
 };
-
-
-
 const providerOptions = [{ "Cortney Lacefield": "Cortney Lacefield, APRN" }, { Klickovich: "Robert Klickovich, M.D" }, { "Lauren Ellis": "Lauren Ellis, APRN" }, { "Taja Elder": "Taja Elder, APRN" }, { "_______": "_________________" }];
 const locationOptions = ["Louisville", "E-town"];
 const insuranceOptions = ["Aetna", "BCBS", "Ambetter", "Cigna", "Commercial", "Humana", "Medicare", "Medicare B", "Medicaid", "MCR", "TriCare", "Trieast", "WellCare", "PP", "UHC", "Work. Comp", "Self pay",];
@@ -53,12 +42,9 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
   const [dateISO, setDateISO] = useState(() => formData.dateOfEvaluation && /^\d{2}\/\d{2}\/\d{4}$/.test(formData.dateOfEvaluation) ? formatDateToISO(parseMMDDYYYYtoDate(formData.dateOfEvaluation)) : formatDateToISO(new Date(Date.now() - 86400000)));
   const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
   const [referringInput, setReferringInput] = useState(formData.referringPhysician || "");
-  const [filteredPhysicians, setFilteredPhysicians] = useState([]);
-  const [allPhysicians, setAllPhysicians] = useState([]);
+  const [filteredPhysicians, setFilteredPhysicians] = useState([]), [allPhysicians, setAllPhysicians] = useState([]);
   const insuranceRef = useRef(), cmaRef = useRef();
   const [uploading, setUploading] = useState(false);
-  const [copiedType, setCopiedType] = useState(null);
-
 
 
   useEffect(() => {
@@ -78,92 +64,12 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
 
   useEffect(() => { if (/\(ET\)/i.test(fileName)) setFormData(p => ({ ...p, location: "E-town" })); }, [fileName]);
 
-  // const handleFieldChange = async (e, setFieldValue) => {
-  //   const { name, value } = e.target;
-
-  //   if (name === "patientName") {
-  //     const formatted = value.trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  //     setLocalPatientName(formatted);
-  //     setFieldValue(name, formatted);
-  //     onChange({ target: { name, value: formatted } });
-  //   } else {
-  //     setFieldValue(name, value);
-  //     onChange(e);
-
-  //     if (name === "referringPhysician") {
-  //       await addPhysicianIfMissing(value.trim(), allPhysicians);
-  //     }
-  //   }
-  // };
-
-  // Inside your component:
-
-  useEffect(() => {
-    axios.get("http://localhost:8000/get-physicians")
-      .then(res => setAllPhysicians(res.data))
-      .catch(err => console.error("Failed to fetch physicians:", err));
-  }, []);
-
-  const addPhysician = async (name) => {
-    try {
-      const res = await axios.post("http://localhost:8000/add-physician", { name });
-      console.log("📌 Physician added:", res.data.message);
-    } catch (err) {
-      console.error("❌ Error adding physician:", err);
-    }
-  };
-
-  // 🔧 PLACE THIS HELPER WITHIN THE COMPONENT TOO:
-  // const addPhysicianIfMissing = async (name) => {
-  //   const trimmed = name.trim();
-  //   const exists = allPhysicians.some(
-  //     (p) => typeof p?.name === "string" && p.name.toLowerCase() === trimmed.toLowerCase()
-  //   );
-  //   if (!exists && trimmed !== "") {
-  //     await addPhysician(trimmed);
-  //   }
-  // };
-  const addPhysicianIfMissing = async (name) => {
-    const trimmed = name.trim();
-    const exists = allPhysicians.some(
-      (p) =>
-        typeof p?.name === "string" &&
-        p.name.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (!exists && trimmed !== "") {
-      await addPhysician(trimmed);
-    }
-  };
-
-
-  // ✍️ Field change handler example (used with Formik)
   const handleFieldChange = (e, setFieldValue) => {
     const { name, value } = e.target;
-
-    if (name === "patientName") {
-      const formatted = value.trim().replace(/\b\w/g, (c) => c.toUpperCase());
-      setLocalPatientName(formatted);
-      setFieldValue(name, value);
-      // setFieldValue(name, formatted);
-      onChange({ target: { name, value: formatted } });
-    } else if (name === "referringPhysician") {
-      // setReferringInput(value);
-      // setFieldValue(name, value);
-      // onChange({ target: { name, value } });
-      // const physicianNames = allPhysicians.map(p => p?.name || "");
-      // setFilteredPhysicians(
-      //   value
-      //     ? physicianNames.filter((n) => n.toLowerCase().includes(value.toLowerCase()))
-      //     : []
-      // );
-      addPhysicianIfMissing(value);
-    } else {
-      setFieldValue(name, value);
-      onChange({ target: { name, value } });
-    }
+    const val = name === "patientName" ? value.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : value;
+    if (name === "patientName") setLocalPatientName(val);
+    setFieldValue(name, val); onChange({ target: { name, value: val } });
   };
-
-
 
   const handleUploadPDFs = async (formData) => {
     if (!fileName || !formData?.dateOfEvaluation) {
@@ -203,31 +109,11 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
   };
 
 
-  // const handleReferringChange = (e, setFieldValue) => {
-  //   const v = e.target.value;
-  //   setReferringInput(v); setFieldValue("referringPhysician", v);
-  //   onChange({ target: { name: "referringPhysician", value: v } });
-  //   const physicianNames = allPhysicians.map(d => d.name || "");
-  //   setFilteredPhysicians(v ? physicianNames.filter(name => name.toLowerCase().includes(v.toLowerCase())) : []);
-
-  // };
   const handleReferringChange = (e, setFieldValue) => {
     const v = e.target.value;
-    setReferringInput(v);
-    setFieldValue("referringPhysician", v);
+    setReferringInput(v); setFieldValue("referringPhysician", v);
     onChange({ target: { name: "referringPhysician", value: v } });
-
-    const physicianNames = allPhysicians
-      .filter(p => typeof p?.name === "string")
-      .map(p => p.name);
-
-    setFilteredPhysicians(
-      v
-        ? physicianNames.filter(name =>
-          name.toLowerCase().includes(v.toLowerCase())
-        )
-        : []
-    );
+    setFilteredPhysicians(v ? allPhysicians.filter(d => d.toLowerCase().includes(v.toLowerCase())) : []);
   };
 
   const changeDate = (days, setFieldValue) => {
@@ -247,12 +133,6 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
     setFormData(p => ({ ...p, [field]: updated })); setFieldValue(field, updated);
   };
 
-  const handleCopy = (type, note) => {
-    navigator.clipboard.writeText(note);
-    setCopiedType(type);
-    setTimeout(() => setCopiedType(null), 1500);
-  };
-
   const onSubmit = async (values, actions) => {
     const insVal = insuranceRef.current?.value.trim(), cmaVal = cmaRef.current?.value.trim();
     if (insVal && !values.insuranceList.includes(insVal)) {
@@ -266,20 +146,9 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
       values.dateOfEvaluation = mmdd; setFormData(p => ({ ...p, dateOfEvaluation: mmdd })); setDateOfEvaluation?.(mmdd);
     }
     const ref = values.referringPhysician.trim(), cap = ref.charAt(0).toUpperCase() + ref.slice(1);
-    if (
-      cap &&
-      !allPhysicians.some(
-        p => typeof p?.name === "string" && p.name.toLowerCase() === cap.toLowerCase()
-      )
-    ) {
-      try {
-        await axios.post(`${BACKEND_URL}/physicians`, { name: cap });
-        setAllPhysicians(prev => [...prev, { name: cap }]);
-      } catch (e) {
-        console.error(e);
-      }
+    if (cap && !allPhysicians.some(p => p.toLowerCase() === cap.toLowerCase())) {
+      try { await axios.post(`${BACKEND_URL}/physicians`, { name: cap }); setAllPhysicians(p => [...p, cap]); } catch (e) { console.error(e); }
     }
-
     await onSubmitExternal({ ...values, referringPhysician: cap }, actions);
   };
 
@@ -287,103 +156,28 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
     <Formik initialValues={formData} validationSchema={getValidationSchema(providerOptions, fileName)} enableReinitialize onSubmit={onSubmit}>
       {({ values, errors, touched, setFieldValue, handleSubmit }) => (
         <form onSubmit={handleSubmit} style={styles.container}>
-          {/* Modern Notes Copy Section (1 row) */}
-          {/* Modern Notes Copy Section (1 row) */}
-          {/* ✅ Modern Notes Copy Section */}
-          <div style={styles.noteCopyRow}>
-            {["RAW", "Transcribed"].map((type) => {
-              const note = `${type} Data Follow up visit notes on ${formData.dateOfEvaluation || "____"}`;
-              const copied = copiedType === type;
 
-              return (
-                <div key={type} style={styles.noteItem}>
-                  <button
-                    type="button"
-                    onClick={() => handleCopyNote(type, note)}
-                    style={{
-                      ...styles.button,
-                      minWidth: 120,
-                      backgroundColor: copied ? "#27ae60" : "#3498db",
-                      transition: "background-color 0.3s ease",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {copied ? "Copied!" : `${type} Notes`}
-                  </button>
-                  <input
-                    readOnly
-                    value={note}
-                    style={{
-                      ...styles.noteInput,
-                      width: "100%",
-                      overflowX: "auto",
-                      whiteSpace: "nowrap",
-                    }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* ✅ File Name Row - Fully Responsive */}
-          <div style={{ ...styles.label, flexWrap: "wrap", gap: "0.5rem", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ minWidth: 80 }}>File Name:</span>
-
-            <input
-              type="text"
-              value={fileName}
-              onChange={(e) => onFileNameChange(e.target.value)}
-              style={{
-                ...styles.input,
-                flex: 1,
-                minWidth: 200,
-                maxWidth: "100%",
-                whiteSpace: "nowrap",
-                overflow: "visible",
-                textOverflow: "initial",
-              }}
-            />
-
-            <input
-              type="file"
-              id="fileInput"
-              accept=".pdf,.docx,.txt"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const baseName = file.name.replace(/\.[^/.]+$/, "");
-                  onFileNameChange(baseName);
-                }
-              }}
-            />
-
-            <label
-              htmlFor="fileInput"
-              style={{
-                ...styles.button,
-                backgroundColor: "#95a5a6",
-                whiteSpace: "nowrap",
-              }}
+          <div style={styles.label}>
+            <span>File Name:</span>
+            <input type="text" value={fileName} onChange={(e) => onFileNameChange(e.target.value)} style={styles.input} />
+            <button type="submit" style={styles.button}>Generate Document</button>
+            <button
+              type="button"
+              style={styles.button}
+              // className="bg-blue-500 text-white px-4 py-2"
+              onClick={() => handleUploadPDFs(values)} // ✅ now passes values correctly
             >
-              Choose File
-            </label>
+              Upload PDFs
+            </button>
 
-            <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-              <button type="submit" style={styles.button}>Generate Document</button>
-              <button type="button" style={styles.button} onClick={() => handleUploadPDFs(values)}>
-                Upload PDFs
-              </button>
-            </div>
+
           </div>
-
-
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
             { label: "Date of Evaluation", name: "dateOfEvaluation", type: "inputWithDate" },
-            { label: "Referring Physician", name: "referringPhysician", type: "referring" },
             { label: "Provider", name: "provider", type: "toggle", options: providerOptions },
+            { label: "Referring Physician", name: "referringPhysician", type: "referring" },
             { label: "Insurance", name: "insuranceList", type: "multi", options: insuranceOptions, ref: insuranceRef },
             { label: "CMA", name: "CMA", type: "multi", options: cmaOptions, ref: cmaRef },
             { label: "Room #", name: "roomNumber", type: "input" },
@@ -417,7 +211,7 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
                             onChange({ target: { name: "dob", value: cleanedDob } });
                           }
                         }}
-                        style={{ ...styles.button, marginLeft: 0, }}
+                        style={{ ...styles.button, marginLeft: 4, padding: "0.2rem 0.5rem" }}
                       >
                         Transform
                       </button>
@@ -435,13 +229,13 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
                         setFieldValue(f.name, fallback); setDateOfEvaluation?.(fallback); onChange({ target: { name: f.name, value: fallback } });
                       }
                     }} />
-                    <button type="button" style={{ ...styles.button, marginRight: 20 }} onClick={() => changeDate(-1, setFieldValue)}>◀</button>
+                    <button type="button" onClick={() => changeDate(-1, setFieldValue)}>◀</button>
                     <input type="date" value={dateISO} style={styles.dateInput} onChange={(e) => {
                       const iso = e.target.value, [y, m, d] = iso.split("-"), mmdd = `${m}/${d}/${y}`;
                       setDateISO(iso); setFieldValue(f.name, mmdd); setDateOfEvaluation?.(mmdd); onChange({ target: { name: f.name, value: mmdd } });
                     }} />
-                    <button type="button" style={{ ...styles.button, }} onClick={() => changeDate(1, setFieldValue)}>▶</button>
-                    {val && <span style={{ marginLeft: 8, fontStyle: "italic", fontSize: 18, color: "#666" }}>{getWeekday(val)}</span>}
+                    <button type="button" onClick={() => changeDate(1, setFieldValue)}>▶</button>
+                    {val && <span style={{ marginLeft: 8, fontStyle: "italic", color: "#666" }}>{getWeekday(val)}</span>}
                   </div>
                 )}
                 {f.type === "referring" && (

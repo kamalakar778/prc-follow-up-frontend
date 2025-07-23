@@ -46,16 +46,7 @@ const styles = {
     border: "1px solid #ccc",
     padding: "4px",
     margin: "2px 0"
-  }),
-  outputBox: {
-    marginTop: "20px",
-    padding: "10px",
-    border: "1px solid #aaa",
-    background: "#f9f9f9",
-    fontFamily: "Calibri",
-    fontSize: "14px",
-    whiteSpace: "pre-wrap"
-  }
+  })
 };
 
 const AssessmentCodes = ({ selected, setSelected }) => {
@@ -220,12 +211,21 @@ const AssessmentCodes = ({ selected, setSelected }) => {
     setSelected(selected.filter((item) => item.label !== code));
   };
 
+  useEffect(() => {
+    inputRef.current;
+  }, [customCodes]);
+
   const formatAssessmentOutput = (selected) => {
     if (!selected || selected.length === 0) return "";
     const sorted = [...selected].sort((a, b) => a.index - b.index);
     return `ASSESSMENT:\n${sorted.map(item => item.label).join('\n')}`;
   };
 
+    useEffect(() => {
+      const formatted = formatAssessmentOutput(selected);
+      setFieldValue("assessmentText", formatted);
+    }, [selected, setFieldValue]);
+    
   return (
     <>
       <div style={styles.container}>
@@ -300,10 +300,6 @@ const AssessmentCodes = ({ selected, setSelected }) => {
             ))}
           </div>
         ))}
-      </div>
-
-      <div style={styles.outputBox}>
-        {formatAssessmentOutput(selected)}
       </div>
     </>
   );

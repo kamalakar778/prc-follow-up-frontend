@@ -55,14 +55,14 @@ export const MedicationProvider = ({ children }) => {
       zanaflex: "Zanaflex",
       Zolpidem: "Zolpidem",
       zofran: "Zofran",
-      
+
     },
     "List 4": {
-      
+
       oxycodone: "Oxycodone",
       oxycontin: "Oxycontin",
       robaxin: "Robaxin",
-      Relistor:"Relistor",
+      Relistor: "Relistor",
       suboxone: "Suboxone",
       Seroquel: "Seroquel",
       tizanidine: "Tizanidine",
@@ -71,7 +71,7 @@ export const MedicationProvider = ({ children }) => {
       ultram: "Ultram",
     },
     "List 5": {
-      pregabalin:"pregabalin",
+      pregabalin: "pregabalin",
       aspirin: "Aspirin",
       naproxen: "Naproxen",
       Amitriptyline: "Amitriptyline",
@@ -97,9 +97,9 @@ export const MedicationProvider = ({ children }) => {
       PCP: "PCP",
       PCM: "PCM",
       "1-2 tabs": "1-2 tabs",
-      "3 tabs":"3 tabs",
-      "AM":"AM",
-      "PM":"PM",
+      "3 tabs": "3 tabs",
+      "AM": "AM",
+      "PM": "PM",
       "12hrs on/off": "12 hours on/off",
     },
 
@@ -123,22 +123,22 @@ export const MedicationProvider = ({ children }) => {
 
 
   const predefinedDosages = {
-    gabapentin: ["100 mg","200 mg", "300 mg", "400 mg", "600 mg", "800 mg"],
+    gabapentin: ["100 mg", "200 mg", "300 mg", "400 mg", "600 mg", "800 mg"],
     mobic: ["7.5 mg", "15 mg",],
     norco: ["5 mg", "7.5 mg", "10 mg"],
-    robaxin: ["500 mg","750 mg", "800 mg"],
+    robaxin: ["500 mg", "750 mg", "800 mg"],
     vynase: [""],
     hydroxyzine: [""],
-    tizanidine: ["2 mg","4 mg"],
-    percocet: ["5 mg","7.5 mg"],
+    tizanidine: ["2 mg", "4 mg"],
+    percocet: ["5 mg", "7.5 mg"],
     lyrica: ["50 mg", "75 mg", "100 mg", "150 mg", "200 mg"],
     cymbalta: ["30 mg", "60 mg"],
-    Elavil:["10 mg", "100 mg"],
-    Relistor:["150 mg"],
+    Elavil: ["10 mg", "20 mg", "100 mg"],
+    Relistor: ["150 mg"],
     diclofenac: ["gel", "50 mg", "75 mg"],
-    pregabalin:["800 mg"],
+    pregabalin: ["800 mg"],
 
-    ibuprofen: ["200 mg", "400 mg", "600 mg","800 mg"],
+    ibuprofen: ["200 mg", "400 mg", "600 mg", "800 mg"],
     celebrex: ["100 mg", "200 mg"],
     tramadol: ["50 mg", "100 mg"],
     meloxicam: ["7.5 mg", "15 mg"],

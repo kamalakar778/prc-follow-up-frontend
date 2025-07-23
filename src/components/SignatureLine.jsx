@@ -82,7 +82,8 @@ const SignatureLine = ({
       switch (dayOfWeek) {
         case "Monday":
         case "Tuesday":
-          setSelectedButton("Dr. Olivia Kelley");
+          setSelectedButton("APRN");
+          // setSelectedButton("Dr. Olivia Kelley");
           break;
         case "Wednesday":
         case "Thursday":
