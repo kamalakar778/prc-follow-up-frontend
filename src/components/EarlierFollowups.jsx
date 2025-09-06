@@ -17,7 +17,7 @@ const sensoryLevelOptions = [
   "right",
   "left",
   "L3", "L4", "L5", "S1", "S2",
-  "C6", "C7", "C8",
+  "C5","C6", "C7", "C8",
   "T1", "T2"
 ];
 

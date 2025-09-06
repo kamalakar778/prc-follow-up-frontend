@@ -3,6 +3,43 @@ import ShortcutMedicationSection from "../components/ShortcutMedicationSection";
 import { MedicationContext } from "../components/context/MedicationContext";
 
 const styles = {
+  toggleButtonGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginTop: "4px",
+    minWidth: 300
+  },
+  toggleButton: {
+    padding: "8px 10px",
+    borderRadius: 8,
+    border: "1px solid #999",
+    backgroundColor: "#f0f0f0",
+    cursor: "pointer",
+    fontSize: 16,
+    textAlign: "left",
+    color: "#333",
+    fontWeight: "normal"
+  },
+  toggleButtonActive: {
+    backgroundColor: "#e0f6e9",
+    color: "green",
+    borderColor: "green",
+    fontWeight: "bold"
+  },
+  toggleButton: (selected) => ({
+    flexDirection: "column",
+    cursor: "pointer",
+    padding: "8px 10px",
+    borderRadius: "8px",
+    border: "1px solid",
+    borderColor: selected ? "green" : "#999",
+    backgroundColor: selected ? "#e0f6e9" : "#f0f0f0",
+    color: selected ? "green" : "#333",
+    fontSize: 16,
+    fontWeight: selected ? "bold" : "normal",
+    textAlign: "left"
+  }),
   container: {
     fontFamily: "Arial, sans-serif",
     maxWidth: 1500,
@@ -88,7 +125,7 @@ const defaultMedication = {
   frequency: ""
 };
 
-const MedicationManagement = ({ setMedicationListData = () => {} }) => {
+const MedicationManagement = ({ setMedicationListData = () => { } }) => {
   const [selectedReason, setSelectedReason] = useState(null);
   const [medications, setMedications] = useState([defaultMedication]);
   const [activeDosageIndex, setActiveDosageIndex] = useState(null);
@@ -176,21 +213,26 @@ const MedicationManagement = ({ setMedicationListData = () => {} }) => {
         <label style={styles.label}>Medications:</label>
 
         {/* Reason Select */}
+        {/* Reason Toggle Buttons */}
         <div style={styles.medicationRow}>
           <label style={styles.label}>Select Reason:</label>
-          <select
-            value={selectedReason || ""}
-            onChange={(e) => setSelectedReason(e.target.value ? parseInt(e.target.value) : null)}
-            style={styles.select}
-          >
-            <option value="">-- Select a reason --</option>
+          <div style={styles.toggleButtonGroup}>
             {medicationReasons.map((reason) => (
-              <option key={reason.id} value={reason.id}>
+              <button
+                key={reason.id}
+                type="button"
+                onClick={() =>
+                  setSelectedReason((prev) => (prev === reason.id ? null : reason.id))
+                }
+                style={styles.toggleButton(selectedReason === reason.id)}
+              >
                 {reason.text}
-              </option>
+              </button>
+
             ))}
-          </select>
+          </div>
         </div>
+
 
         {/* Medication Inputs */}
         {medications.map((med, index) => {

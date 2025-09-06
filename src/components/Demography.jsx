@@ -11,7 +11,6 @@ const styles = {
   button: { padding: "0.5rem 0.8rem", margin: "0.5rem", borderRadius: 8, border: "none", fontWeight: "bold", fontSize: 16, cursor: "pointer", backgroundColor: "#3498db", color: "#fff" },
   dateInput: { padding: 6, borderRadius: 4, border: "1px solid #ccc", fontSize: 17, width: 160, marginTop: 15, marginLeft: -16 },
   optionButton: (sel) => ({ alignItems: "center", margin: "5px 2px", padding: "8px 12px", borderRadius: "8px", border: "1px solid", borderColor: sel ? "green" : "#999", backgroundColor: sel ? "#e0f7e9" : "#f0f0f0", color: sel ? "green" : "#333", fontWeight: sel ? "bold" : "normal", cursor: "pointer", fontSize: 15, display: "inline-block" }),
-  // optionButton: (isChecked) => ({ alignItems: "center", border: `1px solid ${isChecked ? "#3498db" : "#ccc"}`, backgroundColor: isChecked ? "#e1f5fe" : "#fff", cursor: "pointer", transition: "all 0.3s ease" }),
   checkboxContainer: { display: "flex", flexWrap: "wrap", marginBottom: 15 },
 
   noteCopyRow: { display: "flex", gap: "0.1rem", margin: "0.5rem 0", flexWrap: "wrap" },
@@ -78,25 +77,12 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
 
   useEffect(() => { if (/\(ET\)/i.test(fileName)) setFormData(p => ({ ...p, location: "E-town" })); }, [fileName]);
 
-  // const handleFieldChange = async (e, setFieldValue) => {
-  //   const { name, value } = e.target;
-
-  //   if (name === "patientName") {
-  //     const formatted = value.trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  //     setLocalPatientName(formatted);
-  //     setFieldValue(name, formatted);
-  //     onChange({ target: { name, value: formatted } });
-  //   } else {
-  //     setFieldValue(name, value);
-  //     onChange(e);
-
-  //     if (name === "referringPhysician") {
-  //       await addPhysicianIfMissing(value.trim(), allPhysicians);
-  //     }
-  //   }
-  // };
-
   // Inside your component:
+  const handleCopyNote = (type, note) => {
+    navigator.clipboard.writeText(note);
+    setCopiedType(type);
+    setTimeout(() => setCopiedType(null), 1500);
+  };
 
   useEffect(() => {
     axios.get("http://localhost:8000/get-physicians")
@@ -163,54 +149,58 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
     }
   };
 
-
-
-  const handleUploadPDFs = async (formData) => {
-    if (!fileName || !formData?.dateOfEvaluation) {
-      console.error("❌ fileName or dateOfEvaluation missing");
-      alert("Missing file name or date of evaluation.");
+  const handleUploadPDFs = async (files) => {
+    if (!files) {
+      console.error("❌ No files provided to handleUploadPDFs");
       return;
     }
 
-    const payload = {
-      dateOfEvaluation: formData.dateOfEvaluation,
-      rawFolderPath: "G:/FOLDERS/PRC 2025/JULY 2025/07-19-2025",
-      rawFileName: fileName,
-      transcribedFolderPath: "G:/PYTHON/PROJECTS/full_stack_projects/followup-docx-app/backend/PRC_Files_Folder",
-      transcribedFileName: fileName,
-    };
+    // Normalize into array
+    const fileArray = Array.isArray(files) ? files : Array.from(files);
 
-    try {
-      const response = await fetch("http://localhost:8000/upload-documents/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    console.log(`📂 Preparing to upload ${fileArray.length} file(s)...`);
 
-      const result = await response.json();
+    let successCount = 0;
+    let failCount = 0;
 
-      if (!response.ok) {
-        console.error("❌ Upload failed:", result);
-        alert("❌ Upload failed: " + (result.detail || "Unknown server error"));
-      } else {
-        console.log("✅ Upload success:", result.message);
-        alert("✅ PDFs uploaded successfully.");
+    for (let i = 0; i < fileArray.length; i++) {
+      const file = fileArray[i];
+      const { fileName, path } = file;
+
+      console.log(`\n📤 [${i + 1}/${fileArray.length}] Uploading: ${fileName} from ${path}...`);
+
+      try {
+        const response = await fetch("http://localhost:8000/upload-documents", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fileName, path }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error(`❌ Upload failed for ${fileName}:`, error.error);
+          failCount++;
+        } else {
+          const result = await response.json();
+          console.log(`✅ Upload success: ${result.message}`);
+          successCount++;
+        }
+      } catch (err) {
+        console.error(`❌ Error uploading ${fileName}:`, err);
+        failCount++;
       }
-    } catch (error) {
-      console.error("❌ Network/upload error:", error);
-      alert("❌ Upload error. Check console.");
     }
+
+    console.log("\n📊 Upload Summary:");
+    console.log(`   ✅ Success: ${successCount}`);
+    console.log(`   ❌ Failed:  ${failCount}`);
+    console.log("🎉 All files processed one by one.");
   };
 
 
-  // const handleReferringChange = (e, setFieldValue) => {
-  //   const v = e.target.value;
-  //   setReferringInput(v); setFieldValue("referringPhysician", v);
-  //   onChange({ target: { name: "referringPhysician", value: v } });
-  //   const physicianNames = allPhysicians.map(d => d.name || "");
-  //   setFilteredPhysicians(v ? physicianNames.filter(name => name.toLowerCase().includes(v.toLowerCase())) : []);
 
-  // };
   const handleReferringChange = (e, setFieldValue) => {
     const v = e.target.value;
     setReferringInput(v);
@@ -278,6 +268,15 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
       } catch (e) {
         console.error(e);
       }
+    }
+    
+     // Add this part to send the fileName
+    try {
+      const fileName = values.fileName; // Assuming fileName is part of the values object
+      await axios.post(`${BACKEND_URL}/generate-document`, { fileName });
+      console.log("File name sent to backend:", fileName);
+    } catch (err) {
+      console.error("Error sending file name to backend:", err);
     }
 
     await onSubmitExternal({ ...values, referringPhysician: cap }, actions);
@@ -371,9 +370,10 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
 
             <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               <button type="submit" style={styles.button}>Generate Document</button>
-              <button type="button" style={styles.button} onClick={() => handleUploadPDFs(values)}>
+              <button type="button" style={styles.button} onClick={() => handleUploadPDFs(values.fileName)}>
                 Upload PDFs
               </button>
+
             </div>
           </div>
 
@@ -396,35 +396,35 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
                 <span>{f.label}:</span>
                 {f.type === "input" && (
                   <>
-                    <input name={f.name} value={f.name === "patientName" ? localPatientName : val} style={styles.input} onChange={(e) => handleFieldChange(e, setFieldValue)} />
+                    <input
+                      name={f.name}
+                      value={f.name === "patientName" ? localPatientName : val}
+                      style={styles.input}
+                      onChange={(e) => handleFieldChange(e, setFieldValue)}
+                    />
                     {f.name === "patientName" && (
                       <button
                         type="button"
+                        style={{ ...styles.button, marginLeft: 0 }}
                         onClick={() => {
-                          const parts = localPatientName.split(",");
-                          if (parts.length === 2) {
-                            const transformed = parts[1].trim() + " " + parts[0].trim();
-                            setLocalPatientName(transformed);
-                            setFieldValue("patientName", transformed);
-                            onChange({ target: { name: "patientName", value: transformed } });
-                          }
+                          const cap = s => s.trim().split(" ").map(w => w[0]?.toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+                          const [l, f] = localPatientName.split(",").map(cap);
+                          const full = f && l ? `${f} ${l}` : "";
+                          full && setLocalPatientName(full);
+                          full && setFieldValue("patientName", full);
+                          full && onChange({ target: { name: "patientName", value: full } });
 
-                          // 👇 Clean DOB if it starts with "DOB :"
-                          const dobVal = values.dob || "";
-                          const cleanedDob = dobVal.replace(/^DOB\s*:\s*/i, "");
-                          if (dobVal !== cleanedDob) {
-                            setFieldValue("dob", cleanedDob);
-                            onChange({ target: { name: "dob", value: cleanedDob } });
-                          }
+                          const dob = (values.dob || "").replace(/^DOB\s*:\s*/i, "");
+                          dob !== values.dob && setFieldValue("dob", dob);
+                          dob !== values.dob && onChange({ target: { name: "dob", value: dob } });
                         }}
-                        style={{ ...styles.button, marginLeft: 0, }}
                       >
                         Transform
                       </button>
                     )}
-
                   </>
                 )}
+
                 {f.type === "inputWithDate" && (
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <input name={f.name} placeholder="MM/DD/YYYY" style={{ ...styles.input, width: 120 }} value={val} onChange={(e) => {

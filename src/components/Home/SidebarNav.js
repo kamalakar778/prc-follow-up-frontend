@@ -18,54 +18,11 @@ const sections = [
   { id: "signature-line", label: "Signature Line" },
 ];
 
-// Styles
-const styles = {
-  sidebar: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "200px",
-    height: "100vh",
-    overflowY: "auto",
-    padding: "1rem",
-    backgroundColor: "#f4f4f4",
-    borderRight: "1px solid #ccc",
-    zIndex: 10,
-  },
-  header: {
-    fontWeight: "bold",
-    fontSize: "18px",
-    marginBottom: "1rem",
-  },
-  listItem: {
-    marginBottom: "0.5rem",
-  },
-  button: (isActive) => ({
-    width: "100%",
-    padding: "0.5rem",
-    backgroundColor: isActive ? "#4CAF50" : "#fff",
-    color: isActive ? "#fff" : "#000",
-    border: "none",
-    borderRadius: "4px",
-    textAlign: "left",
-    cursor: "pointer",
-    fontWeight: "500",
-  }),
-  toggleButton: {
-    marginTop: "1rem",
-    padding: "0.4rem 0.8rem",
-    border: "1px solid #4CAF50",
-    borderRadius: "4px",
-    backgroundColor: "#fff",
-    cursor: "pointer",
-    fontWeight: "500",
-    color: "#4CAF50",
-  },
-};
-
 const SidebarNav = () => {
   const [activeSection, setActiveSection] = useState(null);
-  const [trackingEnabled, setTrackingEnabled] = useState(true); // ✅ Default ON now
+  const [trackingEnabled, setTrackingEnabled] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -73,6 +30,22 @@ const SidebarNav = () => {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      if (window.innerWidth < 768) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!trackingEnabled) return;
@@ -96,36 +69,101 @@ const SidebarNav = () => {
     return () => observer.disconnect();
   }, [trackingEnabled]);
 
-  return (
-    <aside style={styles.sidebar}>
-      <h2 style={styles.header}>Sections</h2>
+  const styles = {
+    sidebar: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: isCollapsed ? "0" : "200px",
+      height: "100vh",
+      overflowY: isCollapsed ? "hidden" : "auto",
+      padding: isCollapsed ? "0" : "1rem",
+      backgroundColor: "#f4f4f4",
+      borderRight: isCollapsed ? "none" : "1px solid #ccc",
+      zIndex: 10,
+      transition: "all 0.3s ease-in-out",
+    },
+    header: {
+      fontWeight: "bold",
+      fontSize: "18px",
+      marginBottom: "1rem",
+    },
+    listItem: {
+      marginBottom: "0.5rem",
+    },
+    button: (isActive) => ({
+      width: "100%",
+      padding: "0.5rem",
+      backgroundColor: isActive ? "#4CAF50" : "#fff",
+      color: isActive ? "#fff" : "#000",
+      border: "none",
+      borderRadius: "4px",
+      textAlign: "left",
+      cursor: "pointer",
+      fontWeight: "500",
+    }),
+    toggleButton: {
+      position: "fixed",
+      top: "1rem",
+      left: isCollapsed ? "1rem" : "210px",
+      zIndex: 20,
+      padding: "0.4rem 0.8rem",
+      border: "1px solid #4CAF50",
+      borderRadius: "4px",
+      backgroundColor: "#fff",
+      cursor: "pointer",
+      fontWeight: "500",
+      color: "#4CAF50",
+      transition: "left 0.3s ease-in-out",
+    },
+  };
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {sections.map((section) => (
-          <li key={section.id} style={styles.listItem}>
+  return (
+    <>
+      <aside style={styles.sidebar}>
+        {!isCollapsed && (
+          <>
+            <h2 style={styles.header}>Sections</h2>
+
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {sections.map((section) => (
+                <li key={section.id} style={styles.listItem}>
+                  <button
+                    onClick={() => scrollToSection(section.id)}
+                    style={styles.button(
+                      trackingEnabled ? activeSection === section.id : false
+                    )}
+                  >
+                    {section.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+
             <button
-              onClick={() => scrollToSection(section.id)}
-              style={styles.button(
-                trackingEnabled ? activeSection === section.id : false
-              )}
+              onClick={() => setTrackingEnabled((prev) => !prev)}
+              style={{
+                ...styles.button(false),
+                marginTop: "1rem",
+                backgroundColor: trackingEnabled ? "#4CAF50" : "#fff",
+                color: trackingEnabled ? "#fff" : "#4CAF50",
+              }}
             >
-              {section.label}
+              {trackingEnabled
+                ? "Disable Auto Highlight"
+                : "Enable Auto Highlight"}
             </button>
-          </li>
-        ))}
-      </ul>
+          </>
+        )}
+      </aside>
 
       <button
-        onClick={() => setTrackingEnabled((prev) => !prev)}
-        style={{
-          ...styles.toggleButton,
-          backgroundColor: trackingEnabled ? "#4CAF50" : "#fff",
-          color: trackingEnabled ? "#fff" : "#4CAF50",
-        }}
+        onClick={() => setIsCollapsed((prev) => !prev)}
+        style={styles.toggleButton}
       >
-        {trackingEnabled ? "Disable Auto Highlight" : "Enable Auto Highlight"}
+        {isCollapsed ? "☰" : "×"}
       </button>
-    </aside>
+    </>
   );
 };
 

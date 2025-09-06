@@ -42,13 +42,13 @@ export const ShortcutProvider = ({ children }) => {
       Abdomen:"Abdomen",
     },
     "Abbrev-1": {
-      "Facet":"Facet",
+      "Facet":"facet",
       "variable":"variable",
       "caudal":"caudal",
-      "Carpal Tunnel":"Carpal Tunnel",
+      "Carpal Tunnel":"carpal tunnel",
         },
     "Abbrev-2": {
-   "MBB":"Medial Branch Blocks",
+   "MBB":"medial branch blocks",
     "RFA":"radio frequency ablation",
     "ESI":"epidural steroid injection",
     "TESI":"transforaminal epidural steroid injection",

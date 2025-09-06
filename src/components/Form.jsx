@@ -267,6 +267,137 @@ const Form = ({ onChange }) => {
     setFormData((prev) => ({ ...prev, dateOfEvaluation: fallbackFormatted }));
   }
 
+  // const handleSubmit = async () => {
+  //   let finalDateOfEval = formData.dateOfEvaluation;
+  //   const complaintsSummary = getComplaintsSummary();
+  //   const cleanString = (v) => (typeof v === "string" ? v.trim() : v || "");
+  //   const getOrNoValue = (val) => val?.trim() || "No Value";
+  //   const isPlaceholder = (val) => !val || val.trim() === "" || /^[_/]+$/.test(val);
+
+  //   if (isPlaceholder(formData.dateOfEvaluation) && dateInputISO) {
+  //     const [yyyy, mm, dd] = dateInputISO.split("-");
+  //     const fallbackFormatted = `${mm}/${dd}/${yyyy}`;
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       dateOfEvaluation: fallbackFormatted,
+  //     }));
+  //     finalDateOfEval = fallbackFormatted;
+  //   }
+
+  //   const selectedInsurances = formData.insuranceList || [];
+  //   const selectedCMA = formData.CMA || [];
+  //   const insuranceFinal1 = selectedInsurances[0] || "";
+  //   const insuranceFinal2 = selectedInsurances[1] || "";
+  //   const finalCMA = selectedCMA.join(", ");
+
+  //   const payload = {
+  //     ...formData,
+  //     fileName: cleanString(fileName),
+  //     patientName: cleanString(formData.patientName),
+  //     dob: cleanString(formData.dob),
+  //     dateOfEvaluation: cleanString(finalDateOfEval),
+  //     provider: cleanString(formData.provider),
+  //     referringPhysician: cleanString(formData.referringPhysician) || capitalizedPhysician,
+  //     insurance1: insuranceFinal1,
+  //     insurance2: insuranceFinal2,
+  //     insuranceList: cleanString(selectedInsurances.join(", ")),
+  //     location: cleanString(formData.location),
+  //     CMA: finalCMA,
+  //     roomNumber: cleanString(formData.roomNumber),
+  //     chiefComplaint: cleanString(chiefComplaint?.finalText),
+  //     complaintsSummary,
+  //     pain_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.pain_illnessLevel),
+  //     activity_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.activity_illnessLevel),
+  //     social_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.social_illnessLevel),
+  //     job_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.job_illnessLevel),
+  //     sleep_illnessLevel: getOrNoValue(formData.historyOfPresentIllness.sleep_illnessLevel),
+  //     temporally: formData.pain?.temporally || "",
+  //     qualitativePain: formData.pain?.qualitativePain || "",
+  //     numericScaleFormatted: formData.pain.numericScaleFormatted,
+  //     workingStatus: formData.pain?.workingStatus || "",
+  //     comments: formData.pain?.comments || "",
+  //     allergic_symptom_1: formData.formatted_allergic_1,
+  //     allergic_symptom_2: formData.formatted_allergic_2,
+  //     allergic_symptom_3: formData.formatted_allergic_3,
+  //     allergic_symptom_4: formData.formatted_allergic_4,
+  //     allergic_symptom_5: formData.formatted_allergic_5,
+  //     neurological_symptom_1: formData.formatted_neuro_1,
+  //     neurological_symptom_2: formData.formatted_neuro_2,
+  //     neurological_symptom_3: formData.formatted_neuro_3,
+  //     neurological_symptom_4: formData.formatted_neuro_4,
+  //     neurological_symptom_5: formData.formatted_neuro_5,
+  //     complianceComments: formData.complianceComments,
+  //     intervalComments: formData.intervalComments,
+  //     vitals: formData.vitals,
+  //     generalAppearance: formData.generalAppearance,
+  //     orientation: formData.orientation,
+  //     moodAffect: formData.moodAffect,
+  //     gait: formData.gait,
+  //     stationStance: formData.stationStance,
+  //     cardiovascular: formData.cardiovascular,
+  //     lymphadenopathy: formData.lymphadenopathy,
+  //     coordinationBalance: formData.coordinationBalance,
+  //     motorFunction: formData.motorFunction,
+  //     earlier_followups: cleanString(earlierFollowupsText || ""),
+  //     establishedComplaints: formData.establishedComplaints,
+  //     assessment_codes: formattedAssessmentCodes,
+  //     nonComplianceSeverity: cleanString(formData?.nonComplianceSeverity),
+  //     actionTaken: formData.actionTaken,
+  //     udtStatus: formData.udtStatus,
+  //     unexpectedUTox: formData.formattedUnexpectedUTox,
+  //     pillCount: formData.formattedPillCount,
+  //     ptEval: formData.formattedPtEval,
+  //     imaging: formData.formattedImaging,
+  //     xrayOf: formData.formattedXrayOf,
+  //     behavioralFocus: formData.formattedBehavioralFocus,
+  //     referral: formData.formattedReferral,
+  //     medication_management: formData.medication_management,
+  //     INJECTION_SUMMARY: formData?.INJECTION_SUMMARY ? `\n\n${formData?.INJECTION_SUMMARY}` : "",
+  //     signature: {
+  //       ...signatureData,
+  //       otherPlans: signatureData.otherPlans ? `\n\n${signatureData.otherPlans}` : "",
+  //       formattedLines: signatureData?.formattedLines ? `\n${signatureData?.formattedLines}` : "",
+  //       followUpAppointment: signatureData?.followUpAppointment || "",
+  //       signatureLine: signatureData?.signatureLine || "",
+  //       dateTranscribed: formData?.dateTranscribed || "",
+  //       autocompleteItem1: autoCompleteData.item1,
+  //       autocompleteItem2: autoCompleteData.item2
+  //     }
+  //   };
+
+  //   try {
+  //     const response = await fetch("http://localhost:8000/generate-doc", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(payload),
+  //       mode: "cors"
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`Server responded with status ${response.status}`);
+  //     }
+
+  //     const blob = await response.blob();
+  //     const contentDisposition = response.headers.get("Content-Disposition");
+  //     const match = contentDisposition?.match(/filename="?([^"]+)"?/i);
+  //     const extractedFilename =
+  //       match?.[1] || (fileName || formData.patientName || "follow_up") + ".docx";
+
+  //     const url = window.URL.createObjectURL(blob);
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.setAttribute("download", extractedFilename);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     link.remove();
+  //     window.URL.revokeObjectURL(url);
+
+  //     alert("✅ .docx downloaded\n📁 .pdf saved to server");
+  //   } catch (error) {
+  //     console.error("❌ Error generating or downloading DOCX:", error);
+  //     alert("⚠️ Failed to generate document.");
+  //   }
+  // };
   const handleSubmit = async () => {
     let finalDateOfEval = formData.dateOfEvaluation;
     const complaintsSummary = getComplaintsSummary();
@@ -392,12 +523,35 @@ const Form = ({ onChange }) => {
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      alert("✅ .docx downloaded\n📁 .pdf saved to server");
+      showCustomAlert("✅ .docx downloaded\n📁 .pdf saved to server");
+
     } catch (error) {
       console.error("❌ Error generating or downloading DOCX:", error);
-      alert("⚠️ Failed to generate document.");
+      showCustomAlert("⚠️ Failed to generate document.");
     }
   };
+
+const showCustomAlert = (message) => {
+  const alertElement = document.createElement("div");
+  alertElement.style.position = "fixed";
+  alertElement.style.top = "20px";  // Changed from bottom to top
+  alertElement.style.left = "50%";  // Center horizontally
+  alertElement.style.transform = "translateX(-50%)";  // Center align the element
+  alertElement.style.padding = "10px 20px";
+  alertElement.style.backgroundColor = "#4caf50";
+  alertElement.style.color = "white";
+  alertElement.style.borderRadius = "5px";
+  alertElement.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+  alertElement.textContent = message;
+  document.body.appendChild(alertElement);
+
+  setTimeout(() => {
+    alertElement.style.transition = "opacity 0.5s";
+    alertElement.style.opacity = "0";
+    setTimeout(() => alertElement.remove(), 500);
+  }, 5000);
+};
+
   useEffect(() => {
     const scrollToId = localStorage.getItem("scrollToId");
     if (scrollToId) {
