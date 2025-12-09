@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import axios from "axios";
 
 const BACKEND_URL = "http://localhost:8000";
+const bpRegex = /^\d{2,3}\/\d{2,3}$/;
+
 const styles = {
   container: { fontFamily: "Arial, sans-serif", maxWidth: 1200, margin: "10px auto", padding: "0.5rem", backgroundColor: "#f9f9f9", borderRadius: 4, boxShadow: "0 2px 6px rgba(0,0,0,0.1)" },
   label: { display: "flex", flexDirection: "row", alignItems: "center", fontSize: 16, color: "#333", gap: "0.3rem", marginBottom: "-0.2rem" },
@@ -17,6 +19,7 @@ const styles = {
   noteItem: { display: "flex", alignItems: "center", flex: 1, minWidth: 450, gap: "0.5rem" },
   noteLabel: (copied) => ({ cursor: "pointer", fontWeight: "bold", minWidth: 120, color: copied ? "#27ae60" : "#333", userSelect: "none" }),
   noteInput: { flex: 1, padding: 8, borderRadius: 8, border: "1px solid #ccc", fontSize: 16, backgroundColor: "#fdfdfd" },
+  vitalsInput: { width: 70, padding: "8px 8px", borderRadius: 6, border: "3px solid #8a4a31ff", fontSize: 16, marginRight: 18 }
 
 };
 
@@ -44,11 +47,33 @@ const getValidationSchema = (opts = [], fileName = "") => {
     location: Yup.string().test("et-check", "Must be E-town if (ET)", (v) => /\(ET\)/i.test(fileName) ? v === "E-town" : true),
     insuranceList: Yup.array().of(Yup.string()),
     CMA: Yup.array().of(Yup.string()),
-    roomNumber: Yup.string()
+    roomNumber: Yup.string(),
+    vitals: Yup.object({
+      bp: Yup.string()
+        // .nullable()
+        .matches(bpRegex, "BP must be like 120/80")
+        .required("BP is required"),
+      heightFeet: Yup.number()
+        .min(1, "Feet must be at least 1")
+        .max(9, "Feet must be less than 9")
+        .required("Height (ft) is required"),
+      heightInches: Yup.number()
+        .min(0, "Inches cannot be negative")
+        .max(11, "Must be less than 12 inches")
+        .required("Height (in) is required"),
+      weight: Yup.number()
+        .positive("Weight must be positive")
+        .required("Weight is required"),
+      bmi: Yup.number()
+        .min(5, "BMI too low")
+        .max(100, "BMI too high")
+        .required("BMI is required")
+    })
   });
+
 };
 
-const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: onSubmitExternal, setFormData, setDateOfEvaluation }) => {
+const Demography = ({ vitals, setVitals, fileName, formData, onFileNameChange, onChange, onSubmit: onSubmitExternal, setFormData, setDateOfEvaluation }) => {
   const [dateISO, setDateISO] = useState(() => formData.dateOfEvaluation && /^\d{2}\/\d{2}\/\d{4}$/.test(formData.dateOfEvaluation) ? formatDateToISO(parseMMDDYYYYtoDate(formData.dateOfEvaluation)) : formatDateToISO(new Date(Date.now() - 86400000)));
   const [localPatientName, setLocalPatientName] = useState(formData.patientName || "");
   const [referringInput, setReferringInput] = useState(formData.referringPhysician || "");
@@ -269,8 +294,8 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
         console.error(e);
       }
     }
-    
-     // Add this part to send the fileName
+
+    // Add this part to send the fileName
     try {
       const fileName = values.fileName; // Assuming fileName is part of the values object
       await axios.post(`${BACKEND_URL}/generate-document`, { fileName });
@@ -281,9 +306,9 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
 
     await onSubmitExternal({ ...values, referringPhysician: cap }, actions);
   };
-
+  const initialValues = { ...formData, vitals: vitals };
   return (
-    <Formik initialValues={formData} validationSchema={getValidationSchema(providerOptions, fileName)} enableReinitialize onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} validationSchema={getValidationSchema(providerOptions, fileName)} enableReinitialize onSubmit={onSubmit}>
       {({ values, errors, touched, setFieldValue, handleSubmit }) => (
         <form onSubmit={handleSubmit} style={styles.container}>
           {/* Modern Notes Copy Section (1 row) */}
@@ -357,7 +382,7 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
               }}
             />
 
-            <label
+            {/* <label
               htmlFor="fileInput"
               style={{
                 ...styles.button,
@@ -366,7 +391,7 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
               }}
             >
               Choose File
-            </label>
+            </label> */}
 
             <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               <button type="submit" style={styles.button}>Generate Document</button>
@@ -377,7 +402,87 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
             </div>
           </div>
 
+          <div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: 8 }}>
+              <b>Vitals</b>
 
+              {/* BP */}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label><b>Blood Press:</b></label>
+                <input
+                  type="text"
+                  value={vitals.bp}
+                  onChange={(e) => setVitals({ ...vitals, bp: e.target.value })}
+                  placeholder="Pressure"
+                  style={styles.vitalsInput}
+                />
+                {errors.vitals?.bp && touched.vitals?.bp && (
+                  <span style={{ color: "red", fontSize: 14 }}>{errors.vitals.bp}</span>
+                )}
+              </div>
+
+              {/* Height */}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label><b>Height (ft):</b></label>
+                <input
+                  type="text"
+                  value={vitals.heightFeet}
+                  onChange={(e) => setVitals({ ...vitals, heightFeet: e.target.value })}
+                  placeholder="Feet"
+                  style={styles.vitalsInput}
+                />
+                {errors.vitals?.heightFeet && touched.vitals?.heightFeet && (
+                  <span style={{ color: "red", fontSize: 14 }}>{errors.vitals.heightFeet}</span>
+                )}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label><b>Inches:</b></label>
+                <input
+                  type="text"
+                  value={vitals.heightInches}
+                  onChange={(e) => setVitals({ ...vitals, heightInches: e.target.value })}
+                  placeholder="Inches"
+                  style={styles.vitalsInput}
+                />
+                {errors.vitals?.heightInches && touched.vitals?.heightInches && (
+                  <span style={{ color: "red", fontSize: 14 }}>{errors.vitals.heightInches}</span>
+                )}
+              </div>
+
+              {/* Weight */}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label><b>Weight (lbs):</b></label>
+                <input
+                  type="text"
+                  value={vitals.weight}
+                  onChange={(e) => setVitals({ ...vitals, weight: e.target.value })}
+                  placeholder="lbs"
+                  style={styles.vitalsInput}
+                />
+                {errors.vitals?.weight && touched.vitals?.weight && (
+                  <span style={{ color: "red", fontSize: 14 }}>{errors.vitals.weight}</span>
+                )}
+              </div>
+
+              {/* BMI */}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <label><b>BMI:</b></label>
+                <input
+                  type="text"
+                  value={vitals.bmi}
+                  onChange={(e) => setVitals({ ...vitals, bmi: e.target.value })}
+                  placeholder="BMI"
+                  style={styles.vitalsInput}
+                />
+                {errors.vitals?.bmi && touched.vitals?.bmi && (
+                  <span style={{ color: "red", fontSize: 14 }}>{errors.vitals.bmi}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* <hr style={{ margin: "1rem 0" }} /> */}
           {[
             { label: "Patient Name", name: "patientName", type: "input" },
             { label: "Date of Birth", name: "dob", type: "input" },
@@ -444,6 +549,7 @@ const Demography = ({ fileName, formData, onFileNameChange, onChange, onSubmit: 
                     {val && <span style={{ marginLeft: 8, fontStyle: "italic", fontSize: 18, color: "#666" }}>{getWeekday(val)}</span>}
                   </div>
                 )}
+                
                 {f.type === "referring" && (
                   <div style={{ position: "relative", width: "20%" }}>
                     <input name={f.name} value={referringInput} style={styles.input} onChange={(e) => handleReferringChange(e, setFieldValue)} autoComplete="off" />

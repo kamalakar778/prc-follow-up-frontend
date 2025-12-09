@@ -8,7 +8,7 @@ const styles = {
   optionButton: (isSelected) => ({ marginRight: 4, marginBottom: 3, cursor: "pointer", padding: "6px 12px", borderRadius: "10px", border: "1px solid", borderColor: isSelected ? "green" : "gray", backgroundColor: isSelected ? "#e0f7e9" : "#f5f5f5", color: isSelected ? "green" : "gray", display: "inline-block", fontWeight: isSelected ? "bold" : "normal", transition: "all 0.3s ease", }),
 };
 
-const illnessOptions = ["More tolerable", "Less tolerable", "Improved", "Worse", "The same",];
+const illnessOptions = ["More tolerable", "Less tolerable", "Improved", "Worse", "The same", "____________"];
 
 const items = [
   { label: "Pain is:", name: "pain_illnessLevel" },

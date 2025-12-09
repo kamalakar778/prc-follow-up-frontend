@@ -111,20 +111,14 @@ const ButtonOptions = ({ label, options, value, onChange, multi = false }) => {
   );
 };
 
-const PhysicalExamination = ({ onChange }) => {
+const PhysicalExamination = ({ vitals, setVitals, onChange }) => {
   const onChangeRef = useRef(onChange);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  const [vitals, setVitals] = useState({
-    bp: "",
-    heightFeet: "",
-    heightInches: "",
-    weight: "",
-    bmi: ""
-  });
+  
 
   const [generalAppearance, setGeneralAppearance] = useState([
     "Well groomed and content"

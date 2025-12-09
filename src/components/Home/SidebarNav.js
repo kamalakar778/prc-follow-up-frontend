@@ -74,7 +74,7 @@ const SidebarNav = () => {
       position: "fixed",
       top: 0,
       left: 0,
-      width: isCollapsed ? "0" : "200px",
+      width: isCollapsed ? "0" : "180px",
       height: "100vh",
       overflowY: isCollapsed ? "hidden" : "auto",
       padding: isCollapsed ? "0" : "1rem",
@@ -93,14 +93,14 @@ const SidebarNav = () => {
     },
     button: (isActive) => ({
       width: "100%",
-      padding: "0.5rem",
+      padding: "0.4rem",
       backgroundColor: isActive ? "#4CAF50" : "#fff",
       color: isActive ? "#fff" : "#000",
       border: "none",
       borderRadius: "4px",
       textAlign: "left",
       cursor: "pointer",
-      fontWeight: "500",
+      fontWeight: "400",
     }),
     toggleButton: {
       position: "fixed",
@@ -155,14 +155,15 @@ const SidebarNav = () => {
             </button>
           </>
         )}
+        <button
+          onClick={() => setIsCollapsed((prev) => !prev)}
+          style={styles.toggleButton}
+        >
+          {isCollapsed ? "☰" : "×"}
+        </button>
       </aside>
 
-      <button
-        onClick={() => setIsCollapsed((prev) => !prev)}
-        style={styles.toggleButton}
-      >
-        {isCollapsed ? "☰" : "×"}
-      </button>
+
     </>
   );
 };

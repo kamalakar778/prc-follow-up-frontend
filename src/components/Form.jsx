@@ -34,6 +34,13 @@ const Form = ({ onChange }) => {
   const [hasNowSchedule, setHasNowSchedule] = useState(false);
   const [followUpValue, setFollowUpValue] = useState("Four weeks");
   const [dateInputISO, setDateInputISO] = useState("");
+const [vitals, setVitals] = useState({
+    bp: "",
+    heightFeet: "",
+    heightInches: "",
+    weight: "",
+    bmi: ""
+  });
 
   useEffect(() => {
     setFormData(prev => ({
@@ -567,6 +574,8 @@ const showCustomAlert = (message) => {
       <div className="form-section" id="demography">
         <h2 className="section-title">FOLLOW-UP VISIT via In-Office</h2>
         <Demography
+        vitals={vitals} 
+        setVitals={setVitals}
           fileName={fileName}
           onFileNameChange={handleFileNameChange}
           formData={formData}
@@ -632,7 +641,10 @@ const showCustomAlert = (message) => {
       </div>
       <div className="form-section" id="physical-examination">
         <h2 className="section-title">Physical Examination</h2>
-        <PhysicalExamination onChange={handlePhysicalExamChange} />
+        <PhysicalExamination 
+        vitals={vitals} 
+        setVitals={setVitals}
+        onChange={handlePhysicalExamChange} />
       </div>
       <div className="form-section" id="earlier-followups">
         <h2 className="section-title">Earlier Followups</h2>
